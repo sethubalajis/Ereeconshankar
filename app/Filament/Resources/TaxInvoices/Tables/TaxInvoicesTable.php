@@ -1,0 +1,56 @@
+<?php
+
+namespace App\Filament\Resources\TaxInvoices\Tables;
+
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+
+class TaxInvoicesTable
+{
+    public static function configure(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('invoiceable_id')->numeric()
+                    ->sortable(),
+                TextColumn::make('invoiceable_type')
+                    ->searchable(),
+                TextColumn::make('invoice_number')
+                    ->searchable(),
+                TextColumn::make('invoice_date')
+                    ->date()
+                    ->sortable(),
+                TextColumn::make('taxable_amount')
+                    ->numeric()
+                    ->sortable(),
+                TextColumn::make('tax_amount')
+                    ->numeric()
+                    ->sortable(),
+                TextColumn::make('total_amount')
+                    ->numeric()
+                    ->sortable(),
+                TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                //
+            ])
+            ->recordActions([
+                EditAction::make(),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+}

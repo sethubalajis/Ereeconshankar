@@ -1,0 +1,19 @@
+<?php
+
+namespace App\Filament\Resources\TransitInventories\Pages;
+
+use App\Filament\Resources\TransitInventories\TransitInventoryResource;
+use Filament\Actions\DeleteAction;
+use Filament\Resources\Pages\EditRecord;
+
+class EditTransitInventory extends EditRecord
+{
+    protected static string $resource = TransitInventoryResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DeleteAction::make(),
+        ];
+    }
+}

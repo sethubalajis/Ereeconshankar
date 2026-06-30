@@ -1,0 +1,19 @@
+<?php
+
+namespace App\Filament\Resources\TaxGroups\Pages;
+
+use App\Filament\Resources\TaxGroups\TaxGroupResource;
+use Filament\Actions\DeleteAction;
+use Filament\Resources\Pages\EditRecord;
+
+class EditTaxGroup extends EditRecord
+{
+    protected static string $resource = TaxGroupResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DeleteAction::make(),
+        ];
+    }
+}

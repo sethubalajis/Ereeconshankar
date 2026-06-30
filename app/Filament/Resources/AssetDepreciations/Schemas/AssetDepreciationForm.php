@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Filament\Resources\AssetDepreciations\Schemas;
+
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Schema;
+
+class AssetDepreciationForm
+{
+    public static function configure(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                \Filament\Forms\Components\Select::make('asset_id')->relationship('asset', 'name')
+                    ->required(),
+                DatePicker::make('depreciation_date')
+                    ->required(),
+                TextInput::make('amount')
+                    ->required()
+                    ->numeric()
+                    ->default(0.0),
+                TextInput::make('current_value')
+                    ->required()
+                    ->numeric()
+                    ->default(0.0),
+            ]);
+    }
+}

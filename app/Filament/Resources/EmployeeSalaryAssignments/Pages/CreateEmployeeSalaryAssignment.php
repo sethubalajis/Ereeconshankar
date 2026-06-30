@@ -1,0 +1,11 @@
+<?php
+
+namespace App\Filament\Resources\EmployeeSalaryAssignments\Pages;
+
+use App\Filament\Resources\EmployeeSalaryAssignments\EmployeeSalaryAssignmentResource;
+use Filament\Resources\Pages\CreateRecord;
+
+class CreateEmployeeSalaryAssignment extends CreateRecord
+{
+    protected static string $resource = EmployeeSalaryAssignmentResource::class;
+}

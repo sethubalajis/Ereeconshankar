@@ -1,0 +1,19 @@
+<?php
+
+namespace App\Filament\Resources\CashBooks\Pages;
+
+use App\Filament\Resources\CashBooks\CashBookResource;
+use Filament\Actions\DeleteAction;
+use Filament\Resources\Pages\EditRecord;
+
+class EditCashBook extends EditRecord
+{
+    protected static string $resource = CashBookResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DeleteAction::make(),
+        ];
+    }
+}
