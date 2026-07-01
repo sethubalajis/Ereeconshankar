@@ -20,6 +20,10 @@ class ProductVariantsTable
                 TextColumn::make('sku')
                     ->label('SKU')
                     ->searchable(),
+                TextColumn::make('attributeValues.value')
+                    ->label('Attributes')
+                    ->badge()
+                    ->separator(', '),
                 TextColumn::make('mrp')
                     ->numeric()
                     ->sortable(),
