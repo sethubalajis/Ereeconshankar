@@ -52,8 +52,8 @@ class DatabaseSeeder extends Seeder
         $this->call(SizeSeeder::class);
         $this->call(FabricTypeSeeder::class);
         $this->call(PatternTypeSeeder::class);
-        $this->call(VendorSeeder::class);
         $this->call(VendorCategorySeeder::class);
+        $this->call(VendorSeeder::class);
         $this->call(GiftVoucherSeeder::class);
         $this->call(PaymentModeSeeder::class);
         $this->call(CustomerGroupSeeder::class);

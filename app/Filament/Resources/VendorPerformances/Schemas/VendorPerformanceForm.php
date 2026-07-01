@@ -15,7 +15,8 @@ class VendorPerformanceForm
             ->components([
                 \Filament\Forms\Components\Select::make('vendor_id')->relationship('vendor', 'name')
                     ->required(),
-                DatePicker::make('review_date')
+                    DatePicker::make('review_date')
+                        ->default(now())
                     ->required(),
                 TextInput::make('rating')
                     ->required()

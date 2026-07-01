@@ -21,9 +21,11 @@ class VendorPriceListForm
                     ->required()
                     ->numeric()
                     ->default(0.0)
-                    ->prefix('$'),
-                DatePicker::make('valid_from'),
-                DatePicker::make('valid_to'),
+                    ->prefix('₹'),
+                DatePicker::make('valid_from')
+                    ->default(now()),
+                DatePicker::make('valid_to')
+                    ->default(now()),
             ]);
     }
 }
