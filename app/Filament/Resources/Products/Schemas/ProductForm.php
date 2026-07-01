@@ -6,6 +6,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Str;
 
 class ProductForm
 {
@@ -20,8 +21,16 @@ class ProductForm
                 \Filament\Forms\Components\Select::make('hsn_code_id')->relationship('hsnCode', 'hsn_code'),
                 \Filament\Forms\Components\Select::make('tax_group_id')->relationship('taxGroup', 'name'),
                 TextInput::make('name')
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function (\Filament\Forms\Set $set, \Filament\Forms\Get $get, ?string $state): void {
+                        $set('sku', self::generateSku($state, $get('code')));
+                    })
                     ->required(),
                 TextInput::make('code')
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function (\Filament\Forms\Set $set, \Filament\Forms\Get $get, ?string $state): void {
+                        $set('sku', self::generateSku($get('name'), $state));
+                    })
                     ->required(),
                 TextInput::make('sku')
                     ->label('SKU'),
@@ -31,9 +40,22 @@ class ProductForm
                     ->required()
                     ->numeric()
                     ->default(0.0)
-                    ->prefix('$'),
+                    ->prefix('₹'),
                 Toggle::make('is_active')
                     ->required(),
             ]);
+    }
+
+    private static function generateSku(?string $name, ?string $code): string
+    {
+        $codePart = Str::upper(Str::of((string) $code)->replaceMatches('/[^A-Za-z0-9]/', '')->toString());
+
+        if ($codePart !== '') {
+            return $codePart;
+        }
+
+        $namePart = Str::upper(Str::of((string) $name)->replaceMatches('/[^A-Za-z0-9]/', '')->limit(8, '')->toString());
+
+        return $namePart !== '' ? $namePart : 'PRD';
     }
 }
