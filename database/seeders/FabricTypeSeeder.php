@@ -1,24 +1,17 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class FabricTypeSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
-        
-        for ($i = 0; $i < 5; $i++) {
+class FabricTypeSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('fabric_types')->truncate();
+        $fabrics = ['Cotton', 'Silk', 'Polyester', 'Linen', 'Wool', 'Denim', 'Rayon', 'Chiffon'];
+        foreach($fabrics as $f) {
             DB::table('fabric_types')->insert([
-                'name' => $faker->word . ' ' . $faker->word,
-                'code' => substr(strtoupper($faker->unique()->bothify('???###')), 0, 3),
-                'description' => $faker->sentence,
-                'status' => true,
+                'name' => $f, 'code' => strtoupper(substr($f, 0, 3)), 'status' => true
             ]);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }
