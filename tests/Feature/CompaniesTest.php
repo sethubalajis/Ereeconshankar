@@ -3,6 +3,8 @@
 use App\Filament\Resources\Companies\Pages\CreateCompany;
 use App\Models\Company;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -77,3 +79,26 @@ it('prevents duplicate company name', function (): void {
 it('blocks unauthenticated users from create company page', function (): void {
     get('/admin/companies/create')->assertRedirect('/admin/login');
 });
+
+it('uploads and stores company logo image', function (): void {
+    Storage::fake('public');
+    actingAs(User::factory()->create());
+
+    $logo = UploadedFile::fake()->image('company-logo.png');
+
+    Livewire::test(CreateCompany::class)
+        ->fillForm([
+            'name' => 'Logo Upload Co',
+            'code' => 'LOGO001',
+            // Expected final behavior after switching CompanyForm::logo to FileUpload.
+            'logo' => $logo,
+            'status' => true,
+        ])
+        ->call('create');
+
+    $company = Company::query()->where('code', 'LOGO001')->first();
+
+    expect($company)->not->toBeNull();
+    expect($company->logo)->not->toBeEmpty();
+    Storage::disk('public')->assertExists($company->logo);
+})->skip('CompanyForm::logo is currently TextInput. Switch to FileUpload to enable this upload test.');
