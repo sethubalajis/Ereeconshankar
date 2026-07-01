@@ -1,25 +1,23 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class ProductSubCategorySeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
-        
-        for ($i = 0; $i < 5; $i++) {
+class ProductSubCategorySeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('product_sub_categories')->truncate();
+        $subs = [
+            ['cat_id' => 1, 'name' => 'Shirts', 'code' => 'M-SHR'],
+            ['cat_id' => 1, 'name' => 'Trousers', 'code' => 'M-TRU'],
+            ['cat_id' => 2, 'name' => 'Sarees', 'code' => 'W-SAR'],
+            ['cat_id' => 2, 'name' => 'Kurtas', 'code' => 'W-KUR'],
+            ['cat_id' => 3, 'name' => 'Boys T-Shirts', 'code' => 'K-TSH'],
+        ];
+        foreach($subs as $s) {
             DB::table('product_sub_categories')->insert([
-                'product_category_id' => 1,
-                'name' => $faker->word . ' ' . $faker->word,
-                'code' => substr(strtoupper($faker->unique()->bothify('???###')), 0, 3),
-                'description' => $faker->sentence,
-                'status' => true,
+                'product_category_id' => $s['cat_id'], 'name' => $s['name'], 'code' => $s['code'], 'status' => true
             ]);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

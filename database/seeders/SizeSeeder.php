@@ -1,23 +1,17 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class SizeSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
-        
-        for ($i = 0; $i < 5; $i++) {
+class SizeSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('sizes')->truncate();
+        $sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '28', '30', '32', '34'];
+        foreach($sizes as $index => $s) {
             DB::table('sizes')->insert([
-                'name' => $faker->word . ' ' . $faker->word,
-                'code' => substr(strtoupper($faker->unique()->bothify('???###')), 0, 3),
-                'status' => true,
+                'name' => $s, 'code' => $s, 'status' => true
             ]);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

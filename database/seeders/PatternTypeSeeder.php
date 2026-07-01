@@ -1,24 +1,17 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class PatternTypeSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
-        
-        for ($i = 0; $i < 5; $i++) {
+class PatternTypeSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('pattern_types')->truncate();
+        $patterns = ['Solid', 'Striped', 'Checked', 'Floral', 'Printed', 'Polka Dot', 'Geometric'];
+        foreach($patterns as $p) {
             DB::table('pattern_types')->insert([
-                'name' => $faker->word . ' ' . $faker->word,
-                'code' => substr(strtoupper($faker->unique()->bothify('???###')), 0, 3),
-                'description' => $faker->sentence,
-                'status' => true,
+                'name' => $p, 'code' => strtoupper(substr($p, 0, 3)), 'status' => true
             ]);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

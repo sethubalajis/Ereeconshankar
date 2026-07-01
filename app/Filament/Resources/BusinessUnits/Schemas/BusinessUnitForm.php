@@ -18,7 +18,9 @@ class BusinessUnitForm
                 TextInput::make('name')
                     ->required(),
                 TextInput::make('code')
-                    ->required(),
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->placeholder('Auto Generated'),
                 Textarea::make('description')
                     ->columnSpanFull(),
                 Toggle::make('status')
