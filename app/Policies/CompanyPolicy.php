@@ -22,9 +22,7 @@ class CompanyPolicy
     public function viewAny(User $user): bool
     {
         return $this->canAny($user, [
-            'companies.viewAny',
             'companies.view',
-            'company.viewAny',
             'company.view',
             'view companies',
         ]);
@@ -70,7 +68,6 @@ class CompanyPolicy
     public function deleteAny(User $user): bool
     {
         return $this->canAny($user, [
-            'companies.deleteAny',
             'companies.delete',
             'company.delete',
             'delete companies',
