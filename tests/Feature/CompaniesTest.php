@@ -3,6 +3,7 @@
 use App\Filament\Resources\Companies\Pages\CreateCompany;
 use App\Models\Company;
 use App\Models\User;
+use Filament\Http\Middleware\AuthenticateSession as FilamentAuthenticateSession;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
@@ -16,6 +17,7 @@ it('redirects guests away from companies list', function (): void {
 });
 
 it('allows authenticated users to access companies list', function (): void {
+    $this->withoutMiddleware(FilamentAuthenticateSession::class);
     actingAs(User::factory()->create());
 
     get('/admin/companies')->assertOk();
@@ -101,4 +103,4 @@ it('uploads and stores company logo image', function (): void {
     expect($company)->not->toBeNull();
     expect($company->logo)->not->toBeEmpty();
     Storage::disk('public')->assertExists($company->logo);
-})->skip('CompanyForm::logo is currently TextInput. Switch to FileUpload to enable this upload test.');
+});

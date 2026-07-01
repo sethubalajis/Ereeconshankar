@@ -4,6 +4,7 @@ use App\Filament\Resources\Companies\Pages\CreateCompany;
 use App\Filament\Resources\Companies\Pages\EditCompany;
 use App\Models\Company;
 use App\Models\User;
+use Filament\Http\Middleware\AuthenticateSession as FilamentAuthenticateSession;
 use Livewire\Livewire;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -26,6 +27,7 @@ it('creates a company record', function (): void {
 });
 
 it('reads companies from list page', function (): void {
+    $this->withoutMiddleware(FilamentAuthenticateSession::class);
     actingAs(User::factory()->create());
 
     $company = Company::factory()->create([
