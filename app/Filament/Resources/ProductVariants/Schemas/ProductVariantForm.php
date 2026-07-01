@@ -29,6 +29,7 @@ class ProductVariantForm
                     ->live()
                     ->afterStateUpdated(function (Set $set, Get $get): void {
                         self::updateSkuAndBarcode($set, $get);
+                        self::updateVariantPrices($set, $get);
                     })
                     ->required(),
             ], $attributeComponents, [
@@ -244,6 +245,19 @@ class ProductVariantForm
         $sku = self::generateSku($get('product_id'), $get('attribute_inputs'));
         $set('sku', $sku);
         $set('barcode', self::generateBarcodeFromSku($sku));
+    }
+
+    private static function updateVariantPrices(Set $set, Get $get): void
+    {
+        $basePrice = Product::query()->whereKey($get('product_id'))->value('base_price');
+
+        if ($basePrice === null) {
+            return;
+        }
+
+        $set('mrp', $basePrice);
+        $set('selling_price', $basePrice);
+        $set('cost_price', $basePrice);
     }
 
     private static function generateSku(mixed $productId, mixed $attributeInputs): string
