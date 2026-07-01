@@ -4,20 +4,23 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
 
 class PaymentModeSeeder extends Seeder
 {
     public function run(): void
     {
-        $faker = Faker::create();
-        
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('payment_modes')->insert([
-                'name' => $faker->word . ' ' . $faker->word,
-                'code' => substr(strtoupper($faker->unique()->bothify('???###')), 0, 3),
-                'is_active' => true,
-            ]);
-        }
+        DB::table('payment_modes')->truncate();
+
+        $now = now();
+
+        DB::table('payment_modes')->insert([
+            ['name' => 'Cash', 'code' => 'PM001', 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
+            ['name' => 'Cheque', 'code' => 'PM002', 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
+            ['name' => 'Bank Transfer', 'code' => 'PM003', 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
+            ['name' => 'NEFT', 'code' => 'PM004', 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
+            ['name' => 'RTGS', 'code' => 'PM005', 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
+            ['name' => 'IMPS', 'code' => 'PM006', 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
+            ['name' => 'UPI', 'code' => 'PM007', 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
+        ]);
     }
 }
