@@ -1,24 +1,28 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class ColorSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
-        
-        for ($i = 0; $i < 5; $i++) {
+class ColorSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('colors')->truncate();
+        $colors = [
+            ['name' => 'Red', 'code' => 'RED'],
+            ['name' => 'Blue', 'code' => 'BLU'],
+            ['name' => 'Green', 'code' => 'GRN'],
+            ['name' => 'Black', 'code' => 'BLK'],
+            ['name' => 'White', 'code' => 'WHT'],
+            ['name' => 'Yellow', 'code' => 'YEL'],
+            ['name' => 'Pink', 'code' => 'PNK'],
+            ['name' => 'Purple', 'code' => 'PUR'],
+            ['name' => 'Grey', 'code' => 'GRY'],
+            ['name' => 'Navy', 'code' => 'NVY']
+        ];
+        foreach($colors as $c) {
             DB::table('colors')->insert([
-                'name' => $faker->word . ' ' . $faker->word,
-                'code' => substr(strtoupper($faker->unique()->bothify('???###')), 0, 3),
-                'hex_code' => substr(strtoupper($faker->unique()->bothify('???###')), 0, 3),
-                'status' => true,
+                'name' => $c['name'], 'code' => $c['code'], 'status' => true
             ]);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

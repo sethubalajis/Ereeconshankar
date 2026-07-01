@@ -4,12 +4,20 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class ProductCategorySeeder extends Seeder {
     public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         DB::table('product_categories')->truncate();
-        $cats = ['Sarees', 'Silk Sarees', 'Cotton Sarees', 'Shirts', 'T-Shirts', 'Jeans', 'Kurtas', 'Kids Wear', 'Footwear', 'Handbags', 'Jewellery', 'Cosmetics', 'Grocery', 'Home Furnishing'];
-        foreach ($cats as $c) {
+        $categories = [
+            ['name' => 'Mens Wear', 'code' => 'MENS'],
+            ['name' => 'Womens Wear', 'code' => 'WMN'],
+            ['name' => 'Kids Wear', 'code' => 'KID'],
+            ['name' => 'Accessories', 'code' => 'ACC'],
+            ['name' => 'Footwear', 'code' => 'FTW'],
+        ];
+        foreach($categories as $c) {
             DB::table('product_categories')->insert([
-                'name' => $c, 'code' => strtoupper(substr($c, 0, 3)) . rand(10, 99), 'status' => true
+                'name' => $c['name'], 'code' => $c['code'], 'status' => true
             ]);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

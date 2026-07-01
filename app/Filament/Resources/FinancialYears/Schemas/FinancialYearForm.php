@@ -16,8 +16,10 @@ class FinancialYearForm
                 TextInput::make('name')
                     ->required(),
                 DatePicker::make('start_date')
+                    ->default(now()->timezone('Asia/Kolkata'))
                     ->required(),
                 DatePicker::make('end_date')
+                    ->default(now()->timezone('Asia/Kolkata')->addYear()->subDay())
                     ->required(),
                 Toggle::make('is_active')
                     ->required(),

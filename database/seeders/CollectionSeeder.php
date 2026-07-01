@@ -10,17 +10,51 @@ class CollectionSeeder extends Seeder
 {
     public function run(): void
     {
-        $faker = Faker::create();
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('collections')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('collections')->insert([
-                'name' => $faker->word . ' ' . $faker->word,
-                'code' => substr(strtoupper($faker->unique()->bothify('???###')), 0, 3),
-                'description' => $faker->sentence,
-                'start_date' => now()->subDays(rand(1, 30)),
-                'end_date' => now()->subDays(rand(1, 30)),
-                'status' => true,
-            ]);
+        $collections = [
+            [
+                'name' => 'Diwali Festive Collection', 
+                'code' => 'DIW26', 
+                'description' => 'Exclusive ethnic and festive wear for Diwali 2026.',
+                'start_date' => now()->addMonths(3)->startOfMonth(),
+                'end_date' => now()->addMonths(4)->endOfMonth()
+            ],
+            [
+                'name' => 'Summer Essentials 2026', 
+                'code' => 'SUM26', 
+                'description' => 'Light, breathable fabrics and casual summer wear.',
+                'start_date' => now()->startOfMonth(),
+                'end_date' => now()->addMonths(2)->endOfMonth()
+            ],
+            [
+                'name' => 'Bridal Wear Collection', 
+                'code' => 'BRD26', 
+                'description' => 'Premium bridal sarees and designer wear.',
+                'start_date' => now()->startOfYear(),
+                'end_date' => now()->endOfYear()
+            ],
+            [
+                'name' => 'Winter Warmers', 
+                'code' => 'WIN26', 
+                'description' => 'Cozy winter clothing and jackets.',
+                'start_date' => now()->addMonths(6)->startOfMonth(),
+                'end_date' => now()->addMonths(8)->endOfMonth()
+            ],
+            [
+                'name' => 'Monsoon Special', 
+                'code' => 'MON26', 
+                'description' => 'Quick-dry fabrics and monsoon friendly apparel.',
+                'start_date' => now()->addMonths(1)->startOfMonth(),
+                'end_date' => now()->addMonths(2)->endOfMonth()
+            ],
+        ];
+
+        foreach ($collections as $collection) {
+            DB::table('collections')->insert(array_merge($collection, ['status' => true]));
         }
+        
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

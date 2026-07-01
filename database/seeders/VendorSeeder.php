@@ -2,7 +2,6 @@
 namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
 class VendorSeeder extends Seeder {
     public function run(): void {
         $faker = Faker::create('en_IN');
@@ -44,5 +43,6 @@ class VendorSeeder extends Seeder {
                 'updated_at' => now(),
             ]);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

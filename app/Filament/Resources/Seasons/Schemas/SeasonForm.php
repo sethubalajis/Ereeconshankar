@@ -17,8 +17,10 @@ class SeasonForm
                     ->required(),
                 TextInput::make('code')
                     ->required(),
-                DatePicker::make('start_date'),
-                DatePicker::make('end_date'),
+                DatePicker::make('start_date')
+                    ->default(now()->timezone('Asia/Kolkata')),
+                DatePicker::make('end_date')
+                    ->default(now()->timezone('Asia/Kolkata')->addMonths(3)->subDay()),
                 Toggle::make('status')
                     ->required(),
             ]);
