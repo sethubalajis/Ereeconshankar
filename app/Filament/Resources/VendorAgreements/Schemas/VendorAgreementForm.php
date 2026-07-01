@@ -3,7 +3,9 @@
 namespace App\Filament\Resources\VendorAgreements\Schemas;
 
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
 class VendorAgreementForm
@@ -16,12 +18,26 @@ class VendorAgreementForm
                     ->required(),
                 TextInput::make('title')
                     ->required(),
-                DatePicker::make('start_date'),
-                DatePicker::make('end_date'),
-                TextInput::make('document_path'),
-                TextInput::make('status')
+                DatePicker::make('start_date')
+                    ->default(now()),
+                DatePicker::make('end_date')
+                    ->default(now()),
+                FileUpload::make('document_path')
+                    ->label('Document')
+                    ->directory('vendor-agreements')
+                    ->acceptedFileTypes([
+                        'application/pdf',
+                        'application/msword',
+                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                        'image/jpeg',
+                        'image/png',
+                    ]),
+                Toggle::make('status')
+                    ->label('Active')
+                    ->formatStateUsing(fn (mixed $state): bool => in_array($state, ['active', 1, true, '1'], true))
+                    ->dehydrateStateUsing(fn (bool $state): string => $state ? 'active' : 'inactive')
                     ->required()
-                    ->default('active'),
+                    ->default(true),
             ]);
     }
 }

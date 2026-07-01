@@ -15,6 +15,10 @@ class VendorsTable
     {
         return $table
             ->columns([
+                TextColumn::make('vendorCategory.name')
+                    ->label('Category')
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('code')

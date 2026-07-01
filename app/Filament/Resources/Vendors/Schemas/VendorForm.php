@@ -13,6 +13,9 @@ class VendorForm
     {
         return $schema
             ->components([
+                \Filament\Forms\Components\Select::make('vendor_category_id')->relationship('vendorCategory', 'name')
+                    ->searchable()
+                    ->preload(),
                 TextInput::make('name')
                     ->required(),
                 TextInput::make('code')
