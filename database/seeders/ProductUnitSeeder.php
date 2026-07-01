@@ -4,19 +4,24 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
 
 class ProductUnitSeeder extends Seeder
 {
     public function run(): void
     {
-        $faker = Faker::create();
-        
-        for ($i = 0; $i < 5; $i++) {
+        $rows = [
+            ['name' => 'Meter', 'code' => 'MTR', 'description' => 'Length unit for fabric measurement'],
+            ['name' => 'Yard', 'code' => 'YRD', 'description' => 'Length unit commonly used in textiles'],
+            ['name' => 'Piece', 'code' => 'PCS', 'description' => 'Finished garment or item count'],
+            ['name' => 'Roll', 'code' => 'ROL', 'description' => 'Fabric roll packaging unit'],
+            ['name' => 'Kilogram', 'code' => 'KGS', 'description' => 'Weight unit for textile material'],
+        ];
+
+        foreach ($rows as $row) {
             DB::table('product_units')->insert([
-                'name' => $faker->word . ' ' . $faker->word,
-                'code' => substr(strtoupper($faker->unique()->bothify('???###')), 0, 3),
-                'description' => $faker->sentence,
+                'name' => $row['name'],
+                'code' => $row['code'],
+                'description' => $row['description'],
             ]);
         }
     }
