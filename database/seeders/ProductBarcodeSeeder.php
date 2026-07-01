@@ -1,24 +1,23 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class ProductBarcodeSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class ProductBarcodeSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('product_barcodes')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
+        $variants = DB::table('product_variants')->get();
+        if($variants->isEmpty()) return;
+
+        foreach($variants as $v) {
             DB::table('product_barcodes')->insert([
-                'product_id' => DB::table('products')->inRandomOrder()->value('id') ?? 1,
-                'product_variant_id' => DB::table('product_variants')->inRandomOrder()->value('id') ?? 1,
-                'barcode' => substr(strtoupper($faker->unique()->bothify('???###')), 0, 3),
-                'barcode_type' => substr(strtoupper($faker->unique()->bothify('???###')), 0, 3),
+                'product_id' => $v->product_id,
+                'product_variant_id' => $v->id,
+                'barcode' => $v->barcode,
+                'barcode_type' => 'EAN13'
             ]);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

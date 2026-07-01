@@ -86,20 +86,20 @@ class ColorSeeder extends Seeder {
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         DB::table('colors')->truncate();
         $colors = [
-            ['name' => 'Red', 'code' => 'RED'],
-            ['name' => 'Blue', 'code' => 'BLU'],
-            ['name' => 'Green', 'code' => 'GRN'],
-            ['name' => 'Black', 'code' => 'BLK'],
-            ['name' => 'White', 'code' => 'WHT'],
-            ['name' => 'Yellow', 'code' => 'YEL'],
-            ['name' => 'Pink', 'code' => 'PNK'],
-            ['name' => 'Purple', 'code' => 'PUR'],
-            ['name' => 'Grey', 'code' => 'GRY'],
-            ['name' => 'Navy', 'code' => 'NVY']
+            ['name' => 'Red', 'code' => 'RED', 'hex' => '#FF0000'],
+            ['name' => 'Blue', 'code' => 'BLU', 'hex' => '#0000FF'],
+            ['name' => 'Green', 'code' => 'GRN', 'hex' => '#008000'],
+            ['name' => 'Black', 'code' => 'BLK', 'hex' => '#000000'],
+            ['name' => 'White', 'code' => 'WHT', 'hex' => '#FFFFFF'],
+            ['name' => 'Yellow', 'code' => 'YEL', 'hex' => '#FFFF00'],
+            ['name' => 'Pink', 'code' => 'PNK', 'hex' => '#FFC0CB'],
+            ['name' => 'Purple', 'code' => 'PUR', 'hex' => '#800080'],
+            ['name' => 'Grey', 'code' => 'GRY', 'hex' => '#808080'],
+            ['name' => 'Navy', 'code' => 'NVY', 'hex' => '#000080']
         ];
         foreach($colors as $c) {
             DB::table('colors')->insert([
-                'name' => $c['name'], 'code' => $c['code'], 'status' => true
+                'name' => $c['name'], 'code' => $c['code'], 'hex_code' => $c['hex'], 'status' => true
             ]);
         }
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
@@ -194,7 +194,11 @@ class SeasonSeeder extends Seeder {
         $seasons = ['Summer 2026', 'Winter 2026', 'Autumn 2026', 'Spring 2027', 'Festive Collection'];
         foreach($seasons as $s) {
             DB::table('seasons')->insert([
-                'name' => $s, 'code' => strtoupper(substr(str_replace(' ', '', $s), 0, 4)) . rand(10,99), 'status' => true
+                'name' => $s, 
+                'code' => strtoupper(substr(str_replace(' ', '', $s), 0, 4)) . rand(10,99), 
+                'start_date' => now()->timezone('Asia/Kolkata')->format('Y-m-d'),
+                'end_date' => now()->timezone('Asia/Kolkata')->addMonths(3)->format('Y-m-d'),
+                'status' => true
             ]);
         }
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');

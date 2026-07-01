@@ -17,7 +17,7 @@ class BrandForm
                     ->required(),
                 TextInput::make('code')
                     ->required(),
-                TextInput::make('logo'),
+                \Filament\Forms\Components\FileUpload::make('logo')->image(),
                 Textarea::make('description')
                     ->columnSpanFull(),
                 Toggle::make('status')

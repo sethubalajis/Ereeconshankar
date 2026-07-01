@@ -1,24 +1,28 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class TransferReceiptSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class TransferReceiptSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('transfer_receipts')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('transfer_receipts')->insert([
-                'stock_transfer_id' => DB::table('stock_transfers')->inRandomOrder()->value('id') ?? 1,
-                'receive_date' => now()->subDays(rand(1, 30)),
-                'received_by' => rand(1, 9),
-                'status' => 'active',
-            ]);
+        // Simulating that it's still in transit, so no completed receipts yet, or we can add one
+        $transfers = DB::table('stock_transfers')->pluck('id')->toArray();
+        if(empty($transfers)) { $transfers = [1]; }
+        $userId = DB::table('users')->first()->id ?? 1;
+        
+        $receipts = [
+            ['stock_transfer_id' => $transfers[0] ?? 1, 'receive_date' => now()->subDays(1), 'received_by' => $userId, 'status' => 'received'],
+        ];
+        
+        foreach($receipts as $r) {
+            DB::table('transfer_receipts')->insert($r);
         }
+        
+        // Also update the stock transfer status to received
+        DB::table('stock_transfers')->where('id', $transfers[0] ?? 1)->update(['status' => 'received']);
+        
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

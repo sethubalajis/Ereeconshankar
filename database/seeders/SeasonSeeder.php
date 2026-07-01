@@ -9,7 +9,11 @@ class SeasonSeeder extends Seeder {
         $seasons = ['Summer 2026', 'Winter 2026', 'Autumn 2026', 'Spring 2027', 'Festive Collection'];
         foreach($seasons as $s) {
             DB::table('seasons')->insert([
-                'name' => $s, 'code' => strtoupper(substr(str_replace(' ', '', $s), 0, 4)) . rand(10,99), 'status' => true
+                'name' => $s, 
+                'code' => strtoupper(substr(str_replace(' ', '', $s), 0, 4)) . rand(10,99), 
+                'start_date' => now()->timezone('Asia/Kolkata')->format('Y-m-d'),
+                'end_date' => now()->timezone('Asia/Kolkata')->addMonths(3)->format('Y-m-d'),
+                'status' => true
             ]);
         }
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');

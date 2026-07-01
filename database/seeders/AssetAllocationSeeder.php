@@ -1,25 +1,22 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class AssetAllocationSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class AssetAllocationSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('asset_allocations')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('asset_allocations')->insert([
-                'asset_id' => DB::table('assets')->inRandomOrder()->value('id') ?? 1,
-                'employee_id' => DB::table('employees')->inRandomOrder()->value('id') ?? 1,
-                'allocation_date' => now()->subDays(rand(1, 30)),
-                'return_date' => now()->subDays(rand(1, 30)),
-                'status' => 'active',
-            ]);
+        $assetId = DB::table('assets')->where('asset_code', 'AST-IT-001')->value('id') ?? 1;
+        $empId = DB::table('employees')->first()->id ?? 1;
+
+        $allocs = [
+            ['asset_id' => $assetId, 'employee_id' => $empId, 'allocation_date' => now()->subMonths(11)->format('Y-m-d'), 'return_date' => null, 'status' => 'allocated'],
+        ];
+        
+        foreach($allocs as $a) {
+            DB::table('asset_allocations')->insert($a);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

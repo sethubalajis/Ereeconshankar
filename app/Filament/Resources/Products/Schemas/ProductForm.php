@@ -23,15 +23,10 @@ class ProductForm
                     ->required(),
                 TextInput::make('code')
                     ->required(),
-                TextInput::make('sku')
-                    ->label('SKU'),
+
                 Textarea::make('description')
                     ->columnSpanFull(),
-                TextInput::make('base_price')
-                    ->required()
-                    ->numeric()
-                    ->default(0.0)
-                    ->prefix('$'),
+
                 Toggle::make('is_active')
                     ->required(),
             ]);

@@ -1,24 +1,22 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class ServiceAssignmentSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class ServiceAssignmentSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('service_assignments')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('service_assignments')->insert([
-                'service_request_id' => DB::table('service_requests')->inRandomOrder()->value('id') ?? 1,
-                'employee_id' => DB::table('employees')->inRandomOrder()->value('id') ?? 1,
-                'assigned_date' => now()->subDays(rand(1, 30)),
-                'status' => 'active',
-            ]);
+        $srId = DB::table('service_requests')->where('request_number', 'SR-2026-001')->value('id') ?? 1;
+        $empId = DB::table('employees')->first()->id ?? 1;
+
+        $assignments = [
+            ['service_request_id' => $srId, 'employee_id' => $empId, 'assigned_date' => now()->subDays(2), 'status' => 'assigned'],
+        ];
+        
+        foreach($assignments as $a) {
+            DB::table('service_assignments')->insert($a);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

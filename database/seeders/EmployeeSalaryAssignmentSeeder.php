@@ -1,24 +1,22 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class EmployeeSalaryAssignmentSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class EmployeeSalaryAssignmentSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('employee_salary_assignments')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('employee_salary_assignments')->insert([
-                'employee_id' => DB::table('employees')->inRandomOrder()->value('id') ?? 1,
-                'salary_structure_id' => DB::table('salary_structures')->inRandomOrder()->value('id') ?? 1,
-                'gross_salary' => rand(1, 9),
-                'effective_from' => now()->subDays(rand(1, 30)),
-            ]);
+        $empId = DB::table('employees')->first()->id ?? 1;
+        $structId = DB::table('salary_structures')->first()->id ?? 1;
+
+        $assignments = [
+            ['employee_id' => $empId, 'salary_structure_id' => $structId, 'gross_salary' => 50000.00, 'effective_from' => '2025-01-01'],
+        ];
+        
+        foreach($assignments as $a) {
+            DB::table('employee_salary_assignments')->insert($a);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

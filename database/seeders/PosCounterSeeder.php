@@ -1,23 +1,22 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class PosCounterSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class PosCounterSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('pos_counters')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('pos_counters')->insert([
-                'branch_id' => DB::table('branches')->inRandomOrder()->value('id') ?? 1,
-                'counter_name' => $faker->word . ' ' . $faker->word,
-                'status' => true,
-            ]);
+        $branchId = DB::table('branches')->first()->id ?? 1;
+        
+        $counters = [
+            ['branch_id' => $branchId, 'counter_name' => 'Counter A', 'status' => true],
+            ['branch_id' => $branchId, 'counter_name' => 'Counter B', 'status' => true],
+        ];
+        
+        foreach($counters as $c) {
+            DB::table('pos_counters')->insert($c);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

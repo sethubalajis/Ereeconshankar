@@ -1,23 +1,21 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class ServiceReportSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class ServiceReportSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('service_reports')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('service_reports')->insert([
-                'service_request_id' => DB::table('service_requests')->inRandomOrder()->value('id') ?? 1,
-                'resolution_details' => $faker->sentence,
-                'report_date' => now()->subDays(rand(1, 30)),
-            ]);
+        $srId = DB::table('service_requests')->where('status', 'resolved')->value('id') ?? 2;
+
+        $reports = [
+            ['service_request_id' => $srId, 'resolution_details' => 'Jeans were replaced with a new unit from the warehouse.', 'report_date' => now()->subDays(8)],
+        ];
+        
+        foreach($reports as $r) {
+            DB::table('service_reports')->insert($r);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

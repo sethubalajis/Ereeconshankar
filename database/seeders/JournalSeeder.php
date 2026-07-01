@@ -1,27 +1,20 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class JournalSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class JournalSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('journals')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('journals')->insert([
-                'journal_number' => $faker->word . ' ' . $faker->word,
-                'journal_date' => now()->subDays(rand(1, 30)),
-                'reference' => $faker->word . ' ' . $faker->word,
-                'total_debit' => rand(1, 9),
-                'total_credit' => rand(1, 9),
-                'notes' => $faker->sentence,
-                'status' => 'active',
-            ]);
+        $journals = [
+            ['journal_number' => 'JV-2026-001', 'journal_date' => now()->subDays(5), 'reference' => 'Rent Payment for June', 'total_debit' => 25000.00, 'total_credit' => 25000.00, 'notes' => 'Monthly rent transfer to landlord.', 'status' => 'posted'],
+            ['journal_number' => 'JV-2026-002', 'journal_date' => now()->subDays(1), 'reference' => 'Cash Sale Deposit', 'total_debit' => 10000.00, 'total_credit' => 10000.00, 'notes' => 'Deposited cash from POS to HDFC bank.', 'status' => 'draft'],
+        ];
+        
+        foreach($journals as $j) {
+            DB::table('journals')->insert($j);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

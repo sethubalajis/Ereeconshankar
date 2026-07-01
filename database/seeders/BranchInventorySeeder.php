@@ -1,24 +1,22 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class BranchInventorySeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class BranchInventorySeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('branch_inventories')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('branch_inventories')->insert([
-                'branch_id' => DB::table('branches')->inRandomOrder()->value('id') ?? 1,
-                'product_id' => DB::table('products')->inRandomOrder()->value('id') ?? 1,
-                'product_variant_id' => DB::table('product_variants')->inRandomOrder()->value('id') ?? 1,
-                'quantity' => rand(1, 9),
-            ]);
+        $productId = DB::table('products')->first()->id ?? 1;
+
+        $inventories = [
+            ['branch_id' => 1, 'product_id' => $productId, 'product_variant_id' => null, 'quantity' => 150],
+            ['branch_id' => 1, 'product_id' => $productId, 'product_variant_id' => null, 'quantity' => 300],
+        ];
+        
+        foreach($inventories as $inv) {
+            DB::table('branch_inventories')->insert($inv);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

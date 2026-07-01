@@ -1,26 +1,25 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class LedgerSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class LedgerSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('ledgers')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('ledgers')->insert([
-                'chart_of_account_id' => DB::table('chart_of_accounts')->inRandomOrder()->value('id') ?? 1,
-                'transaction_date' => now()->subDays(rand(1, 30)),
-                'description' => $faker->word . ' ' . $faker->word,
-                'debit' => rand(1, 9),
-                'credit' => rand(1, 9),
-                'balance' => rand(1, 9),
-            ]);
+        $cashAcc = DB::table('chart_of_accounts')->where('account_code', '1001')->value('id') ?? 1;
+        $bankAcc = DB::table('chart_of_accounts')->where('account_code', '1002')->value('id') ?? 2;
+        $rentAcc = DB::table('chart_of_accounts')->where('account_code', '5001')->value('id') ?? 4;
+        
+        $ledgers = [
+            // Simulating posting JV1
+            ['chart_of_account_id' => $rentAcc, 'transaction_date' => now()->subDays(5), 'description' => 'Rent Payment for June', 'debit' => 25000.00, 'credit' => 0.00, 'balance' => 25000.00],
+            ['chart_of_account_id' => $bankAcc, 'transaction_date' => now()->subDays(5), 'description' => 'Rent Payment for June', 'debit' => 0.00, 'credit' => 25000.00, 'balance' => 225000.00], // 250k - 25k
+        ];
+        
+        foreach($ledgers as $l) {
+            DB::table('ledgers')->insert($l);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

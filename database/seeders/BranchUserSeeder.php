@@ -1,22 +1,21 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class BranchUserSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class BranchUserSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('branch_users')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('branch_users')->insert([
-                'branch_id' => DB::table('branches')->inRandomOrder()->value('id') ?? 1,
-                'user_id' => DB::table('users')->inRandomOrder()->value('id') ?? 1,
-            ]);
+        $userId = DB::table('users')->first()->id ?? 1;
+
+        $users = [
+            ['branch_id' => 1, 'user_id' => $userId],
+        ];
+        
+        foreach($users as $u) {
+            DB::table('branch_users')->insert($u);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

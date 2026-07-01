@@ -1,25 +1,20 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class PayrollCycleSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class PayrollCycleSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('payroll_cycles')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('payroll_cycles')->insert([
-                'name' => $faker->word . ' ' . $faker->word,
-                'start_date' => now()->subDays(rand(1, 30)),
-                'end_date' => now()->subDays(rand(1, 30)),
-                'payment_date' => now()->subDays(rand(1, 30)),
-                'status' => 'active',
-            ]);
+        $cycles = [
+            ['name' => 'June 2026 Payroll', 'start_date' => '2026-06-01', 'end_date' => '2026-06-30', 'payment_date' => '2026-07-05', 'status' => 'processed'],
+            ['name' => 'July 2026 Payroll', 'start_date' => '2026-07-01', 'end_date' => '2026-07-31', 'payment_date' => '2026-08-05', 'status' => 'draft'],
+        ];
+        
+        foreach($cycles as $c) {
+            DB::table('payroll_cycles')->insert($c);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

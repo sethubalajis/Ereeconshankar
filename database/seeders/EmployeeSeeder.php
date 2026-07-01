@@ -2,23 +2,23 @@
 namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
 class EmployeeSeeder extends Seeder {
     public function run(): void {
-        $faker = Faker::create('en_IN');
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         DB::table('employees')->truncate();
-        for ($i = 1; $i <= 10; $i++) {
-            DB::table('employees')->insert([
-                'user_id' => $i,
-                'first_name' => $faker->firstName,
-                'last_name' => $faker->lastName,
-                'employee_code' => 'EMP' . str_pad($i, 4, '0', STR_PAD_LEFT),
-                'branch_id' => $faker->numberBetween(1, 3),
-                'department_id' => $faker->numberBetween(1, 10),
-                'designation_id' => 1,
-                'joining_date' => $faker->date(),
-                'status' => 'active',
-            ]);
+        
+        $userId = DB::table('users')->first()->id ?? 1;
+        $branchId = DB::table('branches')->first()->id ?? 1;
+        $deptId = DB::table('departments')->first()->id ?? 1;
+        $desigId = DB::table('designations')->first()->id ?? 1;
+
+        $emps = [
+            ['user_id' => $userId, 'department_id' => $deptId, 'designation_id' => $desigId, 'branch_id' => $branchId, 'employee_code' => 'EMP-001', 'first_name' => 'Rajesh', 'last_name' => 'Kumar', 'dob' => '1990-05-15', 'joining_date' => '2020-01-10', 'pan_number' => 'ABCDE1234F', 'pf_number' => 'PF-MH-12345', 'esi_number' => 'ESI-98765', 'status' => 'active'],
+        ];
+        
+        foreach($emps as $e) {
+            DB::table('employees')->insert($e);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

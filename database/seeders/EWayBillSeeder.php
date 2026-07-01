@@ -15,7 +15,7 @@ class EWayBillSeeder extends Seeder
         for ($i = 0; $i < 5; $i++) {
             DB::table('e_way_bills')->insert([
                 'tax_invoice_id' => DB::table('tax_invoices')->inRandomOrder()->value('id') ?? 1,
-                'eway_bill_no' => $faker->word . ' ' . $faker->word,
+                'eway_bill_no' => $faker->unique()->numerify('EWB-########'),
                 'valid_until' => now()->subDays(rand(1, 30)),
                 'transporter_id' => 1,
                 'vehicle_no' => $faker->word . ' ' . $faker->word,

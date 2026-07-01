@@ -16,7 +16,8 @@ class ProductCategoriesTable
     {
         return $table
             ->columns([
-                TextColumn::make('parent.name')
+                TextColumn::make('productCategory.name')
+                    ->label('Product Category')
                     ->sortable(),
                 TextColumn::make('name')
                     ->searchable(),

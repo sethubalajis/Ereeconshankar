@@ -2,21 +2,39 @@
 namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
 class ProductSeeder extends Seeder {
     public function run(): void {
-        $faker = Faker::create('en_IN');
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         DB::table('products')->truncate();
-        for ($i = 1; $i <= 15; $i++) {
-            DB::table('products')->insert([
-                'name' => 'Premium ' . $faker->word . ' ' . $faker->word,
-                'code' => 'PRD' . str_pad($i, 4, '0', STR_PAD_LEFT),
-                'brand_id' => $faker->numberBetween(1, 10),
-                'product_category_id' => $faker->numberBetween(1, 14),
-                'hsn_code_id' => 1,
-                'base_price' => $faker->randomFloat(2, 500, 5000),
-                'is_active' => true,
-            ]);
+        
+        $brandId = DB::table('brands')->first()->id ?? 1;
+        $catId = DB::table('product_categories')->first()->id ?? 1;
+        $subCatId = DB::table('product_sub_categories')->first()->id ?? 1;
+        $unitId = DB::table('product_units')->where('code', 'PCS')->first()->id ?? 1;
+        $hsnId = DB::table('hsn_codes')->first()->id ?? null;
+        $taxId = DB::table('tax_groups')->first()->id ?? null;
+
+        $products = [
+            [
+                'brand_id' => $brandId, 'product_category_id' => $catId, 'product_sub_category_id' => $subCatId, 'product_unit_id' => $unitId,
+                'hsn_code_id' => $hsnId, 'tax_group_id' => $taxId,
+                'name' => 'Classic Cotton Shirt', 'code' => 'SH-CLS-01', 'description' => 'Premium casual wear shirt.', 'is_active' => true
+            ],
+            [
+                'brand_id' => $brandId, 'product_category_id' => $catId, 'product_sub_category_id' => $subCatId, 'product_unit_id' => $unitId,
+                'hsn_code_id' => $hsnId, 'tax_group_id' => $taxId,
+                'name' => 'Denim Jeans Slim Fit', 'code' => 'DN-SLM-02', 'description' => 'Slim fit stretchable jeans.', 'is_active' => true
+            ],
+            [
+                'brand_id' => $brandId, 'product_category_id' => $catId, 'product_sub_category_id' => $subCatId, 'product_unit_id' => $unitId,
+                'hsn_code_id' => $hsnId, 'tax_group_id' => $taxId,
+                'name' => 'Silk Saree Kanchipuram', 'code' => 'SR-KNC-03', 'description' => 'Authentic handwoven silk saree.', 'is_active' => true
+            ],
+        ];
+        
+        foreach($products as $p) {
+            DB::table('products')->insert($p);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

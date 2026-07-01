@@ -1,25 +1,19 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class SalaryStructureSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class SalaryStructureSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('salary_structures')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('salary_structures')->insert([
-                'name' => $faker->word . ' ' . $faker->word,
-                'code' => substr(strtoupper($faker->unique()->bothify('???###')), 0, 3),
-                'basic_percentage' => rand(1, 9),
-                'hra_percentage' => rand(1, 9),
-                'status' => true,
-            ]);
+        $structs = [
+            ['name' => 'Standard Executive Structure', 'code' => 'STR-EXEC', 'basic_percentage' => 40.00, 'hra_percentage' => 20.00, 'status' => true],
+        ];
+        
+        foreach($structs as $s) {
+            DB::table('salary_structures')->insert($s);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

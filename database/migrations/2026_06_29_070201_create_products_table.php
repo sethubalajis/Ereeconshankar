@@ -21,9 +21,7 @@ return new class extends Migration
             $table->foreignId('tax_group_id')->nullable()->constrained('tax_groups');
             $table->string('name');
             $table->string('code')->unique();
-            $table->string('sku')->unique()->nullable();
             $table->text('description')->nullable();
-            $table->decimal('base_price', 15, 2)->default(0);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

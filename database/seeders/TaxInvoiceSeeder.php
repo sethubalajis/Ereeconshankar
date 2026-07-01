@@ -2,21 +2,20 @@
 namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
 class TaxInvoiceSeeder extends Seeder {
     public function run(): void {
-        $faker = Faker::create('en_IN');
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         DB::table('tax_invoices')->truncate();
-        for ($i = 1; $i <= 10; $i++) {
-            DB::table('tax_invoices')->insert([
-                'invoiceable_id' => $faker->numberBetween(1, 10),
-                'invoiceable_type' => 'App\Models\PosSale',
-                'invoice_number' => 'GST' . date('Y') . str_pad($i, 4, '0', STR_PAD_LEFT),
-                'invoice_date' => $faker->date(),
-                'taxable_amount' => $faker->randomFloat(2, 1000, 20000),
-                'tax_amount' => $faker->randomFloat(2, 50, 2000),
-                'total_amount' => $faker->randomFloat(2, 1050, 22000),
-            ]);
+        
+        $salesId = DB::table('pos_sales')->first()->id ?? 1;
+
+        $invoices = [
+            ['invoiceable_id' => $salesId, 'invoiceable_type' => 'App\Models\PosSale', 'invoice_number' => 'TI-2026-0001', 'invoice_date' => now()->subDays(2), 'taxable_amount' => 1500.00, 'tax_amount' => 150.00, 'total_amount' => 1650.00],
+        ];
+        
+        foreach($invoices as $i) {
+            DB::table('tax_invoices')->insert($i);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

@@ -10,14 +10,27 @@ class ProductAttributeSeeder extends Seeder
 {
     public function run(): void
     {
-        $faker = Faker::create();
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('product_attributes')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
+        $attributes = [
+            ['name' => 'Fabric', 'code' => 'FAB', 'type' => 'select'],
+            ['name' => 'Pattern', 'code' => 'PAT', 'type' => 'select'],
+            ['name' => 'Fit', 'code' => 'FIT', 'type' => 'select'],
+            ['name' => 'Material', 'code' => 'MAT', 'type' => 'text'],
+            ['name' => 'Wash Care', 'code' => 'WSH', 'type' => 'text'],
+        ];
+
+        foreach ($attributes as $attr) {
             DB::table('product_attributes')->insert([
-                'name' => $faker->word . ' ' . $faker->word,
-                'code' => substr(strtoupper($faker->unique()->bothify('???###')), 0, 3),
-                'type' => $faker->word . ' ' . $faker->word,
+                'name' => $attr['name'],
+                'code' => $attr['code'],
+                'type' => $attr['type'],
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
         }
+        
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

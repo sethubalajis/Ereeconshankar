@@ -53,7 +53,7 @@ class CitySeeder extends Seeder {
         foreach($cities as $index => $city) {
             DB::table('cities')->insert([
                 'state_id' => ($index < 5) ? 1 : (($index == 5) ? 3 : (($index == 6) ? 4 : (($index == 7) ? 5 : 2))),
-                'name' => $city, 'code' => strtoupper(substr($city, 0, 3)), 'status' => true
+                'name' => $city, 'status' => true
             ]);
         }
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');

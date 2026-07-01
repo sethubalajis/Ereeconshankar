@@ -6,13 +6,15 @@ class DesignationSeeder extends Seeder {
     public function run(): void {
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         DB::table('designations')->truncate();
-        $desigs = ['General Manager', 'Branch Manager', 'Sales Executive', 'Cashier', 'Store Keeper', 'Accountant', 'HR Manager', 'Purchase Officer', 'Marketing Head', 'Customer Care Executive'];
-        foreach($desigs as $index => $d) {
-            DB::table('designations')->insert([
-                'name' => $d,
-                'code' => strtoupper(substr(str_replace(' ', '', $d), 0, 4)) . $index,
-                'status' => true,
-            ]);
+        
+        $desigs = [
+            ['name' => 'Store Manager', 'code' => 'SMGR', 'description' => 'Manages retail store operations', 'status' => true],
+            ['name' => 'Sales Executive', 'code' => 'SALEX', 'description' => 'Handles direct customer sales', 'status' => true],
+            ['name' => 'HR Manager', 'code' => 'HRMGR', 'description' => 'Human resources manager', 'status' => true],
+        ];
+        
+        foreach($desigs as $d) {
+            DB::table('designations')->insert($d);
         }
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }

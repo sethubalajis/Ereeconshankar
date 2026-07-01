@@ -31,12 +31,7 @@ class ProductsTable
                     ->searchable(),
                 TextColumn::make('code')
                     ->searchable(),
-                TextColumn::make('sku')
-                    ->label('SKU')
-                    ->searchable(),
-                TextColumn::make('base_price')
-                    ->money()
-                    ->sortable(),
+
                 IconColumn::make('is_active')
                     ->boolean(),
                 TextColumn::make('created_at')

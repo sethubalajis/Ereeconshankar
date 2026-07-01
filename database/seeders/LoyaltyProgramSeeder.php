@@ -1,26 +1,20 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class LoyaltyProgramSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class LoyaltyProgramSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('loyalty_programs')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('loyalty_programs')->insert([
-                'name' => $faker->word . ' ' . $faker->word,
-                'code' => substr(strtoupper($faker->unique()->bothify('???###')), 0, 3),
-                'points_per_amount' => rand(1, 9),
-                'minimum_points_to_redeem' => rand(1, 9),
-                'value_per_point' => rand(1, 9),
-                'status' => true,
-            ]);
+        $programs = [
+            ['name' => 'Retail Rewards', 'code' => 'LP-RET', 'points_per_amount' => 100.00, 'minimum_points_to_redeem' => 500, 'value_per_point' => 1.00, 'status' => true],
+            ['name' => 'Festive Bonanza', 'code' => 'LP-FST', 'points_per_amount' => 50.00, 'minimum_points_to_redeem' => 200, 'value_per_point' => 2.00, 'status' => true],
+        ];
+        
+        foreach($programs as $p) {
+            DB::table('loyalty_programs')->insert($p);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

@@ -1,23 +1,22 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class PaymentModeSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class PaymentModeSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('payment_modes')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('payment_modes')->insert([
-                'name' => $faker->word . ' ' . $faker->word,
-                'code' => substr(strtoupper($faker->unique()->bothify('???###')), 0, 3),
-                'is_active' => true,
-            ]);
+        $modes = [
+            ['name' => 'Cash', 'code' => 'CASH', 'is_active' => true],
+            ['name' => 'Bank Transfer (NEFT/RTGS)', 'code' => 'BANK', 'is_active' => true],
+            ['name' => 'Credit Card', 'code' => 'CC', 'is_active' => true],
+            ['name' => 'UPI', 'code' => 'UPI', 'is_active' => true],
+        ];
+        
+        foreach($modes as $m) {
+            DB::table('payment_modes')->insert($m);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

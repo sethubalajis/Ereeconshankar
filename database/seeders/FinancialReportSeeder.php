@@ -1,23 +1,20 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class FinancialReportSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class FinancialReportSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('financial_reports')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('financial_reports')->insert([
-                'report_type' => $faker->word . ' ' . $faker->word,
-                'as_of_date' => now()->subDays(rand(1, 30)),
-                'data' => $faker->sentence,
-            ]);
+        $reports = [
+            ['report_type' => 'Profit & Loss', 'as_of_date' => now()->subMonths(1)->endOfMonth()->format('Y-m-d'), 'data' => json_encode(['revenue' => 1500000.00, 'expenses' => 900000.00, 'net_profit' => 600000.00])],
+            ['report_type' => 'Balance Sheet', 'as_of_date' => now()->subMonths(1)->endOfMonth()->format('Y-m-d'), 'data' => json_encode(['assets' => 5000000.00, 'liabilities' => 2000000.00, 'equity' => 3000000.00])],
+        ];
+        
+        foreach($reports as $r) {
+            DB::table('financial_reports')->insert($r);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

@@ -14,6 +14,8 @@ class ProductVariantForm
             ->components([
                 \Filament\Forms\Components\Select::make('product_id')->relationship('product', 'name')
                     ->required(),
+                \Filament\Forms\Components\Select::make('color_id')->relationship('color', 'name'),
+                \Filament\Forms\Components\Select::make('size_id')->relationship('size', 'name'),
                 TextInput::make('sku')
                     ->label('SKU')
                     ->required(),

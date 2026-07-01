@@ -1,24 +1,20 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class ShiftSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class ShiftSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('shifts')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('shifts')->insert([
-                'name' => $faker->word . ' ' . $faker->word,
-                'start_time' => now()->format('H:i:s'),
-                'end_time' => now()->format('H:i:s'),
-                'status' => true,
-            ]);
+        $shifts = [
+            ['name' => 'Morning Shift', 'start_time' => '09:00:00', 'end_time' => '18:00:00', 'status' => true],
+            ['name' => 'Evening Shift', 'start_time' => '14:00:00', 'end_time' => '23:00:00', 'status' => true],
+        ];
+        
+        foreach($shifts as $s) {
+            DB::table('shifts')->insert($s);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

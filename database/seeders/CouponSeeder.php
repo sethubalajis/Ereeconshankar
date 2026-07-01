@@ -1,29 +1,20 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class CouponSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class CouponSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('coupons')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('coupons')->insert([
-                'code' => substr(strtoupper($faker->unique()->bothify('???###')), 0, 3),
-                'discount_percentage' => rand(1, 9),
-                'discount_amount' => rand(1, 9),
-                'start_date' => now()->subDays(rand(1, 30)),
-                'end_date' => now()->subDays(rand(1, 30)),
-                'min_purchase_amount' => rand(1, 9),
-                'max_usage' => rand(1, 9),
-                'current_usage' => rand(1, 9),
-                'status' => true,
-            ]);
+        $coupons = [
+            ['code' => 'FIRST50', 'discount_percentage' => 50.00, 'discount_amount' => null, 'start_date' => now()->startOfYear(), 'end_date' => now()->endOfYear(), 'min_purchase_amount' => 1000.00, 'max_usage' => 100, 'current_usage' => 12, 'status' => true],
+            ['code' => 'SAVE1000', 'discount_percentage' => null, 'discount_amount' => 1000.00, 'start_date' => now()->subDays(2), 'end_date' => now()->addDays(28), 'min_purchase_amount' => 4999.00, 'max_usage' => 50, 'current_usage' => 5, 'status' => true],
+        ];
+        
+        foreach($coupons as $c) {
+            DB::table('coupons')->insert($c);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

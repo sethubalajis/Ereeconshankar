@@ -15,4 +15,7 @@ class PurchaseOrder extends Model
     public function branch() {
         return $this->belongsTo(Branch::class, 'branch_id');
     }
+    public function items() {
+        return $this->hasMany(PurchaseOrderItem::class, 'purchase_order_id');
+    }
 }

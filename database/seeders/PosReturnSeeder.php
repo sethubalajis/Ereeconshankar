@@ -1,25 +1,22 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class PosReturnSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class PosReturnSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('pos_returns')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('pos_returns')->insert([
-                'pos_sale_id' => DB::table('pos_sales')->inRandomOrder()->value('id') ?? 1,
-                'return_date' => now()->subDays(rand(1, 30)),
-                'return_amount' => rand(1, 9),
-                'reason' => $faker->sentence,
-                'status' => 'active',
-            ]);
+        $sales = DB::table('pos_sales')->pluck('id')->toArray();
+        if(empty($sales)) { $sales = [1]; }
+        
+        $returns = [
+            ['pos_sale_id' => $sales[0] ?? 1, 'return_date' => now(), 'return_amount' => 1450.00, 'reason' => 'Customer changed mind / Wrong size', 'status' => 'completed'],
+        ];
+        
+        foreach($returns as $r) {
+            DB::table('pos_returns')->insert($r);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

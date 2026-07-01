@@ -1,26 +1,20 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class ComboOfferSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class ComboOfferSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('combo_offers')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('combo_offers')->insert([
-                'name' => $faker->word . ' ' . $faker->word,
-                'code' => substr(strtoupper($faker->unique()->bothify('???###')), 0, 3),
-                'total_price' => rand(1, 9),
-                'start_date' => now()->subDays(rand(1, 30)),
-                'end_date' => now()->subDays(rand(1, 30)),
-                'status' => true,
-            ]);
+        $offers = [
+            ['name' => 'Summer Casual Combo', 'code' => 'CMB-SMR1', 'total_price' => 1999.00, 'start_date' => now()->subDays(30), 'end_date' => now()->addDays(60), 'status' => true],
+            ['name' => 'Wedding Premium Set', 'code' => 'CMB-WED2', 'total_price' => 14999.00, 'start_date' => now(), 'end_date' => now()->addMonths(6), 'status' => true],
+        ];
+        
+        foreach($offers as $o) {
+            DB::table('combo_offers')->insert($o);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }
