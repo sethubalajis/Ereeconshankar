@@ -4,20 +4,25 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
 
 class ProductSubCategorySeeder extends Seeder
 {
     public function run(): void
     {
-        $faker = Faker::create();
-        
-        for ($i = 0; $i < 5; $i++) {
+        $rows = [
+            ['name' => 'Men Shirts', 'code' => 'MSH'],
+            ['name' => 'Women Tops', 'code' => 'WTP'],
+            ['name' => 'Kids Wear', 'code' => 'KWR'],
+            ['name' => 'Jeans', 'code' => 'JNS'],
+            ['name' => 'Trousers', 'code' => 'TRS'],
+        ];
+
+        foreach ($rows as $row) {
             DB::table('product_sub_categories')->insert([
                 'product_category_id' => 1,
-                'name' => $faker->word . ' ' . $faker->word,
-                'code' => substr(strtoupper($faker->unique()->bothify('???###')), 0, 3),
-                'description' => $faker->sentence,
+                'name' => $row['name'],
+                'code' => $row['code'],
+                'description' => $row['name'] . ' sub category',
                 'status' => true,
             ]);
         }
