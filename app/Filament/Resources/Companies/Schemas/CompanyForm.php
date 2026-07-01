@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Companies\Schemas;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\FileUpload;
 use Filament\Schemas\Schema;
 
 class CompanyForm
@@ -14,9 +15,11 @@ class CompanyForm
         return $schema
             ->components([
                 TextInput::make('name')
-                    ->required(),
+                    ->required()
+                    ->unique(ignoreRecord: true),
                 TextInput::make('code')
-                    ->required(),
+                    ->required()
+                    ->unique(ignoreRecord: true),
                 TextInput::make('gst_number'),
                 TextInput::make('pan_number'),
                 TextInput::make('email')
@@ -26,7 +29,10 @@ class CompanyForm
                     ->tel(),
                 TextInput::make('website')
                     ->url(),
-                TextInput::make('logo'),
+                FileUpload::make('logo')
+                    ->image()
+                    ->disk('public')
+                    ->directory('company-logos'),
                 Textarea::make('address')
                     ->columnSpanFull(),
                 \Filament\Forms\Components\Select::make('city_id')->relationship('city', 'name'),
