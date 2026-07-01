@@ -159,6 +159,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ProductSubCategorySeeder::class);
         $this->call(ProductSeeder::class);
         $this->call(ProductVariantSeeder::class);
+        $this->call(ProductVariantAttributeValueSeeder::class);
         $this->call(ProductImageSeeder::class);
         $this->call(ProductBarcodeSeeder::class);
         $this->call(PurchaseOrderItemSeeder::class);

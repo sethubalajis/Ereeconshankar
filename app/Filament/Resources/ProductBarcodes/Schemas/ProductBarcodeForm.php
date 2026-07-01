@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\ProductBarcodes\Schemas;
 
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
@@ -11,12 +12,22 @@ class ProductBarcodeForm
     {
         return $schema
             ->components([
-                \Filament\Forms\Components\Select::make('product_id')->relationship('product', 'name')
+                Select::make('product_id')->relationship('product', 'name')
                     ->required(),
-                \Filament\Forms\Components\Select::make('product_variant_id')->relationship('productVariant', 'sku'),
+                Select::make('product_variant_id')->relationship('productVariant', 'sku'),
                 TextInput::make('barcode')
                     ->required(),
-                TextInput::make('barcode_type'),
+                Select::make('barcode_type')
+                    ->options([
+                        'EAN13' => 'EAN-13',
+                        'EAN8' => 'EAN-8',
+                        'UPC' => 'UPC-A',
+                        'CODE128' => 'Code 128',
+                        'CODE39' => 'Code 39',
+                        'ITF' => 'ITF',
+                    ])
+                    ->searchable()
+                    ->native(false),
             ]);
     }
 }
