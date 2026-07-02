@@ -33,6 +33,21 @@ class PayslipsTable
                 //
             ])
             ->recordActions([
+                \Filament\Actions\Action::make('download')
+                    ->label('Download')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->action(function ($record) {
+                        if (! \Illuminate\Support\Facades\Storage::disk('public')->exists($record->document_path)) {
+                            \Filament\Notifications\Notification::make()
+                                ->title('File not found')
+                                ->body('The payslip document is missing from the server.')
+                                ->danger()
+                                ->send();
+                            return;
+                        }
+                        return response()->download(storage_path('app/public/' . $record->document_path));
+                    })
+                    ->visible(fn ($record) => $record->document_path !== null),
                 EditAction::make(),
             ])
             ->toolbarActions([

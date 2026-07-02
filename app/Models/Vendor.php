@@ -8,5 +8,8 @@ class Vendor extends Model
 {
     protected $guarded = [];
 
-    //
+    public function vendorCategory()
+    {
+        return $this->belongsTo(VendorCategory::class);
+    }
 }

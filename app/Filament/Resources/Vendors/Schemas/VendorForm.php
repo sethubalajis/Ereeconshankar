@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Vendors\Schemas;
 
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
@@ -13,6 +14,15 @@ class VendorForm
     {
         return $schema
             ->components([
+                Select::make('vendor_category_id')
+                    ->relationship('vendorCategory', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->createOptionForm([
+                        TextInput::make('name')
+                            ->required()
+                            ->maxLength(255),
+                    ]),
                 TextInput::make('name')
                     ->required(),
                 TextInput::make('code')

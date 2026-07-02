@@ -11,7 +11,10 @@ class StockTransactionForm
     {
         return $schema
             ->components([
-                \Filament\Forms\Components\Select::make('stock_id')->relationship('stock', 'id')
+                \Filament\Forms\Components\Select::make('stock_id')
+                    ->relationship('stock', 'id')
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->product->name ?? 'Stock #'.$record->id)
+                    ->searchable()
                     ->required(),
                 TextInput::make('transaction_type')
                     ->required(),
@@ -19,7 +22,7 @@ class StockTransactionForm
                     ->required()
                     ->numeric()
                     ->default(0.0),
-                \Filament\Forms\Components\TextInput::make('reference_id')->numeric()
+                \Filament\Forms\Components\TextInput::make('reference')
                     ,
                 TextInput::make('reference_type'),
             ]);

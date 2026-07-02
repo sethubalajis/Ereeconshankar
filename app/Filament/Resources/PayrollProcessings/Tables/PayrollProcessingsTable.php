@@ -42,6 +42,13 @@ class PayrollProcessingsTable
                 //
             ])
             ->recordActions([
+                \Filament\Actions\Action::make('download')
+                    ->label('Download Payslip')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->action(function ($record) {
+                        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.payslip', ['record' => $record]);
+                        return response()->streamDownload(fn () => print($pdf->output()), 'payslip-' . ($record->employee->employee_code ?? 'EMP') . '-' . ($record->payrollCycle->name ?? 'cycle') . '.pdf');
+                    }),
                 EditAction::make(),
             ])
             ->toolbarActions([

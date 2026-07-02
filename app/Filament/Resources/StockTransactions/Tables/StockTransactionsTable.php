@@ -14,14 +14,17 @@ class StockTransactionsTable
     {
         return $table
             ->columns([
-                TextColumn::make('stock.id')
-                    ->sortable(),
+                TextColumn::make('stock.product.name')
+                    ->label('Product')
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('transaction_type')
                     ->searchable(),
                 TextColumn::make('quantity')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('reference_id')->numeric()
+                TextColumn::make('reference')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('reference_type')
                     ->searchable(),

@@ -18,7 +18,12 @@ class VendorAgreementForm
                     ->required(),
                 DatePicker::make('start_date'),
                 DatePicker::make('end_date'),
-                TextInput::make('document_path'),
+                \Filament\Forms\Components\FileUpload::make('document_path')
+                    ->directory('vendor-agreements')
+                    ->acceptedFileTypes(['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/jpeg', 'image/png'])
+                    ->maxSize(10240)
+                    ->downloadable()
+                    ->openable(),
                 TextInput::make('status')
                     ->required()
                     ->default('active'),

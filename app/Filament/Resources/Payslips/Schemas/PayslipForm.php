@@ -15,7 +15,9 @@ class PayslipForm
                     ->required(),
                 TextInput::make('payslip_number')
                     ->required(),
-                TextInput::make('document_path'),
+                \Filament\Forms\Components\FileUpload::make('document_path')
+                    ->directory('payslips')
+                    ->downloadable(),
             ]);
     }
 }

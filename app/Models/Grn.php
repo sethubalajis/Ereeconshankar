@@ -21,6 +21,41 @@ class Grn extends Model
                 $model->grn_number = 'GRN-' . date('Ymd') . '-' . str_pad($nextId, 4, '0', STR_PAD_LEFT);
             }
         });
+
+        static::created(function ($model) {
+            if (is_array($model->received_items) && count($model->received_items) > 0) {
+                foreach ($model->received_items as $item) {
+                    $productId = $item['product_id'] ?? null;
+                    if (!$productId) continue;
+
+                    $variantId = $item['product_variant_id'] ?? null;
+                    $quantity = (float)($item['quantity'] ?? 0);
+                    $unitPrice = (float)($item['unit_price'] ?? 0);
+
+                    $stock = \App\Models\Stock::firstOrNew([
+                        'product_id' => $productId,
+                        'product_variant_id' => $variantId,
+                        'branch_id' => $model->branch_id,
+                    ]);
+
+                    if ($stock->exists) {
+                        $totalCurrentValue = $stock->quantity * $stock->avg_cost;
+                        $newReceivedValue = $quantity * $unitPrice;
+                        $newTotalQuantity = $stock->quantity + $quantity;
+                        
+                        if ($newTotalQuantity > 0) {
+                            $stock->avg_cost = ($totalCurrentValue + $newReceivedValue) / $newTotalQuantity;
+                        }
+                        $stock->quantity += $quantity;
+                    } else {
+                        $stock->quantity = $quantity;
+                        $stock->avg_cost = $unitPrice;
+                    }
+                    
+                    $stock->save();
+                }
+            }
+        });
     }
 
     //

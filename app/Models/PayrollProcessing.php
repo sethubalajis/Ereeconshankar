@@ -15,4 +15,7 @@ class PayrollProcessing extends Model
     public function employee() {
         return $this->belongsTo(Employee::class, 'employee_id');
     }
+    public function payslip() {
+        return $this->hasOne(Payslip::class, 'payroll_processing_id');
+    }
 }
