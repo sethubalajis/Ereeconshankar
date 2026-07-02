@@ -8,6 +8,10 @@ class PurchaseReturn extends Model
 {
     protected $guarded = [];
 
+    protected $casts = [
+        'returned_items' => 'array',
+    ];
+
     //
     public function purchaseOrder() {
         return $this->belongsTo(PurchaseOrder::class, 'purchase_order_id');

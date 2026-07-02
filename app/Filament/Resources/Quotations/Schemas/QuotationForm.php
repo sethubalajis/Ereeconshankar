@@ -22,7 +22,12 @@ class QuotationForm
                     ->required()
                     ->numeric()
                     ->default(0.0),
-                TextInput::make('status')
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'received' => 'Received',
+                        'accepted' => 'Accepted',
+                        'rejected' => 'Rejected',
+                    ])
                     ->required()
                     ->default('received'),
             ]);

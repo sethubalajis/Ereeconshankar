@@ -26,6 +26,13 @@ class PurchaseReturnForm
                                 $set('vendor_id', $grn->vendor_id);
                                 $set('branch_id', $grn->branch_id);
                                 $set('purchase_order_id', $grn->purchase_order_id);
+                                
+                                $items = $grn->received_items ?? [];
+                                $formattedItems = [];
+                                foreach($items as $item) {
+                                    $formattedItems[(string) str()->uuid()] = $item;
+                                }
+                                $set('returned_items', $formattedItems);
                             }
                         }
                     }),
@@ -41,15 +48,49 @@ class PurchaseReturnForm
                     ->default(0.0),
                 Textarea::make('reason')
                     ->columnSpanFull(),
-                TextInput::make('status')
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'approved' => 'Approved',
+                        'processed' => 'Processed',
+                        'rejected' => 'Rejected',
+                    ])
                     ->required()
                     ->default('pending'),
                     
-                Section::make('GRN Details')
-                    ->relationship('grn')
-                    ->schema(\App\Filament\Resources\Grns\Schemas\GrnForm::configure(\Filament\Schemas\Schema::make($schema->getLivewire()))->getComponents())
+                Section::make('Received Items from GRN')
+                    ->schema([
+                        \Filament\Forms\Components\Repeater::make('returned_items')
+                            ->label('Items')
+                            ->schema([
+                                \Filament\Forms\Components\Select::make('product_id')
+                                    ->options(\App\Models\Product::pluck('name', 'id'))
+                                    ->live(),
+                                \Filament\Forms\Components\Select::make('product_variant_id')
+                                    ->options(function (callable $get) {
+                                        if (!$get('product_id')) return [];
+                                        return \App\Models\ProductVariant::where('product_id', $get('product_id'))->pluck('sku', 'id');
+                                    }),
+                                \Filament\Forms\Components\TextInput::make('quantity')
+                                    ->numeric()
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                        $unitPrice = (float)($get('unit_price') ?: 0);
+                                        $set('total_price', $unitPrice * (float)$state);
+                                    }),
+                                \Filament\Forms\Components\TextInput::make('unit_price')
+                                    ->numeric()
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                        $qty = (float)($get('quantity') ?: 1);
+                                        $set('total_price', (float)$state * $qty);
+                                    }),
+                                \Filament\Forms\Components\TextInput::make('total_price')
+                                    ->numeric(),
+                            ])
+                            ->columns(5)
+                    ])
                     ->columnSpan('full')
-                    ->columns(2)
                     ->visible(fn (callable $get) => filled($get('grn_id'))),
             ]);
     }

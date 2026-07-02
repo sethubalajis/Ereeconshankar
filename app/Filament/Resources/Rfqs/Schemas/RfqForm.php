@@ -12,11 +12,19 @@ class RfqForm
     {
         return $schema
             ->components([
-                \Filament\Forms\Components\Select::make('purchase_requisition_id')->relationship('purchaseRequisition', 'status'),
+                \Filament\Forms\Components\Select::make('purchase_requisition_id')
+                    ->relationship('purchaseRequisition', 'subject')
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->subject ?? "Requisition #{$record->id}"),
                 DatePicker::make('rfq_date')
                     ->required(),
                 DatePicker::make('submission_deadline'),
-                TextInput::make('status')
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'open' => 'Open',
+                        'closed' => 'Closed',
+                        'awarded' => 'Awarded',
+                        'cancelled' => 'Cancelled',
+                    ])
                     ->required()
                     ->default('open'),
             ]);

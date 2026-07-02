@@ -18,6 +18,8 @@ class PurchaseRequisitionsTable
                     ->sortable(),
                 TextColumn::make('department.name')
                     ->sortable(),
+                TextColumn::make('subject')
+                    ->searchable(),
                 TextColumn::make('required_date')
                     ->date()
                     ->sortable(),

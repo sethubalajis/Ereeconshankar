@@ -22,34 +22,82 @@ class GrnForm
                     ->live()
                     ->afterStateUpdated(function ($state, callable $set) {
                         if ($state) {
-                            $po = PurchaseOrder::find($state);
+                            $po = PurchaseOrder::with('items')->find($state);
                             if ($po) {
                                 $set('vendor_id', $po->vendor_id);
                                 $set('branch_id', $po->branch_id);
+                                $items = $po->toArray()['items'] ?? [];
+                                $formattedItems = [];
+                                foreach($items as $item) {
+                                    $formattedItems[(string) str()->uuid()] = $item;
+                                }
+                                $set('received_items', $formattedItems);
                             }
                         }
-                    })
-                    ->createOptionForm(fn (\Filament\Schemas\Schema $schema) => \App\Filament\Resources\PurchaseOrders\Schemas\PurchaseOrderForm::configure($schema)->getComponents())
-                    ->editOptionForm(fn (\Filament\Schemas\Schema $schema) => \App\Filament\Resources\PurchaseOrders\Schemas\PurchaseOrderForm::configure($schema)->getComponents()),
-                    
+                    }),
                 \Filament\Forms\Components\Select::make('vendor_id')->relationship('vendor', 'name')
                     ->required(),
                 \Filament\Forms\Components\Select::make('branch_id')->relationship('branch', 'name')
                     ->required(),
                 TextInput::make('grn_number')
-                    ->required(),
+                    ->default('Auto-generated')
+                    ->disabled()
+                    ->dehydrated(false),
                 DatePicker::make('receive_date')
                     ->required(),
-                TextInput::make('status')
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'received' => 'Received',
+                        'inspected' => 'Inspected',
+                        'partially_received' => 'Partially Received',
+                        'rejected' => 'Rejected',
+                    ])
                     ->required()
                     ->default('received'),
                     
-                Section::make('Purchase Order Details')
-                    ->relationship('purchaseOrder')
-                    ->schema(\App\Filament\Resources\PurchaseOrders\Schemas\PurchaseOrderForm::configure(\Filament\Schemas\Schema::make($schema->getLivewire()))->getComponents())
+                Section::make('Received Items')
+                    ->schema([
+                        \Filament\Forms\Components\Repeater::make('received_items')
+                            ->label('Items')
+                            ->schema([
+                                \Filament\Forms\Components\Select::make('product_id')
+                                    ->options(\App\Models\Product::pluck('name', 'id'))
+                                    ->required()
+                                    ->live(),
+                                \Filament\Forms\Components\Select::make('product_variant_id')
+                                    ->options(function (callable $get) {
+                                        if (!$get('product_id')) return [];
+                                        return \App\Models\ProductVariant::where('product_id', $get('product_id'))->pluck('sku', 'id');
+                                    })
+                                    ->live(onBlur: true),
+                                \Filament\Forms\Components\TextInput::make('quantity')
+                                    ->required()
+                                    ->numeric()
+                                    ->default(1)
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                        $unitPrice = (float)($get('unit_price') ?: 0);
+                                        $set('total_price', $unitPrice * (float)$state);
+                                    }),
+                                \Filament\Forms\Components\TextInput::make('unit_price')
+                                    ->required()
+                                    ->numeric()
+                                    ->default(0.0)
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                        $qty = (float)($get('quantity') ?: 1);
+                                        $set('total_price', (float)$state * $qty);
+                                    }),
+                                \Filament\Forms\Components\TextInput::make('total_price')
+                                    ->required()
+                                    ->numeric()
+                                    ->default(0.0),
+                            ])
+                            ->columns(5)
+                            ->columnSpanFull()
+                    ])
                     ->columnSpan('full')
-                    ->columns(2)
-                    ->visible(fn (callable $get) => filled($get('purchase_order_id'))),
+                    ->columnSpan('full')
             ]);
     }
 }

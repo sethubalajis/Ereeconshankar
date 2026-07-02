@@ -14,7 +14,7 @@ class RfqsTable
     {
         return $table
             ->columns([
-                TextColumn::make('purchaseRequisition.status')
+                TextColumn::make('purchaseRequisition.subject')
                     ->sortable(),
                 TextColumn::make('rfq_date')
                     ->date()

@@ -20,7 +20,9 @@ class PurchaseOrderForm
                 \Filament\Forms\Components\Select::make('branch_id')->relationship('branch', 'name')
                     ->required(),
                 TextInput::make('po_number')
-                    ->required(),
+                    ->default('Auto-generated')
+                    ->disabled()
+                    ->dehydrated(false),
                 DatePicker::make('po_date')
                     ->required(),
                 DatePicker::make('expected_delivery_date'),
@@ -28,7 +30,15 @@ class PurchaseOrderForm
                     ->required()
                     ->numeric()
                     ->default(0.0),
-                TextInput::make('status')
+                Select::make('status')
+                    ->options([
+                        'draft' => 'Draft',
+                        'submitted' => 'Submitted',
+                        'approved' => 'Approved',
+                        'rejected' => 'Rejected',
+                        'completed' => 'Completed',
+                        'cancelled' => 'Cancelled',
+                    ])
                     ->required()
                     ->default('draft'),
                 Repeater::make('items')
