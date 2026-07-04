@@ -23,6 +23,9 @@ class ShiftsTable
                 TextColumn::make('end_time')
                     ->time()
                     ->sortable(),
+                TextColumn::make('break_time')
+                    ->time()
+                    ->sortable(),
                 IconColumn::make('status')
                     ->boolean(),
                 TextColumn::make('created_at')

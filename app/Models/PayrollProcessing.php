@@ -8,7 +8,10 @@ class PayrollProcessing extends Model
 {
     protected $guarded = [];
 
-    //
+    protected $casts = [
+        'allowances' => 'array',
+        'deductions' => 'array',
+    ];
     public function payrollCycle() {
         return $this->belongsTo(PayrollCycle::class, 'payroll_cycle_id');
     }
