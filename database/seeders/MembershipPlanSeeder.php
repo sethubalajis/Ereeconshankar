@@ -14,10 +14,10 @@ class MembershipPlanSeeder extends Seeder
         
         for ($i = 0; $i < 5; $i++) {
             DB::table('membership_plans')->insert([
-                'name' => $faker->word . ' ' . $faker->word,
-                'code' => substr(strtoupper($faker->unique()->bothify('???###')), 0, 3),
-                'fee' => rand(1, 9),
-                'duration_months' => rand(1, 9),
+                'name' => $faker->unique()->randomElement(['Basic', 'Silver', 'Gold', 'Platinum', 'Diamond', 'VIP']),
+                'code' => strtoupper($faker->unique()->lexify('???')),
+                'fee' => $faker->numberBetween(100, 5000),
+                'duration_months' => $faker->randomElement([1, 3, 6, 12, 24]),
                 'benefits_description' => $faker->sentence,
                 'status' => true,
             ]);

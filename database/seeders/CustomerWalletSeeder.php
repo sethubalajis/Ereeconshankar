@@ -15,9 +15,9 @@ class CustomerWalletSeeder extends Seeder
         for ($i = 0; $i < 5; $i++) {
             DB::table('customer_wallets')->insert([
                 'customer_id' => DB::table('customers')->inRandomOrder()->value('id') ?? 1,
-                'transaction_type' => $faker->word . ' ' . $faker->word,
-                'amount' => rand(1, 9),
-                'description' => $faker->word . ' ' . $faker->word,
+                'transaction_type' => $faker->randomElement(['credit', 'debit']),
+                'amount' => $faker->randomFloat(2, 10, 1000),
+                'description' => $faker->sentence(3),
                 'transaction_date' => now()->subDays(rand(1, 30)),
             ]);
         }

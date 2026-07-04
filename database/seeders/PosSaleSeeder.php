@@ -12,8 +12,8 @@ class PosSaleSeeder extends Seeder {
         $pmId = DB::table('payment_modes')->first()->id ?? null;
         
         $sales = [
-            ['branch_id' => $branchId, 'pos_terminal_id' => $terminalId, 'customer_id' => null, 'invoice_number' => 'INV-POS-1001', 'sale_date' => now()->subDays(2), 'total_amount' => 1500.00, 'tax_amount' => 150.00, 'discount_amount' => 50.00, 'net_amount' => 1600.00, 'payment_mode_id' => $pmId, 'status' => 'completed'],
-            ['branch_id' => $branchId, 'pos_terminal_id' => $terminalId, 'customer_id' => null, 'invoice_number' => 'INV-POS-1002', 'sale_date' => now()->subDays(1), 'total_amount' => 2500.00, 'tax_amount' => 250.00, 'discount_amount' => 100.00, 'net_amount' => 2650.00, 'payment_mode_id' => $pmId, 'status' => 'completed'],
+            ['branch_id' => $branchId, 'pos_terminal_id' => $terminalId, 'customer_id' => null, 'invoice_number' => 'INV-POS-1001', 'sale_date' => now()->subDays(2), 'total_amount' => 1500.00, 'tax_amount' => 150.00, 'discount_amount' => 50.00, 'net_amount' => 1600.00, 'payments' => json_encode([['payment_mode_id' => $pmId, 'amount' => 1600.00]]), 'status' => 'completed'],
+            ['branch_id' => $branchId, 'pos_terminal_id' => $terminalId, 'customer_id' => null, 'invoice_number' => 'INV-POS-1002', 'sale_date' => now()->subDays(1), 'total_amount' => 2500.00, 'tax_amount' => 250.00, 'discount_amount' => 100.00, 'net_amount' => 2650.00, 'payments' => json_encode([['payment_mode_id' => $pmId, 'amount' => 2650.00]]), 'status' => 'completed'],
         ];
         
         foreach($sales as $s) {
