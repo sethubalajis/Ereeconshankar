@@ -39,6 +39,8 @@ class GrnForm
                     ->required(),
                 \Filament\Forms\Components\Select::make('branch_id')->relationship('branch', 'name')
                     ->required(),
+                \Filament\Forms\Components\Select::make('warehouse_id')->relationship('warehouse', 'name')
+                    ->required(),
                 TextInput::make('grn_number')
                     ->default('Auto-generated')
                     ->disabled()

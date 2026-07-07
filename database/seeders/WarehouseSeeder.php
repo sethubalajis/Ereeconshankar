@@ -8,9 +8,8 @@ class WarehouseSeeder extends Seeder {
         DB::table('warehouses')->truncate();
         
         $warehouses = [
-            ['branch_id' => 1, 'name' => 'Central Hub Warehouse', 'code' => 'WH-CH1', 'address' => 'Main Industrial Area, Chennai', 'capacity' => 50000.00, 'status' => true],
-            ['branch_id' => 1, 'name' => 'North Region Godown', 'code' => 'WH-NR1', 'address' => 'TNHB Colony, Ambattur', 'capacity' => 25000.00, 'status' => true],
-            ['branch_id' => 1, 'name' => 'South City Distribution Center', 'code' => 'WH-SC1', 'address' => 'OMR IT Expy, Sholinganallur', 'capacity' => 30000.00, 'status' => true],
+            ['branch_id' => 1, 'name' => 'Main Central Warehouse', 'code' => 'WH-MC1', 'address' => 'Central Industrial Park, Chennai', 'capacity' => 100000.00, 'status' => true],
+            ['branch_id' => 1, 'name' => 'Secondary Overflow Godown', 'code' => 'WH-SO1', 'address' => 'North Chennai Depot', 'capacity' => 50000.00, 'status' => true],
         ];
         
         foreach($warehouses as $wh) {

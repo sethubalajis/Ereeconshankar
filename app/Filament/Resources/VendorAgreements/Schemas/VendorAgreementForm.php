@@ -14,7 +14,17 @@ class VendorAgreementForm
             ->components([
                 \Filament\Forms\Components\Select::make('vendor_id')->relationship('vendor', 'name')
                     ->required(),
-                TextInput::make('title')
+                \Filament\Forms\Components\Select::make('title')
+                    ->options([
+                        'Non-Disclosure Agreement (NDA)' => 'Non-Disclosure Agreement (NDA)',
+                        'Master Service Agreement (MSA)' => 'Master Service Agreement (MSA)',
+                        'Service Level Agreement (SLA)' => 'Service Level Agreement (SLA)',
+                        'Software License Agreement' => 'Software License Agreement',
+                        'Consulting Agreement' => 'Consulting Agreement',
+                        'General Vendor Agreement' => 'General Vendor Agreement',
+                        'Other' => 'Other',
+                    ])
+                    ->searchable()
                     ->required(),
                 DatePicker::make('start_date'),
                 DatePicker::make('end_date'),
@@ -24,7 +34,13 @@ class VendorAgreementForm
                     ->maxSize(10240)
                     ->downloadable()
                     ->openable(),
-                TextInput::make('status')
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'active' => 'Active',
+                        'expired' => 'Expired',
+                        'terminated' => 'Terminated',
+                        'pending' => 'Pending',
+                    ])
                     ->required()
                     ->default('active'),
             ]);

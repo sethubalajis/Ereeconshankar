@@ -52,6 +52,23 @@ class PosSaleForm
                             ->toArray();
                     })
                     ->getOptionLabelUsing(fn ($value): ?string => \App\Models\Customer::find($value)?->name)
+                    ->createOptionForm([
+                        \Filament\Forms\Components\TextInput::make('name')
+                            ->required()
+                            ->maxLength(255),
+                        \Filament\Forms\Components\TextInput::make('phone')
+                            ->tel()
+                            ->required()
+                            ->unique('customers', 'phone')
+                            ->maxLength(255),
+                        \Filament\Forms\Components\TextInput::make('email')
+                            ->email()
+                            ->maxLength(255),
+                        \Filament\Forms\Components\Select::make('customer_group_id')
+                            ->relationship('customerGroup', 'name')
+                            ->searchable()
+                            ->preload(),
+                    ])
                     ->live(),
                 \Filament\Forms\Components\Placeholder::make('membership_placeholder')
                     ->label('Customer CRM & Loyalty Info')

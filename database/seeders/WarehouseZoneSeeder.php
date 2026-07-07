@@ -7,11 +7,13 @@ class WarehouseZoneSeeder extends Seeder {
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         DB::table('warehouse_zones')->truncate();
         
+        $wh_id = DB::table('warehouses')->first()->id ?? 1;
+        
         $zones = [
-            ['warehouse_id' => 1, 'name' => 'Receiving Zone', 'code' => 'WZ-RCV', 'type' => 'inbound'],
-            ['warehouse_id' => 1, 'name' => 'Bulk Storage', 'code' => 'WZ-BLK', 'type' => 'storage'],
-            ['warehouse_id' => 1, 'name' => 'Picking Zone', 'code' => 'WZ-PCK', 'type' => 'picking'],
-            ['warehouse_id' => 1, 'name' => 'Dispatch Zone', 'code' => 'WZ-DSP', 'type' => 'outbound'],
+            ['warehouse_id' => $wh_id, 'name' => 'Receiving Zone', 'code' => 'Z-REC', 'type' => 'Receiving'],
+            ['warehouse_id' => $wh_id, 'name' => 'Bulk Storage Zone', 'code' => 'Z-BLK', 'type' => 'Storage'],
+            ['warehouse_id' => $wh_id, 'name' => 'Picking Zone', 'code' => 'Z-PCK', 'type' => 'Storage'],
+            ['warehouse_id' => $wh_id, 'name' => 'Returns & QC Zone', 'code' => 'Z-RET', 'type' => 'Returns'],
         ];
         
         foreach($zones as $z) {

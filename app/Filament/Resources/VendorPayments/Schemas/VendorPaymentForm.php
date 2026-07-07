@@ -23,7 +23,13 @@ class VendorPaymentForm
                     ->default(0.0),
                 \Filament\Forms\Components\Select::make('payment_mode_id')->relationship('paymentMode', 'name'),
                 TextInput::make('transaction_reference'),
-                TextInput::make('status')
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'completed' => 'Completed',
+                        'failed' => 'Failed',
+                        'cancelled' => 'Cancelled',
+                    ])
                     ->required()
                     ->default('completed'),
             ]);

@@ -20,6 +20,8 @@ class GrnsTable
                     ->sortable(),
                 TextColumn::make('branch.name')
                     ->sortable(),
+                TextColumn::make('warehouse.name')
+                    ->sortable(),
                 TextColumn::make('grn_number')
                     ->searchable(),
                 TextColumn::make('receive_date')

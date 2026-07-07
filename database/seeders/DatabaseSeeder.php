@@ -201,7 +201,6 @@ class DatabaseSeeder extends Seeder
         $this->call(EsiContributionSeeder::class);
         $this->call(ProfessionalTaxeSeeder::class);
         $this->call(PayrollProcessingSeeder::class);
-        $this->call(PayslipSeeder::class);
         $this->call(AssetAllocationSeeder::class);
         $this->call(WarrantyClaimSeeder::class);
         $this->call(ServiceAssignmentSeeder::class);

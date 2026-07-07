@@ -36,6 +36,7 @@ class Grn extends Model
                         'product_id' => $productId,
                         'product_variant_id' => $variantId,
                         'branch_id' => $model->branch_id,
+                        'warehouse_id' => $model->warehouse_id,
                     ]);
 
                     if ($stock->exists) {
@@ -67,5 +68,8 @@ class Grn extends Model
     }
     public function branch() {
         return $this->belongsTo(Branch::class, 'branch_id');
+    }
+    public function warehouse() {
+        return $this->belongsTo(Warehouse::class, 'warehouse_id');
     }
 }
