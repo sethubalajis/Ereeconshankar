@@ -49,6 +49,7 @@ class VendorPaymentsTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('payment_date', 'desc');
     }
 }

@@ -26,8 +26,10 @@ class VendorAgreementForm
                     ])
                     ->searchable()
                     ->required(),
-                DatePicker::make('start_date'),
-                DatePicker::make('end_date'),
+                DatePicker::make('start_date')
+                    ->default(now()->timezone('Asia/Kolkata')),
+                DatePicker::make('end_date')
+                    ->default(now()->timezone('Asia/Kolkata')),
                 \Filament\Forms\Components\FileUpload::make('document_path')
                     ->directory('vendor-agreements')
                     ->acceptedFileTypes(['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/jpeg', 'image/png'])

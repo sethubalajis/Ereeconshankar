@@ -16,7 +16,8 @@ class VendorPaymentForm
                     ->required(),
                 \Filament\Forms\Components\Select::make('purchase_order_id')->relationship('purchaseOrder', 'po_number'),
                 DatePicker::make('payment_date')
-                    ->required(),
+                    ->required()
+                    ->default(now()->timezone('Asia/Kolkata')),
                 TextInput::make('amount')
                     ->required()
                     ->numeric()

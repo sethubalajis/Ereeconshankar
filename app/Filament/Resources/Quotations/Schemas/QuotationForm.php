@@ -14,7 +14,9 @@ class QuotationForm
             ->components([
                 \Filament\Forms\Components\Select::make('vendor_id')->relationship('vendor', 'name')
                     ->required(),
-                \Filament\Forms\Components\Select::make('rfq_id')->relationship('rfq', 'status'),
+                \Filament\Forms\Components\Select::make('rfq_id')
+                    ->relationship('rfq', 'rfq_number')
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->rfq_number ?? "RFQ #{$record->id}"),
                 DatePicker::make('quote_date')
                     ->required()
                     ->default(now()->timezone('Asia/Kolkata')),

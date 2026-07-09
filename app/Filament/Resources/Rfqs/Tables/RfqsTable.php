@@ -16,6 +16,9 @@ class RfqsTable
             ->columns([
                 TextColumn::make('purchaseRequisition.subject')
                     ->sortable(),
+                TextColumn::make('rfq_number')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('rfq_date')
                     ->date()
                     ->sortable(),

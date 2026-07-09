@@ -15,6 +15,10 @@ class RfqForm
                 \Filament\Forms\Components\Select::make('purchase_requisition_id')
                     ->relationship('purchaseRequisition', 'subject')
                     ->getOptionLabelFromRecordUsing(fn ($record) => $record->subject ?? "Requisition #{$record->id}"),
+                TextInput::make('rfq_number')
+                    ->default('Auto-generated')
+                    ->disabled()
+                    ->dehydrated(false),
                 DatePicker::make('rfq_date')
                     ->required()
                     ->default(now()->timezone('Asia/Kolkata')),

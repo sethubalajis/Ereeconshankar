@@ -97,17 +97,23 @@ class PurchaseReturnForm
                                     }),
                                 \Filament\Forms\Components\TextInput::make('quantity')
                                     ->numeric()
-                                    ->live(onBlur: true)
+                                    ->live(debounce: 500)
                                     ->afterStateUpdated(function ($state, callable $set, callable $get) {
                                         $unitPrice = (float)($get('unit_price') ?: 0);
                                         $set('total_price', $unitPrice * (float)$state);
+                                        $items = $get('../../returned_items') ?? [];
+                                        $total = collect($items)->sum('total_price');
+                                        $set('../../total_amount', $total);
                                     }),
                                 \Filament\Forms\Components\TextInput::make('unit_price')
                                     ->numeric()
-                                    ->live(onBlur: true)
+                                    ->live(debounce: 500)
                                     ->afterStateUpdated(function ($state, callable $set, callable $get) {
                                         $qty = (float)($get('quantity') ?: 1);
                                         $set('total_price', (float)$state * $qty);
+                                        $items = $get('../../returned_items') ?? [];
+                                        $total = collect($items)->sum('total_price');
+                                        $set('../../total_amount', $total);
                                     }),
                                 \Filament\Forms\Components\TextInput::make('total_price')
                                     ->numeric(),

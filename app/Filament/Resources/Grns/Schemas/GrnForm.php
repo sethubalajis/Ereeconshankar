@@ -77,7 +77,7 @@ class GrnForm
                                     ->required()
                                     ->numeric()
                                     ->default(1)
-                                    ->live(onBlur: true)
+                                    ->live(debounce: 500)
                                     ->afterStateUpdated(function ($state, callable $set, callable $get) {
                                         $unitPrice = (float)($get('unit_price') ?: 0);
                                         $set('total_price', $unitPrice * (float)$state);
@@ -86,7 +86,7 @@ class GrnForm
                                     ->required()
                                     ->numeric()
                                     ->default(0.0)
-                                    ->live(onBlur: true)
+                                    ->live(debounce: 500)
                                     ->afterStateUpdated(function ($state, callable $set, callable $get) {
                                         $qty = (float)($get('quantity') ?: 1);
                                         $set('total_price', (float)$state * $qty);
