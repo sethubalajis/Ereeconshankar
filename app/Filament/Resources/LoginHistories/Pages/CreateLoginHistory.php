@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateLoginHistory extends CreateRecord
 {
     protected static string $resource = LoginHistoryResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateEmployeeDocument extends CreateRecord
 {
     protected static string $resource = EmployeeDocumentResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

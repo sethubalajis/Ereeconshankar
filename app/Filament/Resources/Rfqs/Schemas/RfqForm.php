@@ -16,8 +16,10 @@ class RfqForm
                     ->relationship('purchaseRequisition', 'subject')
                     ->getOptionLabelFromRecordUsing(fn ($record) => $record->subject ?? "Requisition #{$record->id}"),
                 DatePicker::make('rfq_date')
-                    ->required(),
-                DatePicker::make('submission_deadline'),
+                    ->required()
+                    ->default(now()->timezone('Asia/Kolkata')),
+                DatePicker::make('submission_deadline')
+                    ->default(now()->timezone('Asia/Kolkata')),
                 \Filament\Forms\Components\Select::make('status')
                     ->options([
                         'open' => 'Open',

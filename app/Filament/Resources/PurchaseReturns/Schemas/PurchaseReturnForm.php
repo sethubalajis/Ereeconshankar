@@ -15,9 +15,32 @@ class PurchaseReturnForm
     {
         return $schema
             ->components([
-                \Filament\Forms\Components\Select::make('purchase_order_id')->relationship('purchaseOrder', 'po_number'),
+                \Filament\Forms\Components\Select::make('purchase_order_id')
+                    ->relationship('purchaseOrder', 'po_number')
+                    ->live()
+                    ->afterStateUpdated(function ($state, callable $set) {
+                        if ($state) {
+                            $po = \App\Models\PurchaseOrder::with('items')->find($state);
+                            if ($po) {
+                                $set('vendor_id', $po->vendor_id);
+                                $set('branch_id', $po->branch_id);
+                                
+                                $items = $po->toArray()['items'] ?? [];
+                                $formattedItems = [];
+                                foreach($items as $item) {
+                                    $formattedItems[(string) str()->uuid()] = $item;
+                                }
+                                $set('returned_items', $formattedItems);
+                            }
+                        }
+                    }),
                 \Filament\Forms\Components\Select::make('grn_id')
-                    ->relationship('grn', 'grn_number')
+                    ->relationship(
+                        name: 'grn',
+                        titleAttribute: 'grn_number',
+                        modifyQueryUsing: fn (\Illuminate\Database\Eloquent\Builder $query, callable $get) => 
+                            $get('purchase_order_id') ? $query->where('purchase_order_id', $get('purchase_order_id')) : $query
+                    )
                     ->live()
                     ->afterStateUpdated(function ($state, callable $set) {
                         if ($state) {
@@ -41,7 +64,8 @@ class PurchaseReturnForm
                 \Filament\Forms\Components\Select::make('branch_id')->relationship('branch', 'name')
                     ->required(),
                 DatePicker::make('return_date')
-                    ->required(),
+                    ->required()
+                    ->default(now()->timezone('Asia/Kolkata')),
                 TextInput::make('total_amount')
                     ->required()
                     ->numeric()
@@ -91,7 +115,7 @@ class PurchaseReturnForm
                             ->columns(5)
                     ])
                     ->columnSpan('full')
-                    ->visible(fn (callable $get) => filled($get('grn_id'))),
+                    ->visible(fn (callable $get) => filled($get('grn_id')) || filled($get('purchase_order_id'))),
             ]);
     }
 }

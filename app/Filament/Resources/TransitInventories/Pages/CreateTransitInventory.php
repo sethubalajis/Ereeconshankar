@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateTransitInventory extends CreateRecord
 {
     protected static string $resource = TransitInventoryResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateBranchUser extends CreateRecord
 {
     protected static string $resource = BranchUserResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

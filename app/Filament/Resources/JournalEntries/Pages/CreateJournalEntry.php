@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateJournalEntry extends CreateRecord
 {
     protected static string $resource = JournalEntryResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

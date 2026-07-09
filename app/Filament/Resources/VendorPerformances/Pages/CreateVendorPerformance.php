@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateVendorPerformance extends CreateRecord
 {
     protected static string $resource = VendorPerformanceResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

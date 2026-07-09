@@ -16,8 +16,10 @@ class QuotationForm
                     ->required(),
                 \Filament\Forms\Components\Select::make('rfq_id')->relationship('rfq', 'status'),
                 DatePicker::make('quote_date')
-                    ->required(),
-                DatePicker::make('validity_date'),
+                    ->required()
+                    ->default(now()->timezone('Asia/Kolkata')),
+                DatePicker::make('validity_date')
+                    ->default(now()->timezone('Asia/Kolkata')),
                 TextInput::make('total_amount')
                     ->required()
                     ->numeric()

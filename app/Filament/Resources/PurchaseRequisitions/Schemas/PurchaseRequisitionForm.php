@@ -45,7 +45,8 @@ class PurchaseRequisitionForm
                         return $data['subject'];
                     }),
                 DatePicker::make('required_date')
-                    ->required(),
+                    ->required()
+                    ->default(now()->timezone('Asia/Kolkata')),
                 \Filament\Forms\Components\Select::make('status')
                     ->options([
                         'pending' => 'Pending',

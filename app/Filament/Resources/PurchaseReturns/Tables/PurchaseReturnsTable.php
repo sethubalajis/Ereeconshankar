@@ -49,6 +49,7 @@ class PurchaseReturnsTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('return_date', 'desc');
     }
 }

@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateTaxInvoice extends CreateRecord
 {
     protected static string $resource = TaxInvoiceResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

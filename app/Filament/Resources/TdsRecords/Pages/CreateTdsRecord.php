@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateTdsRecord extends CreateRecord
 {
     protected static string $resource = TdsRecordResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

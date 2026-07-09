@@ -43,6 +43,7 @@ class RfqsTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('rfq_date', 'desc');
     }
 }

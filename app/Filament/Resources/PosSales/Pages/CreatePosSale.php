@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreatePosSale extends CreateRecord
 {
     protected static string $resource = PosSaleResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

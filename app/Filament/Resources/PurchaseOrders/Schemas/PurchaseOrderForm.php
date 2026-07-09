@@ -24,8 +24,10 @@ class PurchaseOrderForm
                     ->disabled()
                     ->dehydrated(false),
                 DatePicker::make('po_date')
-                    ->required(),
-                DatePicker::make('expected_delivery_date'),
+                    ->required()
+                    ->default(now()->timezone('Asia/Kolkata')),
+                DatePicker::make('expected_delivery_date')
+                    ->default(now()->timezone('Asia/Kolkata')),
                 TextInput::make('total_amount')
                     ->required()
                     ->numeric()
@@ -43,6 +45,12 @@ class PurchaseOrderForm
                     ->default('draft'),
                 Repeater::make('items')
                     ->relationship('items')
+                    ->live()
+                    ->afterStateUpdated(function (callable $get, callable $set) {
+                        $items = $get('items') ?? [];
+                        $total = collect($items)->sum('total_price');
+                        $set('total_amount', $total);
+                    })
                     ->schema([
                         Select::make('product_id')->relationship('product', 'name')
                             ->required()
@@ -56,12 +64,15 @@ class PurchaseOrderForm
                             ->live(onBlur: true)
                             ->afterStateUpdated(function ($state, callable $set, callable $get) {
                                 if ($state) {
-                                    $variant = ProductVariant::find($state);
+                                    $variant = \App\Models\ProductVariant::find($state);
                                     if ($variant) {
                                         $set('unit_price', $variant->cost_price);
                                         $set('total_price', $variant->cost_price * (float)($get('quantity') ?: 1));
                                     }
                                 }
+                                $items = $get('../../items') ?? [];
+                                $total = collect($items)->sum('total_price');
+                                $set('../../total_amount', $total);
                             }),
                         TextInput::make('quantity')
                             ->required()
@@ -71,6 +82,9 @@ class PurchaseOrderForm
                             ->afterStateUpdated(function ($state, callable $set, callable $get) {
                                 $unitPrice = (float)($get('unit_price') ?: 0);
                                 $set('total_price', $unitPrice * (float)$state);
+                                $items = $get('../../items') ?? [];
+                                $total = collect($items)->sum('total_price');
+                                $set('../../total_amount', $total);
                             }),
                         TextInput::make('unit_price')
                             ->required()
@@ -80,6 +94,9 @@ class PurchaseOrderForm
                             ->afterStateUpdated(function ($state, callable $set, callable $get) {
                                 $qty = (float)($get('quantity') ?: 1);
                                 $set('total_price', (float)$state * $qty);
+                                $items = $get('../../items') ?? [];
+                                $total = collect($items)->sum('total_price');
+                                $set('../../total_amount', $total);
                             }),
                         TextInput::make('total_price')
                             ->required()

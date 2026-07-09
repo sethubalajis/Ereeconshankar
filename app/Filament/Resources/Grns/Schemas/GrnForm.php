@@ -46,7 +46,8 @@ class GrnForm
                     ->disabled()
                     ->dehydrated(false),
                 DatePicker::make('receive_date')
-                    ->required(),
+                    ->required()
+                    ->default(now()->timezone('Asia/Kolkata')),
                 \Filament\Forms\Components\Select::make('status')
                     ->options([
                         'received' => 'Received',

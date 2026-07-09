@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateCashBook extends CreateRecord
 {
     protected static string $resource = CashBookResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

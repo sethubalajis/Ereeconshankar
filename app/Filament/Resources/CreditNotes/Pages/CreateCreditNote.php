@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateCreditNote extends CreateRecord
 {
     protected static string $resource = CreditNoteResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

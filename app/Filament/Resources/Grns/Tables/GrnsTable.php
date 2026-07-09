@@ -48,6 +48,7 @@ class GrnsTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('receive_date', 'desc');
     }
 }

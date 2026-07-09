@@ -44,6 +44,7 @@ class PurchaseRequisitionsTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('required_date', 'desc');
     }
 }

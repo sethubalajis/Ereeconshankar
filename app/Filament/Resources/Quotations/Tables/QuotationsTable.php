@@ -48,6 +48,7 @@ class QuotationsTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('quote_date', 'desc');
     }
 }

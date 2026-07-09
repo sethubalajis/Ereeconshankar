@@ -54,6 +54,14 @@ class Grn extends Model
                     }
                     
                     $stock->save();
+
+                    \App\Models\StockTransaction::create([
+                        'stock_id' => $stock->id,
+                        'transaction_type' => 'in',
+                        'quantity' => $quantity,
+                        'reference' => $model->grn_number ?? 'GRN-' . $model->id,
+                        'reference_type' => 'App\\Models\\Grn',
+                    ]);
                 }
             }
         });
