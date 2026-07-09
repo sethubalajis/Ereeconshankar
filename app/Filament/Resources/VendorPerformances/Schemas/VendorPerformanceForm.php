@@ -16,7 +16,8 @@ class VendorPerformanceForm
                 \Filament\Forms\Components\Select::make('vendor_id')->relationship('vendor', 'name')
                     ->required(),
                 DatePicker::make('review_date')
-                    ->required(),
+                    ->required()
+                    ->default(now()->timezone('Asia/Kolkata')),
                 TextInput::make('rating')
                     ->required()
                     ->numeric()

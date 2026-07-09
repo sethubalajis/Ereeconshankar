@@ -5,6 +5,7 @@ namespace App\Filament\Resources\StockLedgers\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -15,13 +16,17 @@ class StockLedgersTable
         return $table
             ->columns([
                 TextColumn::make('product.name')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('productVariant.sku')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('branch.name')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('warehouse.name')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('transaction_date')
                     ->date()
                     ->sortable(),
