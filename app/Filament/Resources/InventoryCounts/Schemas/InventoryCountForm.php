@@ -16,7 +16,8 @@ class InventoryCountForm
                     ->required(),
                 \Filament\Forms\Components\Select::make('warehouse_id')->relationship('warehouse', 'name'),
                 DatePicker::make('count_date')
-                    ->required(),
+                    ->required()
+                    ->default(now()->timezone('Asia/Kolkata')),
                 TextInput::make('status')
                     ->required()
                     ->default('draft'),

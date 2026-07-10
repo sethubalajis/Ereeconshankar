@@ -61,6 +61,7 @@ class StockLedgersTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('transaction_date', 'desc');
     }
 }

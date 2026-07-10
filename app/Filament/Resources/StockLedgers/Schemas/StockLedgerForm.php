@@ -65,7 +65,8 @@ class StockLedgerForm
                     ->live()
                     ->afterStateUpdated($updateQuantities),
                 DatePicker::make('transaction_date')
-                    ->required(),
+                    ->required()
+                    ->default(now()->timezone('Asia/Kolkata')),
                 TextInput::make('opening_qty')
                     ->required()
                     ->numeric()

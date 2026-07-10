@@ -18,10 +18,17 @@ class StockTransferForm
                 \Filament\Forms\Components\Select::make('to_branch_id')->relationship('toBranch', 'name')
                     ->required(),
                 DatePicker::make('transfer_date')
-                    ->required(),
+                    ->required()
+                    ->default(now()->timezone('Asia/Kolkata')),
                 TextInput::make('vehicle_number'),
                 TextInput::make('driver_name'),
-                TextInput::make('status')
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'in_transit' => 'In Transit',
+                        'received' => 'Received',
+                        'cancelled' => 'Cancelled',
+                    ])
                     ->required()
                     ->default('in_transit'),
             ]);

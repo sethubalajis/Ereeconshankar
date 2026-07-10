@@ -15,7 +15,8 @@ class StockValuationForm
                 \Filament\Forms\Components\Select::make('branch_id')->relationship('branch', 'name')
                     ->required(),
                 DatePicker::make('valuation_date')
-                    ->required(),
+                    ->required()
+                    ->default(now()->timezone('Asia/Kolkata')),
                 TextInput::make('total_value')
                     ->required()
                     ->numeric()

@@ -18,6 +18,9 @@ class CashRegistersTable
                     ->sortable(),
                 TextColumn::make('user.name')
                     ->sortable(),
+                TextColumn::make('date')
+                    ->date()
+                    ->sortable(),
                 TextColumn::make('opening_balance')
                     ->numeric()
                     ->sortable(),
