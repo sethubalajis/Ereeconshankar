@@ -18,6 +18,18 @@ class PayrollProcessingsTable
                     ->sortable(),
                 TextColumn::make('employee.first_name')
                     ->sortable(),
+                TextColumn::make('basic_pay')->numeric()->sortable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('hra')->numeric()->sortable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('special_allowance')->numeric()->sortable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('pf')->numeric()->sortable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('esi')->numeric()->sortable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('loss_of_pay')->numeric()->sortable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('extra_deductions')->numeric()->sortable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('bonuses')->numeric()->sortable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('incentives')->numeric()->sortable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('reimbursement')->numeric()->sortable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('professional_taxes')->numeric()->sortable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('tds_records')->numeric()->sortable()->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('gross_pay')
                     ->numeric()
                     ->sortable(),

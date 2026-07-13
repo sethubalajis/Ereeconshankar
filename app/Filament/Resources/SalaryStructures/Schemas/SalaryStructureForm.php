@@ -24,6 +24,10 @@ class SalaryStructureForm
                     ->required()
                     ->numeric()
                     ->default(0.0),
+                TextInput::make('special_allowance')
+                    ->required()
+                    ->numeric()
+                    ->default(0.0),
                 Toggle::make('status')
                     ->required(),
             ]);

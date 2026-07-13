@@ -49,19 +49,14 @@
     </table>
 
     @php
-        $assignment = \App\Models\EmployeeSalaryAssignment::where('employee_id', $record->employee_id)->first();
-        $structure = $assignment ? $assignment->salaryStructure : null;
-
-        $basicPct = $structure ? $structure->basic_percentage : 40;
-        $hraPct = $structure ? $structure->hra_percentage : 20;
-
-        // Fetch any dynamic database records for this cycle if they exist
         $bonuses = \App\Models\Bonus::where('employee_id', $record->employee_id)
-            ->whereBetween('payout_date', [$record->payrollCycle->start_date, $record->payrollCycle->end_date])
+            ->whereYear('payout_date', \Carbon\Carbon::parse($record->payrollCycle->start_date)->year)
+            ->whereMonth('payout_date', \Carbon\Carbon::parse($record->payrollCycle->start_date)->month)
             ->get();
             
-        $extraDeductions = \App\Models\Deduction::where('employee_id', $record->employee_id)
-            ->whereBetween('month', [$record->payrollCycle->start_date, $record->payrollCycle->end_date])
+        $extraDeductionsList = \App\Models\Deduction::where('employee_id', $record->employee_id)
+            ->whereYear('month', \Carbon\Carbon::parse($record->payrollCycle->start_date)->year)
+            ->whereMonth('month', \Carbon\Carbon::parse($record->payrollCycle->start_date)->month)
             ->get();
             
         $startDate = \Carbon\Carbon::parse($record->payrollCycle->start_date);
@@ -78,66 +73,23 @@
             ->whereIn('status', ['half_day', 'Half Day'])
             ->count();
             
-        $absentDates = \App\Models\Attendance::where('employee_id', $record->employee_id)
-            ->whereBetween('date', [$record->payrollCycle->start_date, $record->payrollCycle->end_date])
-            ->whereIn('status', ['absent', 'Absent'])
-            ->pluck('date');
-            
-        $paidLeaveDays = 0;
-        $lopDays = 0;
-        $year = \Carbon\Carbon::parse($record->payrollCycle->start_date)->year;
+        // Use the exact values from the processed record
+        $basic = $record->basic_pay;
+        $hra = $record->hra;
+        $specialAllowance = $record->special_allowance;
+        $pf = $record->pf;
+        $esi = $record->esi;
+        $lossOfPay = $record->loss_of_pay;
+        $otherDeductions = $record->extra_deductions;
+        $incentives = $record->incentives;
+        $reimbursement = $record->reimbursement;
+        $pt = $record->professional_taxes;
+        $tds = $record->tds_records;
         
-        foreach ($absentDates as $date) {
-            $leave = \App\Models\EmployeeLeave::where('employee_id', $record->employee_id)
-                ->where('status', 'approved')
-                ->where('start_date', '<=', $date)
-                ->where('end_date', '>=', $date)
-                ->first();
-                
-            if ($leave && $leave->leaveType && $leave->leaveType->days_allowed > 0) {
-                $totalTakenInYear = \DB::table('employee_leaves')
-                    ->where('employee_id', $record->employee_id)
-                    ->where('status', 'approved')
-                    ->where('leave_type_id', $leave->leaveType->id)
-                    ->whereYear('start_date', $year)
-                    ->get()
-                    ->sum(function($l) {
-                        return \Carbon\Carbon::parse($l->start_date)->diffInDays(\Carbon\Carbon::parse($l->end_date)) + 1;
-                    });
-                    
-                if ($totalTakenInYear <= $leave->leaveType->days_allowed) {
-                    $paidLeaveDays++;
-                } else {
-                    $lopDays++;
-                }
-            } else {
-                $lopDays++;
-            }
-        }
-            
-        $effectivePresentDays = $presentDays + ($halfDays * 0.5) + $paidLeaveDays;
+        $baseGross = $record->gross_pay - $record->bonuses - $incentives - $reimbursement + $lossOfPay;
+        $lopDays = ($baseGross > 0) ? round(($lossOfPay * $totalDays) / $baseGross, 1) : 0;
+        $effectivePresentDays = $totalDays - $lopDays;
         $absentDays = $lopDays;
-        
-        $baseGross = $assignment ? $assignment->gross_salary : 0;
-        $lossOfPay = 0;
-        if ($totalDays > 0 && $baseGross > 0) {
-            $lossOfPay = ($baseGross / $totalDays) * $lopDays;
-        }
-
-        $basic = ($assignment ? $assignment->gross_salary : 0) * $basicPct / 100;
-        $hra = ($assignment ? $assignment->gross_salary : 0) * $hraPct / 100;
-        $specialAllowance = ($assignment ? $assignment->gross_salary : 0) - ($basic + $hra);
-
-        $proratedGross = $baseGross - $lossOfPay;
-        $proratedBasic = $proratedGross * $basicPct / 100;
-        
-        $pf = $proratedBasic * 0.12; // Standard 12% of basic
-        $totalExtraDeductionAmount = $extraDeductions->sum('amount');
-        
-        $otherDeductions = $record->total_deductions - $pf - $totalExtraDeductionAmount - $lossOfPay;
-        if ($otherDeductions < 0) {
-            $otherDeductions = 0;
-        }
     @endphp
 
     <div class="section-title">Attendance Details</div>
@@ -146,11 +98,11 @@
             <th>Total Days in Month</th>
             <td>{{ $totalDays }}</td>
             <th>Effective Present Days</th>
-            <td>{{ $effectivePresentDays }}</td>
+            <td>{{ round($effectivePresentDays) }}</td>
         </tr>
         <tr>
             <th>Absent/Leave Days</th>
-            <td>{{ $absentDays }}</td>
+            <td>{{ round($absentDays) }}</td>
             <th>Loss of Pay (LOP)</th>
             <td style="color: red;">{{ number_format($lossOfPay, 2) }}</td>
         </tr>
@@ -176,12 +128,30 @@
             <tr>
                 <td>House Rent Allowance (HRA)</td>
                 <td class="text-right">{{ number_format($hra, 2) }}</td>
-                <td>Tax / Other Deductions</td>
-                <td class="text-right">{{ number_format($otherDeductions, 2) }}</td>
+                <td>Employee State Insurance (ESI)</td>
+                <td class="text-right">{{ number_format($esi, 2) }}</td>
             </tr>
             <tr>
                 <td>Special Allowance</td>
                 <td class="text-right">{{ number_format($specialAllowance, 2) }}</td>
+                <td>Professional Tax (PT)</td>
+                <td class="text-right">{{ number_format($pt, 2) }}</td>
+            </tr>
+            <tr>
+                <td>Incentives</td>
+                <td class="text-right">{{ number_format($incentives, 2) }}</td>
+                <td>Tax Deducted at Source (TDS)</td>
+                <td class="text-right">{{ number_format($tds, 2) }}</td>
+            </tr>
+            <tr>
+                <td>Reimbursements</td>
+                <td class="text-right">{{ number_format($reimbursement, 2) }}</td>
+                <td>Tax / Other Deductions</td>
+                <td class="text-right">{{ number_format($otherDeductions, 2) }}</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td class="text-right"></td>
                 <td>Loss of Pay (Absence)</td>
                 <td class="text-right">{{ number_format($lossOfPay, 2) }}</td>
             </tr>
@@ -195,7 +165,7 @@
             </tr>
             @endforeach
 
-            @foreach($extraDeductions as $deduction)
+            @foreach($extraDeductionsList as $deduction)
             <tr>
                 <td></td>
                 <td class="text-right"></td>
