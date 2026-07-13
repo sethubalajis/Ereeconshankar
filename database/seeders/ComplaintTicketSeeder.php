@@ -2,20 +2,21 @@
 namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
 class ComplaintTicketSeeder extends Seeder {
     public function run(): void {
-        $faker = Faker::create('en_IN');
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         DB::table('complaint_tickets')->truncate();
-        for ($i = 1; $i <= 10; $i++) {
-            DB::table('complaint_tickets')->insert([
-                'ticket_number' => 'TKT' . date('Y') . str_pad($i, 4, '0', STR_PAD_LEFT),
-                'customer_id' => $faker->numberBetween(1, 10),
-                'complaint_category_id' => 1,
-                'description' => $faker->paragraph,
-                'status' => 'open',
-                'created_at' => now(), 'updated_at' => now(),
-            ]);
+        
+        $customerId = DB::table('customers')->first()->id ?? 1;
+        $catId = DB::table('complaint_categories')->where('code', 'CC-BIL')->value('id') ?? 1;
+
+        $tickets = [
+            ['customer_id' => $customerId, 'complaint_category_id' => $catId, 'ticket_number' => 'TKT-2026-001', 'description' => 'Overcharged on my last purchase due to a missing discount.', 'status' => 'open'],
+        ];
+        
+        foreach($tickets as $t) {
+            DB::table('complaint_tickets')->insert($t);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

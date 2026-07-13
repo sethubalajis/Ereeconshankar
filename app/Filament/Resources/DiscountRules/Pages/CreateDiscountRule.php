@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateDiscountRule extends CreateRecord
 {
     protected static string $resource = DiscountRuleResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

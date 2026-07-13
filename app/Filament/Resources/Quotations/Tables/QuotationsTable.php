@@ -16,7 +16,9 @@ class QuotationsTable
             ->columns([
                 TextColumn::make('vendor.name')
                     ->sortable(),
-                TextColumn::make('rfq.status')
+                TextColumn::make('rfq.rfq_number')
+                    ->label('RFQ Number')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('quote_date')
                     ->date()
@@ -48,6 +50,7 @@ class QuotationsTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('quote_date', 'desc');
     }
 }

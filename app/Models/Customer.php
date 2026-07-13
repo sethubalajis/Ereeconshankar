@@ -12,4 +12,7 @@ class Customer extends Model
     public function customerGroup() {
         return $this->belongsTo(CustomerGroup::class, 'customer_group_id');
     }
+    public function loyaltyCards() {
+        return $this->hasMany(LoyaltyCard::class, 'customer_id');
+    }
 }

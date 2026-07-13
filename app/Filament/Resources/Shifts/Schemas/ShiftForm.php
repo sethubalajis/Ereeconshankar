@@ -19,6 +19,8 @@ class ShiftForm
                     ->required(),
                 TimePicker::make('end_time')
                     ->required(),
+                TimePicker::make('break_time')
+                    ->nullable(),
                 Toggle::make('status')
                     ->required(),
             ]);

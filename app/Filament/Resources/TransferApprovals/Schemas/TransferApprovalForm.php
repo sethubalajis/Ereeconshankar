@@ -15,8 +15,14 @@ class TransferApprovalForm
                 \Filament\Forms\Components\Select::make('transfer_request_id')->relationship('transferRequest', 'status')
                     ->required(),
                 \Filament\Forms\Components\Select::make('approver_id')->relationship('approver', 'name'),
-                DatePicker::make('approval_date'),
-                TextInput::make('status')
+                DatePicker::make('approval_date')
+                    ->default(now()->timezone('Asia/Kolkata')),
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'approved' => 'Approved',
+                        'rejected' => 'Rejected',
+                    ])
                     ->required()
                     ->default('pending'),
             ]);

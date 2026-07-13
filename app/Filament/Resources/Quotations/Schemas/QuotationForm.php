@@ -14,15 +14,24 @@ class QuotationForm
             ->components([
                 \Filament\Forms\Components\Select::make('vendor_id')->relationship('vendor', 'name')
                     ->required(),
-                \Filament\Forms\Components\Select::make('rfq_id')->relationship('rfq', 'status'),
+                \Filament\Forms\Components\Select::make('rfq_id')
+                    ->relationship('rfq', 'rfq_number')
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->rfq_number ?? "RFQ #{$record->id}"),
                 DatePicker::make('quote_date')
-                    ->required(),
-                DatePicker::make('validity_date'),
+                    ->required()
+                    ->default(now()->timezone('Asia/Kolkata')),
+                DatePicker::make('validity_date')
+                    ->default(now()->timezone('Asia/Kolkata')),
                 TextInput::make('total_amount')
                     ->required()
                     ->numeric()
                     ->default(0.0),
-                TextInput::make('status')
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'received' => 'Received',
+                        'accepted' => 'Accepted',
+                        'rejected' => 'Rejected',
+                    ])
                     ->required()
                     ->default('received'),
             ]);

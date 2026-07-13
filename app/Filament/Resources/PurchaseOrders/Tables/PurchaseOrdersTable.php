@@ -50,6 +50,7 @@ class PurchaseOrdersTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('po_date', 'desc');
     }
 }

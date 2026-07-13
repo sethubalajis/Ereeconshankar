@@ -42,6 +42,7 @@ class InventoryCountsTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('count_date', 'desc');
     }
 }

@@ -47,6 +47,7 @@ class VendorContactsTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('name', 'asc');
     }
 }

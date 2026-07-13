@@ -18,6 +18,8 @@ class PurchaseRequisitionsTable
                     ->sortable(),
                 TextColumn::make('department.name')
                     ->sortable(),
+                TextColumn::make('subject')
+                    ->searchable(),
                 TextColumn::make('required_date')
                     ->date()
                     ->sortable(),
@@ -42,6 +44,7 @@ class PurchaseRequisitionsTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('required_date', 'desc');
     }
 }

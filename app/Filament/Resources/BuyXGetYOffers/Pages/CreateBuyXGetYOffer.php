@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateBuyXGetYOffer extends CreateRecord
 {
     protected static string $resource = BuyXGetYOfferResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

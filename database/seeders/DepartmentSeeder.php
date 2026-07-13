@@ -6,14 +6,17 @@ class DepartmentSeeder extends Seeder {
     public function run(): void {
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         DB::table('departments')->truncate();
-        $deps = ['Sales', 'Purchase', 'Inventory', 'Accounts', 'HR', 'IT', 'Marketing', 'Customer Support', 'Logistics', 'Management'];
-        foreach($deps as $index => $d) {
-            DB::table('departments')->insert([
-                'branch_id' => 1,
-                'name' => $d,
-                'code' => strtoupper(substr($d, 0, 3)) . $index,
-                'status' => true,
-            ]);
+        
+        $branchId = DB::table('branches')->first()->id ?? 1;
+
+        $depts = [
+            ['branch_id' => $branchId, 'name' => 'Human Resources', 'code' => 'HR', 'description' => 'HR & Admin', 'status' => true],
+            ['branch_id' => $branchId, 'name' => 'Sales & Retail', 'code' => 'SALES', 'description' => 'Store Front Sales', 'status' => true],
+            ['branch_id' => $branchId, 'name' => 'IT Support', 'code' => 'IT', 'description' => 'Technical support', 'status' => true],
+        ];
+        
+        foreach($depts as $d) {
+            DB::table('departments')->insert($d);
         }
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }

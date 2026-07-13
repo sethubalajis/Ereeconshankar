@@ -47,6 +47,7 @@ class VendorAgreementsTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('start_date', 'desc');
     }
 }

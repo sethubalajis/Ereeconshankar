@@ -1,23 +1,21 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class PromotionTypeSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class PromotionTypeSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('promotion_types')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('promotion_types')->insert([
-                'name' => $faker->word . ' ' . $faker->word,
-                'code' => substr(strtoupper($faker->unique()->bothify('???###')), 0, 3),
-                'description' => $faker->sentence,
-            ]);
+        $types = [
+            ['name' => 'Percentage Discount', 'code' => 'PT-PCT', 'description' => 'A percentage based discount on total cart value.'],
+            ['name' => 'Flat Amount Discount', 'code' => 'PT-FLT', 'description' => 'A flat amount discount.'],
+            ['name' => 'Free Shipping', 'code' => 'PT-FSHP', 'description' => 'Free shipping on orders above a limit.'],
+        ];
+        
+        foreach($types as $t) {
+            DB::table('promotion_types')->insert($t);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

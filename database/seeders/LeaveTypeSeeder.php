@@ -1,24 +1,21 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class LeaveTypeSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class LeaveTypeSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('leave_types')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('leave_types')->insert([
-                'name' => $faker->word . ' ' . $faker->word,
-                'code' => substr(strtoupper($faker->unique()->bothify('???###')), 0, 3),
-                'days_allowed' => rand(1, 9),
-                'status' => true,
-            ]);
+        $leaves = [
+            ['name' => 'Sick Leave', 'code' => 'SL', 'days_allowed' => 12, 'status' => true],
+            ['name' => 'Casual Leave', 'code' => 'CL', 'days_allowed' => 12, 'status' => true],
+            ['name' => 'Earned Leave', 'code' => 'EL', 'days_allowed' => 15, 'status' => true],
+        ];
+        
+        foreach($leaves as $l) {
+            DB::table('leave_types')->insert($l);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

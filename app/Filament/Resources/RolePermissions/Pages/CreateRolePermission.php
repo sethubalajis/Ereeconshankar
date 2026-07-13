@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateRolePermission extends CreateRecord
 {
     protected static string $resource = RolePermissionResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

@@ -14,7 +14,7 @@ class ProductCategoryForm
     {
         return $schema
             ->components([
-                \Filament\Forms\Components\Select::make('parent_id')->relationship('parent', 'name'),
+                \Filament\Forms\Components\Select::make('parent_id')->relationship('productCategory', 'name')->label('Product Category'),
                 TextInput::make('name')
                     ->required(),
                 TextInput::make('code')

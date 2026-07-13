@@ -15,9 +15,9 @@ class LoyaltyCardSeeder extends Seeder
         for ($i = 0; $i < 5; $i++) {
             DB::table('loyalty_cards')->insert([
                 'customer_id' => DB::table('customers')->inRandomOrder()->value('id') ?? 1,
-                'card_number' => $faker->word . ' ' . $faker->word,
+                'card_number' => $faker->unique()->numerify('################'),
                 'issue_date' => now()->subDays(rand(1, 30)),
-                'expiry_date' => now()->subDays(rand(1, 30)),
+                'expiry_date' => now()->addYears(rand(1, 5)),
                 'status' => true,
             ]);
         }

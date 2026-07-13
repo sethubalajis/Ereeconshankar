@@ -10,10 +10,26 @@ class CashClosingForm
 {
     public static function configure(Schema $schema): Schema
     {
+        $updateClosingAmount = function ($state, callable $set) {
+            if (!$state) return;
+            
+            $register = \App\Models\CashRegister::find($state);
+            if ($register) {
+                $openingAmount = \App\Models\CashOpening::where('cash_register_id', $register->id)->sum('opening_amount');
+                $salesAmount = \App\Models\PosSale::where('pos_terminal_id', $register->pos_terminal_id)
+                    ->where('sale_date', $register->date)
+                    ->sum('net_amount');
+                
+                $set('closing_amount', (float) ($openingAmount + $salesAmount));
+            }
+        };
+
         return $schema
             ->components([
                 \Filament\Forms\Components\Select::make('cash_register_id')->relationship('cashRegister', 'status')
-                    ->required(),
+                    ->required()
+                    ->live()
+                    ->afterStateUpdated($updateClosingAmount),
                 DateTimePicker::make('closing_time')
                     ->required(),
                 TextInput::make('closing_amount')

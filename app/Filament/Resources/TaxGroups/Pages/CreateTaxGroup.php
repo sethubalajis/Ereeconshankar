@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateTaxGroup extends CreateRecord
 {
     protected static string $resource = TaxGroupResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

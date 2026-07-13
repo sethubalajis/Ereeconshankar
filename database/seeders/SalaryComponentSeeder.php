@@ -1,24 +1,23 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class SalaryComponentSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class SalaryComponentSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('salary_components')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('salary_components')->insert([
-                'name' => $faker->word . ' ' . $faker->word,
-                'type' => $faker->word . ' ' . $faker->word,
-                'is_taxable' => true,
-                'status' => true,
-            ]);
+        $components = [
+            ['name' => 'Basic Pay', 'type' => 'earning', 'is_taxable' => true, 'status' => true],
+            ['name' => 'House Rent Allowance (HRA)', 'type' => 'earning', 'is_taxable' => false, 'status' => true],
+            ['name' => 'Special Allowance', 'type' => 'earning', 'is_taxable' => true, 'status' => true],
+            ['name' => 'Provident Fund (PF)', 'type' => 'deduction', 'is_taxable' => false, 'status' => true],
+            ['name' => 'Professional Tax (PT)', 'type' => 'deduction', 'is_taxable' => false, 'status' => true],
+        ];
+        
+        foreach($components as $c) {
+            DB::table('salary_components')->insert($c);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

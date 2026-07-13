@@ -1,27 +1,23 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class StockAdjustmentSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class StockAdjustmentSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('stock_adjustments')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('stock_adjustments')->insert([
-                'branch_id' => DB::table('branches')->inRandomOrder()->value('id') ?? 1,
-                'warehouse_id' => DB::table('warehouses')->inRandomOrder()->value('id') ?? 1,
-                'product_id' => DB::table('products')->inRandomOrder()->value('id') ?? 1,
-                'product_variant_id' => DB::table('product_variants')->inRandomOrder()->value('id') ?? 1,
-                'quantity' => rand(1, 9),
-                'reason' => $faker->word . ' ' . $faker->word,
-                'status' => 'active',
-            ]);
+        $productId = DB::table('products')->first()->id ?? 1;
+
+        $adjustments = [
+            ['branch_id' => 1, 'warehouse_id' => 1, 'product_id' => $productId, 'product_variant_id' => null, 'quantity' => -5, 'reason' => 'Damaged during transit', 'status' => 'approved'],
+            ['branch_id' => 1, 'warehouse_id' => 2, 'product_id' => $productId, 'product_variant_id' => null, 'quantity' => 2, 'reason' => 'Found in unexpected bin', 'status' => 'approved'],
+            ['branch_id' => 1, 'warehouse_id' => 3, 'product_id' => $productId, 'product_variant_id' => null, 'quantity' => -1, 'reason' => 'Quality control failure', 'status' => 'pending'],
+        ];
+        
+        foreach($adjustments as $adj) {
+            DB::table('stock_adjustments')->insert($adj);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

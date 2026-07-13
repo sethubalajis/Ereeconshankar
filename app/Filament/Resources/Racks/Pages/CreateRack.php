@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateRack extends CreateRecord
 {
     protected static string $resource = RackResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

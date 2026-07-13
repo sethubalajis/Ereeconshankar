@@ -10,17 +10,24 @@ class VendorPriceListSeeder extends Seeder
 {
     public function run(): void
     {
-        $faker = Faker::create();
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('vendor_price_lists')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('vendor_price_lists')->insert([
-                'vendor_id' => DB::table('vendors')->inRandomOrder()->value('id') ?? 1,
-                'product_id' => DB::table('products')->inRandomOrder()->value('id') ?? 1,
-                'product_variant_id' => DB::table('product_variants')->inRandomOrder()->value('id') ?? 1,
-                'agreed_price' => rand(1, 9),
-                'valid_from' => now()->subDays(rand(1, 30)),
-                'valid_to' => now()->subDays(rand(1, 30)),
-            ]);
+        $vendors = DB::table('vendors')->pluck('id')->toArray();
+        if(empty($vendors)) { $vendors = [1, 2, 3]; }
+        
+        $productId = DB::table('products')->first()->id ?? 1;
+
+        $priceLists = [
+            ['vendor_id' => $vendors[0] ?? 1, 'product_id' => $productId, 'product_variant_id' => null, 'agreed_price' => 250.00, 'valid_from' => now()->startOfYear(), 'valid_to' => now()->endOfYear()],
+            ['vendor_id' => $vendors[1] ?? 2, 'product_id' => $productId, 'product_variant_id' => null, 'agreed_price' => 245.00, 'valid_from' => now()->subMonths(6), 'valid_to' => now()->addMonths(6)],
+            ['vendor_id' => $vendors[2] ?? 3, 'product_id' => $productId, 'product_variant_id' => null, 'agreed_price' => 260.00, 'valid_from' => now()->subMonths(1), 'valid_to' => now()->addMonths(11)],
+        ];
+
+        foreach ($priceLists as $price) {
+            DB::table('vendor_price_lists')->insert($price);
         }
+        
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

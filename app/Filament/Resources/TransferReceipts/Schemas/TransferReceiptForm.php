@@ -15,10 +15,16 @@ class TransferReceiptForm
                 \Filament\Forms\Components\Select::make('stock_transfer_id')->relationship('stockTransfer', 'vehicle_number')
                     ->required(),
                 DatePicker::make('receive_date')
-                    ->required(),
+                    ->required()
+                    ->default(now()->timezone('Asia/Kolkata')),
                 TextInput::make('received_by')
                     ->numeric(),
-                TextInput::make('status')
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'received' => 'Received',
+                        'partial' => 'Partial',
+                        'discrepancy' => 'Discrepancy',
+                    ])
                     ->required()
                     ->default('received'),
             ]);

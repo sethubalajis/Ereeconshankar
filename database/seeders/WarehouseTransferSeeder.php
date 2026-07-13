@@ -1,24 +1,21 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class WarehouseTransferSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class WarehouseTransferSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('warehouse_transfers')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('warehouse_transfers')->insert([
-                'from_warehouse_id' => 1,
-                'to_warehouse_id' => 1,
-                'transfer_date' => now()->subDays(rand(1, 30)),
-                'status' => 'active',
-            ]);
+        $transfers = [
+            ['from_warehouse_id' => 1, 'to_warehouse_id' => 2, 'transfer_date' => now()->subDays(5), 'status' => 'completed'],
+            ['from_warehouse_id' => 1, 'to_warehouse_id' => 3, 'transfer_date' => now()->subDays(2), 'status' => 'in_transit'],
+            ['from_warehouse_id' => 3, 'to_warehouse_id' => 1, 'transfer_date' => now(), 'status' => 'pending'],
+        ];
+        
+        foreach($transfers as $t) {
+            DB::table('warehouse_transfers')->insert($t);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

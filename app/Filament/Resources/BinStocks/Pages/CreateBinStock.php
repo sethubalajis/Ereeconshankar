@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateBinStock extends CreateRecord
 {
     protected static string $resource = BinStockResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

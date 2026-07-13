@@ -51,8 +51,13 @@ class VendorPaymentForm
                     ->preload()
                     ->disabled(fn (Get $get): bool => ! (bool) $get('vendor_id')),
                 DatePicker::make('payment_date')
+<<<<<<< HEAD
+                    ->required()
+                    ->default(now()->timezone('Asia/Kolkata')),
+=======
                     ->default(now())
                     ->required(),
+>>>>>>> origin/main
                 TextInput::make('amount')
                     ->required()
                     ->numeric()
@@ -72,6 +77,15 @@ class VendorPaymentForm
                     ->preload()
                     ->required(),
                 TextInput::make('transaction_reference'),
+<<<<<<< HEAD
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'completed' => 'Completed',
+                        'failed' => 'Failed',
+                        'cancelled' => 'Cancelled',
+                    ])
+=======
                 Select::make('status')
                     ->options([
                         'completed' => 'Completed',
@@ -81,6 +95,7 @@ class VendorPaymentForm
                     ])
                     ->searchable()
                     ->native(false)
+>>>>>>> origin/main
                     ->required()
                     ->default('completed'),
             ]);

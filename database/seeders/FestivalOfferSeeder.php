@@ -1,25 +1,20 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class FestivalOfferSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class FestivalOfferSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('festival_offers')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('festival_offers')->insert([
-                'name' => $faker->word . ' ' . $faker->word,
-                'start_date' => now()->subDays(rand(1, 30)),
-                'end_date' => now()->subDays(rand(1, 30)),
-                'discount_percentage' => rand(1, 9),
-                'status' => true,
-            ]);
+        $offers = [
+            ['name' => 'Diwali Dhamaka', 'start_date' => now()->addMonths(2), 'end_date' => now()->addMonths(3), 'discount_percentage' => 40.00, 'status' => true],
+            ['name' => 'Pongal Special', 'start_date' => now()->subMonths(5), 'end_date' => now()->subMonths(4), 'discount_percentage' => 25.00, 'status' => false],
+        ];
+        
+        foreach($offers as $o) {
+            DB::table('festival_offers')->insert($o);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

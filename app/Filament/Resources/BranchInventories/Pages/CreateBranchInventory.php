@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateBranchInventory extends CreateRecord
 {
     protected static string $resource = BranchInventoryResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

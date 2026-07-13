@@ -14,7 +14,10 @@ class RfqsTable
     {
         return $table
             ->columns([
-                TextColumn::make('purchaseRequisition.status')
+                TextColumn::make('purchaseRequisition.subject')
+                    ->sortable(),
+                TextColumn::make('rfq_number')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('rfq_date')
                     ->date()
@@ -43,6 +46,7 @@ class RfqsTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('rfq_date', 'desc');
     }
 }

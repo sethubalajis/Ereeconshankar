@@ -1,24 +1,24 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class TransferItemSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class TransferItemSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('transfer_items')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('transfer_items')->insert([
-                'stock_transfer_id' => DB::table('stock_transfers')->inRandomOrder()->value('id') ?? 1,
-                'product_id' => DB::table('products')->inRandomOrder()->value('id') ?? 1,
-                'product_variant_id' => DB::table('product_variants')->inRandomOrder()->value('id') ?? 1,
-                'quantity' => rand(1, 9),
-            ]);
+        $transfers = DB::table('stock_transfers')->pluck('id')->toArray();
+        if(empty($transfers)) { $transfers = [1]; }
+        
+        $productId = DB::table('products')->first()->id ?? 1;
+        
+        $items = [
+            ['stock_transfer_id' => $transfers[0] ?? 1, 'product_id' => $productId, 'product_variant_id' => null, 'quantity' => 50],
+        ];
+        
+        foreach($items as $i) {
+            DB::table('transfer_items')->insert($i);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

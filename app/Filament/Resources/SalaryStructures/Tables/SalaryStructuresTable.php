@@ -25,6 +25,9 @@ class SalaryStructuresTable
                 TextColumn::make('hra_percentage')
                     ->numeric()
                     ->sortable(),
+                TextColumn::make('special_allowance')
+                    ->numeric()
+                    ->sortable(),
                 IconColumn::make('status')
                     ->boolean(),
                 TextColumn::make('created_at')

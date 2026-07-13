@@ -25,7 +25,13 @@ class EmployeeForm
                 DatePicker::make('joining_date'),
                 TextInput::make('pan_number'),
                 TextInput::make('pf_number'),
+                \Filament\Forms\Components\Toggle::make('pf_opt_in')
+                    ->label('Opt-in for PF')
+                    ->default(true),
                 TextInput::make('esi_number'),
+                \Filament\Forms\Components\Toggle::make('esi_opt_in')
+                    ->label('Opt-in for ESI')
+                    ->default(true),
                 TextInput::make('status')
                     ->required()
                     ->default('active'),

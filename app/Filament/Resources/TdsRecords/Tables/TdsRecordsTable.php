@@ -14,18 +14,34 @@ class TdsRecordsTable
     {
         return $table
             ->columns([
-                TextColumn::make('section_code')
-                    ->searchable(),
-                TextColumn::make('tds_percentage')
+                TextColumn::make('payrollProcessing.payrollCycle.name')
+                    ->label('Payroll Processing')
+                    ->sortable(),
+                TextColumn::make('employee.first_name')
+                    ->sortable(),
+                TextColumn::make('financialYear.name')
+                    ->sortable(),
+                TextColumn::make('tax_regime'),
+                TextColumn::make('annual_gross_salary')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('deductee_id')->numeric()
-                    ->sortable(),
-                TextColumn::make('deductee_type')
-                    ->searchable(),
-                TextColumn::make('amount')
+                TextColumn::make('approved_tax_deductions')
                     ->numeric()
                     ->sortable(),
+                TextColumn::make('taxable_income')
+                    ->numeric()
+                    ->sortable(),
+                TextColumn::make('annual_income_tax')
+                    ->numeric()
+                    ->sortable(),
+                TextColumn::make('monthly_tds')
+                    ->numeric()
+                    ->sortable(),
+                TextColumn::make('remaining_tds')
+                    ->numeric()
+                    ->sortable(),
+                TextColumn::make('status')
+                    ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

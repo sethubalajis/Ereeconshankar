@@ -41,6 +41,7 @@ class StockValuationsTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('valuation_date', 'desc');
     }
 }

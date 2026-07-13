@@ -1,23 +1,23 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class BranchSettingSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class BranchSettingSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('branch_settings')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('branch_settings')->insert([
-                'branch_id' => DB::table('branches')->inRandomOrder()->value('id') ?? 1,
-                'setting_key' => $faker->word . ' ' . $faker->word,
-                'setting_value' => $faker->sentence,
-            ]);
+        $settings = [
+            ['branch_id' => 1, 'setting_key' => 'store_opening_time', 'setting_value' => '09:00 AM'],
+            ['branch_id' => 1, 'setting_key' => 'store_closing_time', 'setting_value' => '09:00 PM'],
+            ['branch_id' => 1, 'setting_key' => 'contact_email', 'setting_value' => 'chennai.branch@retail.com'],
+            ['branch_id' => 1, 'setting_key' => 'contact_phone', 'setting_value' => '+91-44-24567890'],
+            ['branch_id' => 1, 'setting_key' => 'manager_name', 'setting_value' => 'Ravi Kumar'],
+        ];
+        
+        foreach($settings as $s) {
+            DB::table('branch_settings')->insert($s);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

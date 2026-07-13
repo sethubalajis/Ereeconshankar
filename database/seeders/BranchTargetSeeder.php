@@ -1,24 +1,21 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class BranchTargetSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class BranchTargetSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('branch_targets')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('branch_targets')->insert([
-                'branch_id' => DB::table('branches')->inRandomOrder()->value('id') ?? 1,
-                'target_month' => now()->subDays(rand(1, 30)),
-                'target_amount' => rand(1, 9),
-                'achieved_amount' => rand(1, 9),
-            ]);
+        $targets = [
+            ['branch_id' => 1, 'target_month' => now()->startOfMonth(), 'target_amount' => 500000.00, 'achieved_amount' => 450000.00],
+            ['branch_id' => 1, 'target_month' => now()->subMonths(1)->startOfMonth(), 'target_amount' => 450000.00, 'achieved_amount' => 480000.00],
+            ['branch_id' => 1, 'target_month' => now()->subMonths(2)->startOfMonth(), 'target_amount' => 400000.00, 'achieved_amount' => 390000.00],
+        ];
+        
+        foreach($targets as $t) {
+            DB::table('branch_targets')->insert($t);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

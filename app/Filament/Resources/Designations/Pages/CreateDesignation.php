@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateDesignation extends CreateRecord
 {
     protected static string $resource = DesignationResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

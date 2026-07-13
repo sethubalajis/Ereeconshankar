@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateGstRate extends CreateRecord
 {
     protected static string $resource = GstRateResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

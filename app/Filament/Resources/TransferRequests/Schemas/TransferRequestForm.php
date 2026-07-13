@@ -17,8 +17,17 @@ class TransferRequestForm
                 \Filament\Forms\Components\Select::make('to_branch_id')->relationship('toBranch', 'name')
                     ->required(),
                 DatePicker::make('request_date')
-                    ->required(),
-                TextInput::make('status')
+                    ->required()
+                    ->default(now()->timezone('Asia/Kolkata')),
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'approved' => 'Approved',
+                        'rejected' => 'Rejected',
+                        'shipped' => 'Shipped',
+                        'completed' => 'Completed',
+                        'cancelled' => 'Cancelled',
+                    ])
                     ->required()
                     ->default('pending'),
             ]);

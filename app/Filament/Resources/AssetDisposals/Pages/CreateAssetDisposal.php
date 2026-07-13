@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateAssetDisposal extends CreateRecord
 {
     protected static string $resource = AssetDisposalResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateDebitNote extends CreateRecord
 {
     protected static string $resource = DebitNoteResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

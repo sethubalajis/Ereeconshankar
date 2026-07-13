@@ -1,24 +1,24 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class WarehouseZoneSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class WarehouseZoneSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('warehouse_zones')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('warehouse_zones')->insert([
-                'warehouse_id' => DB::table('warehouses')->inRandomOrder()->value('id') ?? 1,
-                'name' => $faker->word . ' ' . $faker->word,
-                'code' => substr(strtoupper($faker->unique()->bothify('???###')), 0, 3),
-                'type' => $faker->word . ' ' . $faker->word,
-            ]);
+        $wh_id = DB::table('warehouses')->first()->id ?? 1;
+        
+        $zones = [
+            ['warehouse_id' => $wh_id, 'name' => 'Receiving Zone', 'code' => 'Z-REC', 'type' => 'Receiving'],
+            ['warehouse_id' => $wh_id, 'name' => 'Bulk Storage Zone', 'code' => 'Z-BLK', 'type' => 'Storage'],
+            ['warehouse_id' => $wh_id, 'name' => 'Picking Zone', 'code' => 'Z-PCK', 'type' => 'Storage'],
+            ['warehouse_id' => $wh_id, 'name' => 'Returns & QC Zone', 'code' => 'Z-RET', 'type' => 'Returns'],
+        ];
+        
+        foreach($zones as $z) {
+            DB::table('warehouse_zones')->insert($z);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

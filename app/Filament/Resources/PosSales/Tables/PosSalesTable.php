@@ -37,8 +37,7 @@ class PosSalesTable
                 TextColumn::make('net_amount')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('paymentMode.name')
-                    ->sortable(),
+
                 TextColumn::make('status')
                     ->searchable(),
                 TextColumn::make('created_at')

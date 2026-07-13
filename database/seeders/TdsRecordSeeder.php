@@ -1,25 +1,21 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class TdsRecordSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class TdsRecordSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('tds_records')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('tds_records')->insert([
-                'section_code' => substr(strtoupper($faker->unique()->bothify('???###')), 0, 3),
-                'tds_percentage' => rand(1, 9),
-                'deductee_id' => 1,
-                'deductee_type' => $faker->word . ' ' . $faker->word,
-                'amount' => rand(1, 9),
-            ]);
+        $vendorId = DB::table('vendors')->first()->id ?? 1;
+
+        $tds = [
+            ['section_code' => '194C', 'tds_percentage' => 2.00, 'deductee_id' => $vendorId, 'deductee_type' => 'App\Models\Vendor', 'amount' => 2500.00],
+        ];
+        
+        foreach($tds as $t) {
+            DB::table('tds_records')->insert($t);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

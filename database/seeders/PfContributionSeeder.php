@@ -1,24 +1,21 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class PfContributionSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class PfContributionSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('pf_contributions')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('pf_contributions')->insert([
-                'employee_id' => DB::table('employees')->inRandomOrder()->value('id') ?? 1,
-                'employee_share' => rand(1, 9),
-                'employer_share' => rand(1, 9),
-                'month' => now()->subDays(rand(1, 30)),
-            ]);
+        $empId = DB::table('employees')->first()->id ?? 1;
+
+        $pfs = [
+            ['employee_id' => $empId, 'employee_share' => 1800.00, 'employer_share' => 1800.00, 'month' => now()->startOfMonth()->format('Y-m-d')],
+        ];
+        
+        foreach($pfs as $p) {
+            DB::table('pf_contributions')->insert($p);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

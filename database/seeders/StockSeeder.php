@@ -2,19 +2,22 @@
 namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
 class StockSeeder extends Seeder {
     public function run(): void {
-        $faker = Faker::create('en_IN');
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         DB::table('stocks')->truncate();
-        for ($i = 1; $i <= 15; $i++) {
-            DB::table('stocks')->insert([
-                'product_id' => $i,
-                'branch_id' => $faker->numberBetween(1, 3),
-                'warehouse_id' => $faker->numberBetween(1, 2),
-                'quantity' => $faker->numberBetween(50, 500),
-                'avg_cost' => $faker->randomFloat(2, 200, 3000),
-            ]);
+        
+        $productId = DB::table('products')->first()->id ?? 1;
+
+        $stocks = [
+            ['product_id' => $productId, 'product_variant_id' => null, 'branch_id' => 1, 'warehouse_id' => 1, 'quantity' => 1500, 'avg_cost' => 250.00],
+            ['product_id' => $productId, 'product_variant_id' => null, 'branch_id' => 1, 'warehouse_id' => 2, 'quantity' => 300, 'avg_cost' => 250.00],
+            ['product_id' => $productId, 'product_variant_id' => null, 'branch_id' => 1, 'warehouse_id' => 3, 'quantity' => 850, 'avg_cost' => 250.00],
+        ];
+        
+        foreach($stocks as $s) {
+            DB::table('stocks')->insert($s);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

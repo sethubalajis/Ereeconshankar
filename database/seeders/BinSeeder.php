@@ -1,24 +1,22 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
-
-class BinSeeder extends Seeder
-{
-    public function run(): void
-    {
-        $faker = Faker::create();
+class BinSeeder extends Seeder {
+    public function run(): void {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('bins')->truncate();
         
-        for ($i = 0; $i < 5; $i++) {
-            DB::table('bins')->insert([
-                'rack_id' => DB::table('racks')->inRandomOrder()->value('id') ?? 1,
-                'name' => $faker->word . ' ' . $faker->word,
-                'code' => substr(strtoupper($faker->unique()->bothify('???###')), 0, 3),
-                'max_weight' => rand(1, 9),
-            ]);
+        $bins = [
+            ['rack_id' => 1, 'name' => 'Bin A1-01', 'code' => 'BIN-A101', 'max_weight' => 500.00],
+            ['rack_id' => 1, 'name' => 'Bin A1-02', 'code' => 'BIN-A102', 'max_weight' => 500.00],
+            ['rack_id' => 2, 'name' => 'Bin A2-01', 'code' => 'BIN-A201', 'max_weight' => 500.00],
+            ['rack_id' => 4, 'name' => 'Pick Bin FP1-01', 'code' => 'BIN-FP101', 'max_weight' => 100.00],
+        ];
+        
+        foreach($bins as $b) {
+            DB::table('bins')->insert($b);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }
