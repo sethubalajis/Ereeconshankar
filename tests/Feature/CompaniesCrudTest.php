@@ -2,17 +2,30 @@
 
 use App\Filament\Resources\Companies\Pages\CreateCompany;
 use App\Filament\Resources\Companies\Pages\EditCompany;
+use App\Filament\Resources\Companies\Pages\ListCompanies;
 use App\Models\Company;
+use App\Models\Role;
 use App\Models\User;
-use Filament\Http\Middleware\AuthenticateSession as FilamentAuthenticateSession;
 use Livewire\Livewire;
 use function Pest\Laravel\actingAs;
-use function Pest\Laravel\get;
 
 uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
 
+function makeCompanyCrudAdminUser(): User
+{
+    $role = Role::query()->firstOrCreate([
+        'name' => 'Super Admin',
+        'guard_name' => 'web',
+    ]);
+
+    $user = User::factory()->create();
+    $user->assignRole($role);
+
+    return $user;
+}
+
 it('creates a company record', function (): void {
-    actingAs(User::factory()->create());
+    actingAs(makeCompanyCrudAdminUser());
 
     Livewire::test(CreateCompany::class)
         ->fillForm([
@@ -27,22 +40,21 @@ it('creates a company record', function (): void {
 });
 
 it('reads companies from list page', function (): void {
-    $this->withoutMiddleware(FilamentAuthenticateSession::class);
-    actingAs(User::factory()->create());
+    actingAs(makeCompanyCrudAdminUser());
 
     $company = Company::factory()->create([
         'name' => 'CRUD Read Co',
         'code' => 'CRUD002',
     ]);
 
-    get('/admin/companies')
-        ->assertOk()
-        ->assertSeeText($company->name)
-        ->assertSeeText($company->code);
+    Livewire::test(ListCompanies::class)
+        ->assertSuccessful()
+        ->assertSee($company->name)
+        ->assertSee($company->code);
 });
 
 it('updates a company record', function (): void {
-    actingAs(User::factory()->create());
+    actingAs(makeCompanyCrudAdminUser());
 
     $company = Company::factory()->create([
         'name' => 'CRUD Update Old',
@@ -65,7 +77,7 @@ it('updates a company record', function (): void {
 });
 
 it('deletes a company record', function (): void {
-    actingAs(User::factory()->create());
+    actingAs(makeCompanyCrudAdminUser());
 
     $company = Company::factory()->create([
         'name' => 'CRUD Delete Co',

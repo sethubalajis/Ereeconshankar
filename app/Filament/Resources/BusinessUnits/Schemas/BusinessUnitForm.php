@@ -16,11 +16,11 @@ class BusinessUnitForm
                 \Filament\Forms\Components\Select::make('company_id')->relationship('company', 'name')
                     ->required(),
                 TextInput::make('name')
-                    ->required(),
+                    ->required()
+                    ->unique(ignoreRecord: true),
                 TextInput::make('code')
-                    ->disabled()
-                    ->dehydrated(false)
-                    ->placeholder('Auto Generated'),
+                    ->required()
+                    ->unique(ignoreRecord: true),
                 Textarea::make('description')
                     ->columnSpanFull(),
                 Toggle::make('status')

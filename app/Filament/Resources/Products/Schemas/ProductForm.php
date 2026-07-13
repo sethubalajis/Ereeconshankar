@@ -20,13 +20,24 @@ class ProductForm
                 \Filament\Forms\Components\Select::make('hsn_code_id')->relationship('hsnCode', 'hsn_code'),
                 \Filament\Forms\Components\Select::make('tax_group_id')->relationship('taxGroup', 'name'),
                 TextInput::make('name')
+                    ->live(onBlur: true)
                     ->required(),
                 TextInput::make('code')
                     ->required(),
+<<<<<<< HEAD
 
                 Textarea::make('description')
                     ->columnSpanFull(),
 
+=======
+                Textarea::make('description')
+                    ->columnSpanFull(),
+                TextInput::make('base_price')
+                    ->required()
+                    ->numeric()
+                    ->default(0.0)
+                    ->prefix('₹'),
+>>>>>>> origin/main
                 Toggle::make('is_active')
                     ->required(),
             ]);

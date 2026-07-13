@@ -52,8 +52,8 @@ class DatabaseSeeder extends Seeder
         $this->call(SizeSeeder::class);
         $this->call(FabricTypeSeeder::class);
         $this->call(PatternTypeSeeder::class);
-        $this->call(VendorSeeder::class);
         $this->call(VendorCategorySeeder::class);
+        $this->call(VendorSeeder::class);
         $this->call(GiftVoucherSeeder::class);
         $this->call(PaymentModeSeeder::class);
         $this->call(CustomerGroupSeeder::class);
@@ -159,6 +159,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ProductSubCategorySeeder::class);
         $this->call(ProductSeeder::class);
         $this->call(ProductVariantSeeder::class);
+        $this->call(ProductVariantAttributeValueSeeder::class);
         $this->call(ProductImageSeeder::class);
         $this->call(ProductBarcodeSeeder::class);
         $this->call(PurchaseOrderItemSeeder::class);

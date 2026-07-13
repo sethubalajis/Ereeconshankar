@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ProductAttributes\Schemas;
 
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
 use Filament\Schemas\Schema;
 
 class ProductAttributeForm
@@ -15,7 +16,17 @@ class ProductAttributeForm
                     ->required(),
                 TextInput::make('code')
                     ->required(),
-                TextInput::make('type')
+                Select::make('type')
+                    ->options([
+                        'text' => 'Text',
+                        'select' => 'Select',
+                        'color' => 'Color',
+                        'number' => 'Number',
+                        'boolean' => 'Boolean',
+                        'date' => 'Date',
+                    ])
+                    ->searchable()
+                    ->native(false)
                     ->required()
                     ->default('text'),
             ]);
