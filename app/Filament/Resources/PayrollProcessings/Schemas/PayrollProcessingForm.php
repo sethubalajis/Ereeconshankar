@@ -196,11 +196,42 @@ class PayrollProcessingForm
                 ->whereMonth('month', $month)
                 ->sum('amount');
 
-            $tdsRecords = \App\Models\TdsRecord::where('deductee_id', $employeeId)
-                ->where('deductee_type', \App\Models\Employee::class)
-                ->whereYear('created_at', $year)
-                ->whereMonth('created_at', $month)
-                ->sum('amount');
+            // Find Financial Year based on cycle date
+            $financialYear = \App\Models\FinancialYear::where('start_date', '<=', $cycle->start_date)
+                ->where('end_date', '>=', $cycle->start_date)
+                ->first();
+
+            $taxRegime = 'old';
+            $approvedDeductions = 0;
+
+            if ($financialYear) {
+                $declaration = \App\Models\EmployeeTaxDeclaration::where('employee_id', $employeeId)
+                    ->where('financial_year_id', $financialYear->id)
+                    ->where('status', 'approved')
+                    ->first();
+                
+                if ($declaration) {
+                    $taxRegime = $declaration->tax_regime;
+                    $approvedDeductions = $declaration->items()->sum('approved_amount');
+                }
+            }
+
+            // Simple Tax Calculation
+            $annualGross = $grossSalary * 12;
+            $taxableIncome = max(0, $annualGross - $approvedDeductions);
+            
+            $annualTax = 0;
+            if ($taxableIncome > 250000) {
+                if ($taxableIncome <= 500000) {
+                    $annualTax = ($taxableIncome - 250000) * 0.05;
+                } elseif ($taxableIncome <= 1000000) {
+                    $annualTax = (250000 * 0.05) + (($taxableIncome - 500000) * 0.20);
+                } else {
+                    $annualTax = (250000 * 0.05) + (500000 * 0.20) + (($taxableIncome - 1000000) * 0.30);
+                }
+            }
+
+            $tdsRecords = round($annualTax / 12, 2);
                 
             $totalDeductions += $professionalTaxes;
             $totalDeductions += $tdsRecords;
@@ -216,13 +247,27 @@ class PayrollProcessingForm
                 $basicPay = ($grossSalary * $structure->basic_percentage) / 100;
                 $hra = ($grossSalary * $structure->hra_percentage) / 100;
                 $specialAllowance = ($grossSalary * $structure->special_allowance) / 100;
-                
                 $proratedGross = $grossSalary - $lossOfPay;
                 $proratedBasic = ($proratedGross * $structure->basic_percentage) / 100;
-                $pf = $proratedBasic * 0.12; 
                 
-                if ($grossSalary <= 21000) {
-                    $esi = $proratedGross * 0.0075;
+                $employee = \App\Models\Employee::find($employeeId);
+                
+                if ($employee && $employee->pf_opt_in) {
+                    $pfContribution = \App\Models\PfContribution::where('employee_id', $employeeId)
+                        ->whereYear('month', $year)
+                        ->whereMonth('month', $month)
+                        ->first();
+                    $pf = $pfContribution ? $pfContribution->employee_share : 0;
+                } else {
+                    $pf = 0;
+                }
+                
+                if ($grossSalary <= 21000 && $employee && $employee->esi_opt_in) {
+                    $esiContribution = \App\Models\EsiContribution::where('employee_id', $employeeId)
+                        ->whereYear('month', $year)
+                        ->whereMonth('month', $month)
+                        ->first();
+                    $esi = $esiContribution ? $esiContribution->employee_share : 0;
                 } else {
                     $esi = 0;
                 }

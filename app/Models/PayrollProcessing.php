@@ -16,6 +16,8 @@ class PayrollProcessing extends Model
         return $this->belongsTo(Employee::class, 'employee_id');
     }
 
+    public $tds_data_temp = null;
+
     public function calculatePayroll()
     {
         if (!$this->employee_id || !$this->payroll_cycle_id) {
@@ -132,14 +134,46 @@ class PayrollProcessing extends Model
                 ->whereMonth('month', $month)
                 ->sum('amount');
 
-            $tdsRecords = \App\Models\TdsRecord::where('deductee_id', $this->employee_id)
-                ->where('deductee_type', \App\Models\Employee::class)
-                ->whereYear('created_at', $year)
-                ->whereMonth('created_at', $month)
-                ->sum('amount');
+            // Find Financial Year based on cycle date
+            $financialYear = \App\Models\FinancialYear::where('start_date', '<=', $cycle->start_date)
+                ->where('end_date', '>=', $cycle->start_date)
+                ->first();
+
+            $taxRegime = 'old';
+            $approvedDeductions = 0;
+
+            if ($financialYear) {
+                $declaration = \App\Models\EmployeeTaxDeclaration::where('employee_id', $this->employee_id)
+                    ->where('financial_year_id', $financialYear->id)
+                    ->where('status', 'approved')
+                    ->first();
                 
+                if ($declaration) {
+                    $taxRegime = $declaration->tax_regime;
+                    $approvedDeductions = $declaration->items()->sum('approved_amount');
+                }
+            }
+
+            // Simple Tax Calculation (Placeholders for actual slabs)
+            $annualGross = $grossSalary * 12;
+            $taxableIncome = max(0, $annualGross - $approvedDeductions);
+            
+            $annualTax = 0;
+            if ($taxableIncome > 250000) {
+                if ($taxableIncome <= 500000) {
+                    $annualTax = ($taxableIncome - 250000) * 0.05;
+                } elseif ($taxableIncome <= 1000000) {
+                    $annualTax = (250000 * 0.05) + (($taxableIncome - 500000) * 0.20);
+                } else {
+                    $annualTax = (250000 * 0.05) + (500000 * 0.20) + (($taxableIncome - 1000000) * 0.30);
+                }
+            }
+
+            $monthlyTds = round($annualTax / 12, 2);
+            $this->tds_records = $monthlyTds;
+            
             $totalDeductions += $professionalTaxes;
-            $totalDeductions += $tdsRecords;
+            $totalDeductions += $this->tds_records;
 
             // Calculate exact breakdown based on FULL gross
             $this->basic_pay = 0;
@@ -155,14 +189,27 @@ class PayrollProcessing extends Model
                 $this->hra = round(($grossSalary * $structure->hra_percentage) / 100, 2);
                 $this->special_allowance = round(($grossSalary * $structure->special_allowance) / 100, 2);
                 
-                // PF usually calculated on PRORATED basic
                 $proratedGross = $grossSalary - $lossOfPay;
                 $proratedBasic = ($proratedGross * $structure->basic_percentage) / 100;
-                $this->pf = round($proratedBasic * 0.12, 2); // 12% PF
                 
-                // ESI is usually 0.75% of PRORATED gross, only if FULL gross <= 21000
-                if ($grossSalary <= 21000) {
-                    $this->esi = round($proratedGross * 0.0075, 2);
+                $employee = \App\Models\Employee::find($this->employee_id);
+                
+                if ($employee && $employee->pf_opt_in) {
+                    $pfContribution = \App\Models\PfContribution::where('employee_id', $this->employee_id)
+                        ->whereYear('month', $year)
+                        ->whereMonth('month', $month)
+                        ->first();
+                    $this->pf = $pfContribution ? round($pfContribution->employee_share, 2) : 0;
+                } else {
+                    $this->pf = 0;
+                }
+                
+                if ($grossSalary <= 21000 && $employee && $employee->esi_opt_in) {
+                    $esiContribution = \App\Models\EsiContribution::where('employee_id', $this->employee_id)
+                        ->whereYear('month', $year)
+                        ->whereMonth('month', $month)
+                        ->first();
+                    $this->esi = $esiContribution ? round($esiContribution->employee_share, 2) : 0;
                 } else {
                     $this->esi = 0;
                 }
@@ -178,12 +225,20 @@ class PayrollProcessing extends Model
             $this->incentives = round($incentives, 2);
             $this->reimbursement = round($reimbursement, 2);
             $this->professional_taxes = round($professionalTaxes, 2);
-            $this->tds_records = round($tdsRecords, 2);
 
             // Gross pay is Full Salary + Bonuses + Incentives + Reimbursement
             $this->gross_pay = round($grossSalary + $bonuses + $incentives + $reimbursement, 2);
             $this->total_deductions = round($totalDeductions, 2);
             $this->net_pay = round($this->gross_pay - $this->total_deductions, 2);
+            
+            $this->tds_data_temp = [
+                'annualGross' => $annualGross,
+                'approvedDeductions' => $approvedDeductions,
+                'taxableIncome' => $taxableIncome,
+                'annualTax' => $annualTax,
+                'taxRegime' => $taxRegime,
+                'financialYearId' => $financialYear ? $financialYear->id : null,
+            ];
         }
     }
     
@@ -191,6 +246,26 @@ class PayrollProcessing extends Model
     {
         static::saving(function ($model) {
             $model->calculatePayroll();
+        });
+        
+        static::saved(function ($model) {
+            if (isset($model->tds_data_temp)) {
+                \App\Models\TdsRecord::updateOrCreate(
+                    ['payroll_processing_id' => $model->id],
+                    [
+                        'employee_id' => $model->employee_id,
+                        'financial_year_id' => $model->tds_data_temp['financialYearId'],
+                        'tax_regime' => $model->tds_data_temp['taxRegime'],
+                        'annual_gross_salary' => $model->tds_data_temp['annualGross'],
+                        'approved_tax_deductions' => $model->tds_data_temp['approvedDeductions'],
+                        'taxable_income' => $model->tds_data_temp['taxableIncome'],
+                        'annual_income_tax' => $model->tds_data_temp['annualTax'],
+                        'monthly_tds' => $model->tds_records,
+                        'remaining_tds' => max(0, $model->tds_data_temp['annualTax'] - $model->tds_records),
+                        'status' => 'processed',
+                    ]
+                );
+            }
         });
     }
 }
