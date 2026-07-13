@@ -1,13 +1,13 @@
 <?php
 
 use Spatie\Permission\DefaultTeamResolver;
-<<<<<<< HEAD
+
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
-=======
+/*=======
 use App\Models\Permission;
 use App\Models\Role;
->>>>>>> origin/main
+>>>>>>> origin/main*/
 
 return [
 
@@ -69,11 +69,9 @@ return [
          * basic default value but you may easily change it to any table you like.
          */
 
-<<<<<<< HEAD
+
         'model_has_roles' => 'model_has_roles',
-=======
-        'model_has_roles' => 'user_roles',
->>>>>>> origin/main
+
 
         /*
          * When using the "HasRoles" trait from this package, we need to know which
@@ -81,11 +79,9 @@ return [
          * basic default value but you may easily change it to any table you like.
          */
 
-<<<<<<< HEAD
+
         'role_has_permissions' => 'role_has_permissions',
-=======
-        'role_has_permissions' => 'role_permissions',
->>>>>>> origin/main
+
     ],
 
     'column_names' => [
@@ -103,11 +99,7 @@ return [
          * that case, name this `model_uuid`.
          */
 
-<<<<<<< HEAD
-        'model_morph_key' => 'model_id',
-=======
         'model_morph_key' => 'user_id',
->>>>>>> origin/main
 
         /*
          * Change this if you want to use the teams feature and your related model's
