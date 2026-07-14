@@ -16,35 +16,29 @@ class PurchaseReturn extends Model
     {
         static::created(function ($model) {
             if (is_array($model->returned_items) && count($model->returned_items) > 0) {
+                $inventoryService = new \App\Services\InventoryService();
+                
                 foreach ($model->returned_items as $item) {
                     $productId = $item['product_id'] ?? null;
                     if (!$productId) continue;
 
                     $variantId = $item['product_variant_id'] ?? null;
                     $quantity = (float)($item['quantity'] ?? 0);
+                    $unitPrice = (float)($item['unit_price'] ?? 0); // Might not be present, but fallback to 0
 
                     $warehouseId = $model->grn ? $model->grn->warehouse_id : null;
 
-                    $stock = \App\Models\Stock::where([
-                        'product_id' => $productId,
-                        'product_variant_id' => $variantId,
-                        'branch_id' => $model->branch_id,
-                    ])->when($warehouseId, function ($query) use ($warehouseId) {
-                        return $query->where('warehouse_id', $warehouseId);
-                    })->first();
-
-                    if ($stock) {
-                        $stock->quantity -= $quantity;
-                        $stock->save();
-
-                        \App\Models\StockTransaction::create([
-                            'stock_id' => $stock->id,
-                            'transaction_type' => 'out',
-                            'quantity' => $quantity,
-                            'reference' => 'PR-' . $model->id,
-                            'reference_type' => 'App\\Models\\PurchaseReturn',
-                        ]);
-                    }
+                    $inventoryService->updateStock(
+                        $productId,
+                        $variantId,
+                        $model->branch_id,
+                        $warehouseId,
+                        'out',
+                        $quantity,
+                        $unitPrice,
+                        'PR-' . $model->id,
+                        'App\\Models\\PurchaseReturn'
+                    );
                 }
             }
         });

@@ -29,13 +29,19 @@ class VendorAgreementForm
                     ->searchable()
                     ->required(),
                 DatePicker::make('start_date')
-<<<<<<< HEAD
                     ->default(now()->timezone('Asia/Kolkata')),
                 DatePicker::make('end_date')
                     ->default(now()->timezone('Asia/Kolkata')),
                 \Filament\Forms\Components\FileUpload::make('document_path')
+                    ->label('Document')
                     ->directory('vendor-agreements')
-                    ->acceptedFileTypes(['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/jpeg', 'image/png'])
+                    ->acceptedFileTypes([
+                        'application/pdf',
+                        'application/msword',
+                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                        'image/jpeg',
+                        'image/png',
+                    ])
                     ->maxSize(10240)
                     ->downloadable()
                     ->openable(),
@@ -46,25 +52,6 @@ class VendorAgreementForm
                         'terminated' => 'Terminated',
                         'pending' => 'Pending',
                     ])
-=======
-                    ->default(now()),
-                DatePicker::make('end_date')
-                    ->default(now()),
-                FileUpload::make('document_path')
-                    ->label('Document')
-                    ->directory('vendor-agreements')
-                    ->acceptedFileTypes([
-                        'application/pdf',
-                        'application/msword',
-                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                        'image/jpeg',
-                        'image/png',
-                    ]),
-                Toggle::make('status')
-                    ->label('Active')
-                    ->formatStateUsing(fn (mixed $state): bool => in_array($state, ['active', 1, true, '1'], true))
-                    ->dehydrateStateUsing(fn (bool $state): string => $state ? 'active' : 'inactive')
->>>>>>> origin/main
                     ->required()
                     ->default(true),
             ]);

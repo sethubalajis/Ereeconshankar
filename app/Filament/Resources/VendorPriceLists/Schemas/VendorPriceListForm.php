@@ -21,19 +21,11 @@ class VendorPriceListForm
                     ->required()
                     ->numeric()
                     ->default(0.0)
-<<<<<<< HEAD
-                    ->prefix('$'),
-                DatePicker::make('valid_from')
-                    ->default(now()->timezone('Asia/Kolkata')),
-                DatePicker::make('valid_to')
-                    ->default(now()->timezone('Asia/Kolkata')),
-=======
                     ->prefix('₹'),
                 DatePicker::make('valid_from')
-                    ->default(now()),
+                    ->default(now()->timezone('Asia/Kolkata')),
                 DatePicker::make('valid_to')
-                    ->default(now()),
->>>>>>> origin/main
+                    ->default(now()->timezone('Asia/Kolkata')),
             ]);
     }
 }

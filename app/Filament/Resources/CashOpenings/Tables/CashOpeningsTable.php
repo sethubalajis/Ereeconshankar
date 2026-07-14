@@ -14,8 +14,7 @@ class CashOpeningsTable
     {
         return $table
             ->columns([
-                TextColumn::make('cashRegister.status')
-                    ->sortable(),
+                TextColumn::make('cashRegister.name'),
                 TextColumn::make('opening_time')
                     ->dateTime()
                     ->sortable(),

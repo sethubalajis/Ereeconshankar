@@ -24,12 +24,6 @@ class ProductForm
                     ->required(),
                 TextInput::make('code')
                     ->required(),
-<<<<<<< HEAD
-
-                Textarea::make('description')
-                    ->columnSpanFull(),
-
-=======
                 Textarea::make('description')
                     ->columnSpanFull(),
                 TextInput::make('base_price')
@@ -37,7 +31,6 @@ class ProductForm
                     ->numeric()
                     ->default(0.0)
                     ->prefix('₹'),
->>>>>>> origin/main
                 Toggle::make('is_active')
                     ->required(),
             ]);

@@ -18,15 +18,11 @@ class BrandForm
                     ->required()
                     ->unique(ignoreRecord: true),
                 TextInput::make('code')
-<<<<<<< HEAD
-                    ->required(),
-                \Filament\Forms\Components\FileUpload::make('logo')->image(),
-=======
                     ->required()
                     ->unique(ignoreRecord: true),
                 FileUpload::make('logo')
                     ->image(),
->>>>>>> origin/main
+
                 Textarea::make('description')
                     ->columnSpanFull(),
                 Toggle::make('status')

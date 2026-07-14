@@ -10,11 +10,11 @@ class CreateProductVariant extends CreateRecord
 {
     protected static string $resource = ProductVariantResource::class;
 
-<<<<<<< HEAD
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');
-=======
+    }
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         unset($data['attribute_inputs']);
@@ -27,6 +27,5 @@ class CreateProductVariant extends CreateRecord
         $state = $this->form->getState();
         ProductVariantForm::syncAttributeInputs($this->record, (array) ($state['attribute_inputs'] ?? []));
         ProductVariantForm::syncBarcodeRecord($this->record);
->>>>>>> origin/main
     }
 }

@@ -15,4 +15,9 @@ class CashRegister extends Model
     public function user() {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function getNameAttribute()
+    {
+        return 'Register #' . $this->id . ($this->posTerminal ? ' - ' . $this->posTerminal->terminal_name : '');
+    }
 }
