@@ -32,12 +32,7 @@ class ProductVariantForm
                         self::updateVariantPrices($set, $get);
                     })
                     ->required(),
-<<<<<<< HEAD
-                \Filament\Forms\Components\Select::make('color_id')->relationship('color', 'name'),
-                \Filament\Forms\Components\Select::make('size_id')->relationship('size', 'name'),
-=======
             ], $attributeComponents, [
->>>>>>> origin/main
                 TextInput::make('sku')
                     ->label('SKU')
                     ->live(onBlur: true)

@@ -17,13 +17,8 @@ class VendorsTable
             ->columns([
                 TextColumn::make('vendorCategory.name')
                     ->label('Category')
-<<<<<<< HEAD
                     ->searchable()
                     ->sortable(),
-=======
-                    ->sortable()
-                    ->searchable(),
->>>>>>> origin/main
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('code')
