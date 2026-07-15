@@ -29,10 +29,17 @@ class VendorAgreementForm
                     ->searchable()
                     ->required(),
                 DatePicker::make('start_date')
+<<<<<<< HEAD
                     ->default(now()->timezone('Asia/Kolkata')),
                 DatePicker::make('end_date')
                     ->default(now()->timezone('Asia/Kolkata')),
                 \Filament\Forms\Components\FileUpload::make('document_path')
+=======
+                    ->default(now()),
+                DatePicker::make('end_date')
+                    ->default(now()),
+                FileUpload::make('document_path')
+>>>>>>> origin/main
                     ->label('Document')
                     ->directory('vendor-agreements')
                     ->acceptedFileTypes([
@@ -41,6 +48,7 @@ class VendorAgreementForm
                         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
                         'image/jpeg',
                         'image/png',
+<<<<<<< HEAD
                     ])
                     ->maxSize(10240)
                     ->downloadable()
@@ -52,6 +60,13 @@ class VendorAgreementForm
                         'terminated' => 'Terminated',
                         'pending' => 'Pending',
                     ])
+=======
+                    ]),
+                Toggle::make('status')
+                    ->label('Active')
+                    ->formatStateUsing(fn (mixed $state): bool => in_array($state, ['active', 1, true, '1'], true))
+                    ->dehydrateStateUsing(fn (bool $state): string => $state ? 'active' : 'inactive')
+>>>>>>> origin/main
                     ->required()
                     ->default(true),
             ]);
