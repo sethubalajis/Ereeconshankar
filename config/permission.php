@@ -1,18 +1,9 @@
 <?php
 
 use Spatie\Permission\DefaultTeamResolver;
-<<<<<<< HEAD
-use App\Models\Permission;
-use App\Models\Role;
-=======
 
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
-/*=======
-use App\Models\Permission;
-use App\Models\Role;
->>>>>>> origin/main*/
->>>>>>> origin/main
 
 return [
 
@@ -74,13 +65,9 @@ return [
          * basic default value but you may easily change it to any table you like.
          */
 
-<<<<<<< HEAD
-        'model_has_roles' => 'user_roles',
-=======
 
         'model_has_roles' => 'model_has_roles',
 
->>>>>>> origin/main
 
         /*
          * When using the "HasRoles" trait from this package, we need to know which
@@ -88,13 +75,9 @@ return [
          * basic default value but you may easily change it to any table you like.
          */
 
-<<<<<<< HEAD
-        'role_has_permissions' => 'role_permissions',
-=======
 
         'role_has_permissions' => 'role_has_permissions',
 
->>>>>>> origin/main
     ],
 
     'column_names' => [

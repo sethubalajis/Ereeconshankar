@@ -22,10 +22,6 @@ class BrandForm
                     ->unique(ignoreRecord: true),
                 FileUpload::make('logo')
                     ->image(),
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/main
                 Textarea::make('description')
                     ->columnSpanFull(),
                 Toggle::make('status')

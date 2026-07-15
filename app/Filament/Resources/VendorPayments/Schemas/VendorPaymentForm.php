@@ -51,13 +51,8 @@ class VendorPaymentForm
                     ->preload()
                     ->disabled(fn (Get $get): bool => ! (bool) $get('vendor_id')),
                 DatePicker::make('payment_date')
-<<<<<<< HEAD
-                    ->required()
-                    ->default(now()->timezone('Asia/Kolkata')),
-=======
                     ->default(now())
                     ->required(),
->>>>>>> origin/main
                 TextInput::make('amount')
                     ->required()
                     ->numeric()
