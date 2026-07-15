@@ -8,10 +8,7 @@ class VendorCategory extends Model
 {
     protected $guarded = [];
 
-<<<<<<< HEAD
-=======
     //
->>>>>>> origin/main
     public function vendors()
     {
         return $this->hasMany(Vendor::class, 'vendor_category_id');
