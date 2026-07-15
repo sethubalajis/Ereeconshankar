@@ -36,7 +36,9 @@ class CashOpeningForm
 
         return $schema
             ->components([
-                \Filament\Forms\Components\Select::make('cash_register_id')->relationship('cashRegister', 'status')
+                \Filament\Forms\Components\Select::make('cash_register_id')
+                    ->relationship('cashRegister', 'id')
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->name)
                     ->required()
                     ->live()
                     ->afterStateUpdated($updateOpeningAmount),

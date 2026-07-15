@@ -24,6 +24,8 @@ class Grn extends Model
 
         static::created(function ($model) {
             if (is_array($model->received_items) && count($model->received_items) > 0) {
+                $inventoryService = new \App\Services\InventoryService();
+                
                 foreach ($model->received_items as $item) {
                     $productId = $item['product_id'] ?? null;
                     if (!$productId) continue;
@@ -32,36 +34,17 @@ class Grn extends Model
                     $quantity = (float)($item['quantity'] ?? 0);
                     $unitPrice = (float)($item['unit_price'] ?? 0);
 
-                    $stock = \App\Models\Stock::firstOrNew([
-                        'product_id' => $productId,
-                        'product_variant_id' => $variantId,
-                        'branch_id' => $model->branch_id,
-                        'warehouse_id' => $model->warehouse_id,
-                    ]);
-
-                    if ($stock->exists) {
-                        $totalCurrentValue = $stock->quantity * $stock->avg_cost;
-                        $newReceivedValue = $quantity * $unitPrice;
-                        $newTotalQuantity = $stock->quantity + $quantity;
-                        
-                        if ($newTotalQuantity > 0) {
-                            $stock->avg_cost = ($totalCurrentValue + $newReceivedValue) / $newTotalQuantity;
-                        }
-                        $stock->quantity += $quantity;
-                    } else {
-                        $stock->quantity = $quantity;
-                        $stock->avg_cost = $unitPrice;
-                    }
-                    
-                    $stock->save();
-
-                    \App\Models\StockTransaction::create([
-                        'stock_id' => $stock->id,
-                        'transaction_type' => 'in',
-                        'quantity' => $quantity,
-                        'reference' => $model->grn_number ?? 'GRN-' . $model->id,
-                        'reference_type' => 'App\\Models\\Grn',
-                    ]);
+                    $inventoryService->updateStock(
+                        $productId,
+                        $variantId,
+                        $model->branch_id,
+                        $model->warehouse_id,
+                        'in',
+                        $quantity,
+                        $unitPrice,
+                        $model->grn_number ?? 'GRN-' . $model->id,
+                        'App\\Models\\Grn'
+                    );
                 }
             }
         });
