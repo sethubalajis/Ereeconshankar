@@ -60,6 +60,14 @@ class PosSale extends Model
                         ]);
                     }
 
+                    // Update CRM Metrics
+                    $customer->last_purchase_date = now()->toDateString();
+                    $customer->total_purchase_amount += $model->net_amount;
+                    $customer->total_invoices += 1;
+                    $customer->lifetime_purchase_value += $model->net_amount;
+                    $customer->average_purchase_value = $customer->total_invoices > 0 ? $customer->total_purchase_amount / $customer->total_invoices : 0;
+                    $customer->last_visited_branch_id = $model->branch_id;
+
                     $customer->save();
                 }
             }

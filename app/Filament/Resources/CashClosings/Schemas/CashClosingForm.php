@@ -26,7 +26,7 @@ class CashClosingForm
 
         return $schema
             ->components([
-                \Filament\Forms\Components\Select::make('cash_register_id')->relationship('cashRegister', 'status')
+                \Filament\Forms\Components\Select::make('cash_register_id')->relationship('cashRegister', 'name')
                     ->required()
                     ->live()
                     ->afterStateUpdated($updateClosingAmount),
