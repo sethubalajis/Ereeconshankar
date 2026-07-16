@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loyalty Programs, Cards, and Points Report</title>
+    <style>
+        :root {
+            --ink: #1f2937;
+            --muted: #4b5563;
+            --line: #d1d5db;
+            --panel: #f8fafc;
+            --accent: #0f766e;
+            --warn: #92400e;
+            --danger: #991b1b;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--ink);
+            background: white;
+            line-height: 1.5;
+        }
+
+        .page {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 48px 56px;
+        }
+
+        h1, h2, h3 {
+            margin: 0 0 12px;
+            line-height: 1.2;
+        }
+
+        h1 {
+            font-size: 30px;
+        }
+
+        h2 {
+            margin-top: 28px;
+            font-size: 22px;
+            border-bottom: 2px solid var(--line);
+            padding-bottom: 8px;
+        }
+
+        h3 {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        p {
+            margin: 0 0 12px;
+        }
+
+        .meta {
+            color: var(--muted);
+            margin-bottom: 20px;
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 16px 18px;
+            margin: 16px 0;
+        }
+
+        .label {
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        ul {
+            margin: 8px 0 12px 20px;
+            padding: 0;
+        }
+
+        li {
+            margin: 6px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0 18px;
+            font-size: 14px;
+        }
+
+        th, td {
+            border: 1px solid var(--line);
+            padding: 10px 12px;
+            vertical-align: top;
+            text-align: left;
+        }
+
+        th {
+            background: #eef2f7;
+        }
+
+        .note {
+            color: var(--warn);
+            font-weight: 600;
+        }
+
+        .risk {
+            color: var(--danger);
+            font-weight: 600;
+        }
+
+        code {
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 0.95em;
+            background: #f3f4f6;
+            padding: 1px 4px;
+            border-radius: 4px;
+        }
+
+        @media print {
+            .page {
+                padding: 20px 24px 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <h1>Loyalty Programs, Loyalty Cards, and Loyalty Points</h1>
+        <p class="meta">Application review for the current implementation in ereckontamil. Generated on 2026-07-16.</p>
+
+        <div class="panel">
+            <p><span class="label">Short answer:</span> the application has the three loyalty master/transaction models, but only Loyalty Cards and Loyalty Points are partially connected to POS flow today. Loyalty Program exists as configuration data, but current sale logic does not use it.</p>
+        </div>
+
+        <h2>1. Existing Behavior</h2>
+
+        <h3>Loyalty Programs</h3>
+        <p>Loyalty Programs store the intended business rules for the loyalty scheme. The form and migration show these fields:</p>
+        <ul>
+            <li><code>name</code></li>
+            <li><code>code</code></li>
+            <li><code>points_per_amount</code></li>
+            <li><code>minimum_points_to_redeem</code></li>
+            <li><code>value_per_point</code></li>
+            <li><code>status</code></li>
+        </ul>
+        <p>Current role: administrative setup only. There is no active code path in POS sale processing that reads these values when awarding or redeeming points.</p>
+
+        <h3>Loyalty Cards</h3>
+        <p>Loyalty Cards are customer-linked identities used to find the customer in billing.</p>
+        <ul>
+            <li>Each card belongs to one customer.</li>
+            <li>Card fields include <code>card_number</code>, <code>issue_date</code>, <code>expiry_date</code>, and <code>status</code>.</li>
+            <li>POS customer search checks card number as one of the search keys.</li>
+        </ul>
+        <p>Current role: identification and lookup. The system uses the card to locate a customer record, not to drive rule validation or separate balance management.</p>
+
+        <h3>Loyalty Points</h3>
+        <p>Loyalty Points act as the transaction ledger for points earned and redeemed.</p>
+        <ul>
+            <li>Each row belongs to one customer.</li>
+            <li>Transaction fields include <code>transaction_type</code>, <code>points</code>, <code>description</code>, and <code>transaction_date</code>.</li>
+            <li>When a POS sale is created, the application inserts loyalty point rows for <code>earn</code> and <code>redeem</code> activity.</li>
+        </ul>
+        <p>Current role: audit trail for the running <code>customers.total_points</code> balance.</p>
+
+        <h2>2. How It Works Today in POS</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Step</th>
+                    <th>Current behavior</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Customer search</td>
+                    <td>Cashier can search by customer name, phone, or loyalty card number.</td>
+                </tr>
+                <tr>
+                    <td>Customer snapshot</td>
+                    <td>POS screen shows customer group, active loyalty card, available points, wallet balance, and GST.</td>
+                </tr>
+                <tr>
+                    <td>Discount application</td>
+                    <td>Customer group discount percentage is applied on item pricing during sale entry.</td>
+                </tr>
+                <tr>
+                    <td>Point redemption</td>
+                    <td>Cashier can manually enter a redemption amount on the sale.</td>
+                </tr>
+                <tr>
+                    <td>Point earning</td>
+                    <td>After sale creation, points are earned using a hardcoded formula: <code>(int) (net_amount / 100)</code>.</td>
+                </tr>
+                <tr>
+                    <td>Point ledger update</td>
+                    <td>The system inserts <code>loyalty_points</code> records for earn and redeem transactions.</td>
+                </tr>
+                <tr>
+                    <td>Customer balance update</td>
+                    <td>The system updates <code>customers.total_points</code> directly after the sale is saved.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="panel">
+            <p class="note">Key implementation fact: Loyalty Program values are not used by the live POS earn/redeem logic. The current logic is hardcoded at sale creation time.</p>
+        </div>
+
+        <h2>3. What Each Model Is Supposed To Do</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Model</th>
+                    <th>Business purpose</th>
+                    <th>Current state</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>LoyaltyProgram</td>
+                    <td>Define how many points are earned, the minimum redeem threshold, and the value of each point.</td>
+                    <td>Configured in admin but not enforced in sale logic.</td>
+                </tr>
+                <tr>
+                    <td>LoyaltyCard</td>
+                    <td>Give the customer a unique membership identity for lookup and membership verification.</td>
+                    <td>Used for customer search; no rule enforcement based on card validity.</td>
+                </tr>
+                <tr>
+                    <td>LoyaltyPoint</td>
+                    <td>Store point earn/redeem history as a ledger.</td>
+                    <td>Actively written from POS sale creation.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>4. Gaps In The Current Implementation</h2>
+        <ul>
+            <li><span class="risk">Loyalty Program is not driving the real calculations.</span> Current earn rate ignores <code>points_per_amount</code>, <code>minimum_points_to_redeem</code>, and <code>value_per_point</code>.</li>
+            <li><span class="risk">No visible validation prevents over-redemption.</span> A cashier can enter a redemption amount without clear enforcement against the actual available balance.</li>
+            <li><span class="risk">No card validity check is enforced at redemption time.</span> Expired or inactive cards are not clearly blocked from use in the POS loyalty path.</li>
+            <li>Point conversion is treated as amount-equals-points in the current sale hook, which is usually too simplistic for production use.</li>
+            <li>No clear reversal flow is visible here for cancelled sales, edited sales, or returns affecting already posted loyalty entries.</li>
+            <li>No direct linkage is stored from a loyalty point row to the source sale ID, only a description string is inserted.</li>
+        </ul>
+
+        <h2>5. What Should Be Done</h2>
+        <h3>Required for a production-safe loyalty module</h3>
+        <ol>
+            <li>Make POS sale logic read the active Loyalty Program before calculating earn or redeem values.</li>
+            <li>Use <code>points_per_amount</code> for earning, instead of the hardcoded <code>net_amount / 100</code> rule.</li>
+            <li>Use <code>minimum_points_to_redeem</code> to block redemption below the required threshold.</li>
+            <li>Use <code>value_per_point</code> to convert points into currency correctly.</li>
+            <li>Validate that entered redemption never exceeds the customer's available points.</li>
+            <li>Validate that the customer's loyalty card is active and not expired when card-based loyalty is required.</li>
+            <li>Store a direct source reference on loyalty transactions, such as POS sale ID, return ID, or manual adjustment ID.</li>
+            <li>Add reversal logic for sale cancellation, POS return, and edit scenarios.</li>
+        </ol>
+
+        <h3>Recommended operational improvements</h3>
+        <ol>
+            <li>Add a manual loyalty adjustment screen for admin-approved credit/debit corrections.</li>
+            <li>Add a customer loyalty statement that shows opening balance, transactions, and closing balance.</li>
+            <li>Add branch-level and date-range loyalty reports.</li>
+            <li>Prevent negative customer point balances at both form level and database transaction level.</li>
+            <li>Consider whether only one active loyalty program should exist at a time, and enforce that rule if needed.</li>
+        </ol>
+
+        <h2>6. Recommended Business Flow</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Stage</th>
+                    <th>Recommended behavior</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Program setup</td>
+                    <td>Admin creates one active loyalty program with earning rate, redemption threshold, and point value.</td>
+                </tr>
+                <tr>
+                    <td>Card issue</td>
+                    <td>Customer receives a loyalty card linked to the customer master record.</td>
+                </tr>
+                <tr>
+                    <td>Sale billing</td>
+                    <td>Cashier selects customer, system validates card status, then calculates discounts and eligible loyalty usage.</td>
+                </tr>
+                <tr>
+                    <td>Redemption</td>
+                    <td>System converts points to currency using the active loyalty program and blocks excess usage.</td>
+                </tr>
+                <tr>
+                    <td>Posting</td>
+                    <td>After successful sale, system updates customer point balance and writes the loyalty ledger with source references.</td>
+                </tr>
+                <tr>
+                    <td>Reversal</td>
+                    <td>If the sale is voided or returned, system posts reversing loyalty entries automatically.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>7. Bottom Line</h2>
+        <p>If you use the module exactly as it exists now, Loyalty Cards help identify the customer, Loyalty Points record earn/redeem movements, and Loyalty Programs mostly act as unused setup data. To make the feature complete, the program rules must be connected to the POS posting logic and guarded with validation and reversal handling.</p>
+    </div>
+</body>
+</html>
