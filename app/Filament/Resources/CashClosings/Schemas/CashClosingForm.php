@@ -26,12 +26,15 @@ class CashClosingForm
 
         return $schema
             ->components([
-                \Filament\Forms\Components\Select::make('cash_register_id')->relationship('cashRegister', 'name')
+                \Filament\Forms\Components\Select::make('cash_register_id')
+                    ->relationship('cashRegister', 'id')
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->name)
                     ->required()
                     ->live()
                     ->afterStateUpdated($updateClosingAmount),
                 DateTimePicker::make('closing_time')
-                    ->required(),
+                    ->required()
+                    ->default(now()->timezone('Asia/Kolkata')),
                 TextInput::make('closing_amount')
                     ->required()
                     ->numeric()

@@ -42,6 +42,7 @@ class TransferRequestsTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('request_date', 'desc');
     }
 }

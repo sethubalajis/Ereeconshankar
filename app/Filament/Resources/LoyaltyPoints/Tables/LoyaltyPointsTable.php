@@ -38,6 +38,7 @@ class LoyaltyPointsTable
             ->filters([
                 //
             ])
+            ->defaultSort('transaction_date', 'desc')
             ->recordActions([
                 EditAction::make(),
             ])

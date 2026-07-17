@@ -41,6 +41,7 @@ class CashRegistersTable
             ->filters([
                 //
             ])
+            ->defaultSort('created_at', 'desc')
             ->recordActions([
                 EditAction::make(),
             ])

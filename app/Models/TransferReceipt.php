@@ -12,4 +12,8 @@ class TransferReceipt extends Model
     public function stockTransfer() {
         return $this->belongsTo(StockTransfer::class, 'stock_transfer_id');
     }
+
+    public function receivedBy() {
+        return $this->belongsTo(User::class, 'received_by');
+    }
 }

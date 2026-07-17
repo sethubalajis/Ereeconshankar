@@ -22,15 +22,7 @@ class StockResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    public static function canCreate(): bool
-    {
-        return false;
-    }
-
-    public static function canEdit(\Illuminate\Database\Eloquent\Model $record): bool
-    {
-        return false;
-    }
+    // Removed canCreate and canEdit to allow these actions
 
     public static function form(Schema $schema): Schema
     {

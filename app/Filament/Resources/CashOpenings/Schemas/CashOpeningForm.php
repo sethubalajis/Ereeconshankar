@@ -43,7 +43,8 @@ class CashOpeningForm
                     ->live()
                     ->afterStateUpdated($updateOpeningAmount),
                 DateTimePicker::make('opening_time')
-                    ->required(),
+                    ->required()
+                    ->default(now()->timezone('Asia/Kolkata')),
                 TextInput::make('opening_amount')
                     ->required()
                     ->numeric()

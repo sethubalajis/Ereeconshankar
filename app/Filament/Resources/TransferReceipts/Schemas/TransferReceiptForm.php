@@ -17,8 +17,8 @@ class TransferReceiptForm
                 DatePicker::make('receive_date')
                     ->required()
                     ->default(now()->timezone('Asia/Kolkata')),
-                TextInput::make('received_by')
-                    ->numeric(),
+                \Filament\Forms\Components\Select::make('received_by')
+                    ->relationship('receivedBy', 'name'),
                 \Filament\Forms\Components\Select::make('status')
                     ->options([
                         'received' => 'Received',

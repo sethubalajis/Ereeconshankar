@@ -25,6 +25,10 @@ class MembershipPlanForm
                     ->required()
                     ->numeric()
                     ->default(12),
+                TextInput::make('upgrade_threshold')
+                    ->label('Upgrade Threshold (Lifetime Purchases)')
+                    ->numeric()
+                    ->nullable(),
                 Textarea::make('benefits_description')
                     ->columnSpanFull(),
                 Toggle::make('status')

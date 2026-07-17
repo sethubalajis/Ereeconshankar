@@ -16,14 +16,21 @@ class PosReturnForm
                 \Filament\Forms\Components\Select::make('pos_sale_id')->relationship('posSale', 'invoice_number')
                     ->required(),
                 DatePicker::make('return_date')
-                    ->required(),
+                    ->required()
+                    ->default(now()->timezone('Asia/Kolkata')),
                 TextInput::make('return_amount')
                     ->required()
                     ->numeric()
                     ->default(0.0),
                 Textarea::make('reason')
                     ->columnSpanFull(),
-                TextInput::make('status')
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'completed' => 'Completed',
+                        'pending' => 'Pending',
+                        'cancelled' => 'Cancelled',
+                        'refunded' => 'Refunded',
+                    ])
                     ->required()
                     ->default('completed'),
             ]);

@@ -16,7 +16,8 @@ class BranchExpenseForm
                 \Filament\Forms\Components\Select::make('branch_id')->relationship('branch', 'name')
                     ->required(),
                 DatePicker::make('expense_date')
-                    ->required(),
+                    ->required()
+                    ->default(now()->timezone('Asia/Kolkata')),
                 TextInput::make('amount')
                     ->required()
                     ->numeric()

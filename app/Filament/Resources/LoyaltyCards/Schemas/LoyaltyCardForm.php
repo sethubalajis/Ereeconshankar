@@ -18,8 +18,10 @@ class LoyaltyCardForm
                 TextInput::make('card_number')
                     ->required(),
                 DatePicker::make('issue_date')
-                    ->required(),
-                DatePicker::make('expiry_date'),
+                    ->required()
+                    ->default(now()->timezone('Asia/Kolkata')),
+                DatePicker::make('expiry_date')
+                    ->default(now()->timezone('Asia/Kolkata')),
                 Toggle::make('status')
                     ->required(),
             ]);
