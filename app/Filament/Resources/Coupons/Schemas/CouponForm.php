@@ -19,8 +19,10 @@ class CouponForm
                     ->numeric(),
                 TextInput::make('discount_amount')
                     ->numeric(),
-                DatePicker::make('start_date'),
-                DatePicker::make('end_date'),
+                DatePicker::make('start_date')
+                    ->default(now()->timezone('Asia/Kolkata')),
+                DatePicker::make('end_date')
+                    ->default(now()->timezone('Asia/Kolkata')),
                 TextInput::make('min_purchase_amount')
                     ->required()
                     ->numeric()

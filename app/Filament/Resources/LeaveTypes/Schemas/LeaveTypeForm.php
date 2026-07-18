@@ -15,7 +15,9 @@ class LeaveTypeForm
                 TextInput::make('name')
                     ->required(),
                 TextInput::make('code')
-                    ->required(),
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->placeholder('Auto-generated'),
                 TextInput::make('days_allowed')
                     ->required()
                     ->numeric()

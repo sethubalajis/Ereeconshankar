@@ -18,13 +18,19 @@ class DiscountRuleForm
                 TextInput::make('name')
                     ->required(),
                 TextInput::make('code')
-                    ->required(),
+                    ->default(fn () => 'DR-' . strtoupper(\Illuminate\Support\Str::random(6)))
+                    ->disabled()
+                    ->dehydrated()
+                    ->required()
+                    ->unique(ignoreRecord: true),
                 TextInput::make('discount_percentage')
                     ->numeric(),
                 TextInput::make('discount_amount')
                     ->numeric(),
-                DatePicker::make('start_date'),
-                DatePicker::make('end_date'),
+                DatePicker::make('start_date')
+                    ->default(now()->timezone('Asia/Kolkata')),
+                DatePicker::make('end_date')
+                    ->default(now()->timezone('Asia/Kolkata')),
                 TextInput::make('min_purchase_amount')
                     ->required()
                     ->numeric()

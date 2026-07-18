@@ -14,7 +14,11 @@ class LoyaltyPointForm
             ->components([
                 \Filament\Forms\Components\Select::make('customer_id')->relationship('customer', 'name')
                     ->required(),
-                TextInput::make('transaction_type')
+                \Filament\Forms\Components\Select::make('transaction_type')
+                    ->options([
+                        'earn' => 'Earn',
+                        'redeem' => 'Redeem',
+                    ])
                     ->required(),
                 TextInput::make('points')
                     ->required()

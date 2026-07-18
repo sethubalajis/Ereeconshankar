@@ -12,7 +12,6 @@ class ProductVariant extends Model
     public function product() {
         return $this->belongsTo(Product::class, 'product_id');
     }
-<<<<<<< HEAD
     public function color() {
         return $this->belongsTo(Color::class, 'color_id');
     }
@@ -20,8 +19,6 @@ class ProductVariant extends Model
     public function size() {
         return $this->belongsTo(Size::class, 'size_id');
     }
-=======
->>>>>>> origin/main
 
     public function attributeValues()
     {

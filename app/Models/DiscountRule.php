@@ -8,6 +8,15 @@ class DiscountRule extends Model
 {
     protected $guarded = [];
 
+    protected static function booted()
+    {
+        static::creating(function ($model) {
+            if (empty($model->code)) {
+                $model->code = 'DR-' . strtoupper(\Illuminate\Support\Str::random(6));
+            }
+        });
+    }
+
     //
     public function promotionType() {
         return $this->belongsTo(PromotionType::class, 'promotion_type_id');

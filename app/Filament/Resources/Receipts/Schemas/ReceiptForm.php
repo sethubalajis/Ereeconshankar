@@ -16,7 +16,8 @@ class ReceiptForm
                     ->required(),
                 TextInput::make('receipt_number')
                     ->required(),
-                DateTimePicker::make('printed_at'),
+                DateTimePicker::make('printed_at')
+                    ->default(now('Asia/Kolkata')),
             ]);
     }
 }

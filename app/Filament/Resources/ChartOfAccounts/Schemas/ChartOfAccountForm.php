@@ -14,10 +14,19 @@ class ChartOfAccountForm
                 \Filament\Forms\Components\Select::make('account_group_id')->relationship('accountGroup', 'name')
                     ->required(),
                 TextInput::make('account_code')
-                    ->required(),
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->placeholder('Auto-generated'),
                 TextInput::make('account_name')
                     ->required(),
-                TextInput::make('account_type')
+                \Filament\Forms\Components\Select::make('account_type')
+                    ->options([
+                        'asset' => 'Asset',
+                        'liability' => 'Liability',
+                        'equity' => 'Equity',
+                        'revenue' => 'Revenue',
+                        'expense' => 'Expense',
+                    ])
                     ->required(),
                 TextInput::make('opening_balance')
                     ->required()

@@ -19,6 +19,7 @@ class TaxInvoiceForm
                 TextInput::make('invoice_number')
                     ->required(),
                 DatePicker::make('invoice_date')
+                    ->default(now('Asia/Kolkata'))
                     ->required(),
                 TextInput::make('taxable_amount')
                     ->required()

@@ -18,7 +18,9 @@ class DepartmentForm
                 TextInput::make('name')
                     ->required(),
                 TextInput::make('code')
-                    ->required(),
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->placeholder('Auto-generated'),
                 Textarea::make('description')
                     ->columnSpanFull(),
                 Toggle::make('status')

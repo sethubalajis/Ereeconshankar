@@ -16,9 +16,11 @@ class FestivalOfferForm
                 TextInput::make('name')
                     ->required(),
                 DatePicker::make('start_date')
-                    ->required(),
+                    ->required()
+                    ->default(now()->timezone('Asia/Kolkata')),
                 DatePicker::make('end_date')
-                    ->required(),
+                    ->required()
+                    ->default(now()->timezone('Asia/Kolkata')),
                 TextInput::make('discount_percentage')
                     ->required()
                     ->numeric()

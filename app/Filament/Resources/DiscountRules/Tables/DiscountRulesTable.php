@@ -50,6 +50,7 @@ class DiscountRulesTable
             ->filters([
                 //
             ])
+            ->defaultSort('start_date', 'desc')
             ->recordActions([
                 EditAction::make(),
             ])

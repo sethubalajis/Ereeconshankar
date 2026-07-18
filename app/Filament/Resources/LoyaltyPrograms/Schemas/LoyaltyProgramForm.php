@@ -15,7 +15,11 @@ class LoyaltyProgramForm
                 TextInput::make('name')
                     ->required(),
                 TextInput::make('code')
-                    ->required(),
+                    ->default(fn () => 'LP-' . strtoupper(\Illuminate\Support\Str::random(6)))
+                    ->disabled()
+                    ->dehydrated()
+                    ->required()
+                    ->unique(ignoreRecord: true),
                 \Filament\Forms\Components\Select::make('customer_group_id')
                     ->relationship('customerGroup', 'name')
                     ->nullable(),
@@ -45,7 +49,9 @@ class LoyaltyProgramForm
                 TextInput::make('points_expiry_months')
                     ->numeric()
                     ->nullable(),
-                \Filament\Forms\Components\DatePicker::make('effective_from')->nullable(),
+                \Filament\Forms\Components\DatePicker::make('effective_from')
+                    ->default(now()->timezone('Asia/Kolkata'))
+                    ->nullable(),
                 \Filament\Forms\Components\DatePicker::make('effective_to')->nullable(),
                 Toggle::make('status')
                     ->required(),

@@ -17,7 +17,7 @@ class TrialBalancesTable
                 TextColumn::make('as_of_date')
                     ->date()
                     ->sortable(),
-                TextColumn::make('chartOfAccount.account_code')
+                TextColumn::make('chartOfAccount.account_name')
                     ->sortable(),
                 TextColumn::make('debit_balance')
                     ->numeric()

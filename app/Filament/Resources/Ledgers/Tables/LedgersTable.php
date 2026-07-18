@@ -14,7 +14,7 @@ class LedgersTable
     {
         return $table
             ->columns([
-                TextColumn::make('chartOfAccount.account_code')
+                TextColumn::make('chartOfAccount.account_name')
                     ->sortable(),
                 TextColumn::make('transaction_date')
                     ->date()

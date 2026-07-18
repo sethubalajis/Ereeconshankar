@@ -12,9 +12,10 @@ class LedgerForm
     {
         return $schema
             ->components([
-                \Filament\Forms\Components\Select::make('chart_of_account_id')->relationship('chartOfAccount', 'account_code')
+                \Filament\Forms\Components\Select::make('chart_of_account_id')->relationship('chartOfAccount', 'account_name')
                     ->required(),
                 DatePicker::make('transaction_date')
+                    ->default(now('Asia/Kolkata'))
                     ->required(),
                 TextInput::make('description'),
                 TextInput::make('debit')

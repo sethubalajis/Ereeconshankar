@@ -18,9 +18,16 @@ class GstReturnForm
                     ->required(),
                 DatePicker::make('period_end')
                     ->required(),
-                DatePicker::make('filing_date'),
+                DatePicker::make('filing_date')
+                    ->default(now('Asia/Kolkata')),
                 TextInput::make('arn_number'),
-                TextInput::make('status')
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'filed' => 'Filed',
+                        'overdue' => 'Overdue',
+                        'cancelled' => 'Cancelled',
+                    ])
                     ->required()
                     ->default('pending'),
             ]);
