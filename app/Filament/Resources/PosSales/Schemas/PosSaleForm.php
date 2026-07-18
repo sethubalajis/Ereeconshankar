@@ -22,8 +22,9 @@ class PosSaleForm
             
             $redeemPointsAmount = (float) ($get('../../redeem_points_amount') ?? 0);
             $walletAmount = (float) ($get('../../use_wallet_balance') ?? 0);
+            $voucherAmount = (float) ($get('../../gift_voucher_amount') ?? 0);
             
-            $netAmount = ($totalAmount + $taxAmount) - $redeemPointsAmount - $walletAmount;
+            $netAmount = ($totalAmount + $taxAmount) - $redeemPointsAmount - $walletAmount - $voucherAmount;
             
             $set('../../total_amount', $totalAmount);
             $set('../../discount_amount', $totalDiscount);
@@ -78,14 +79,27 @@ class PosSaleForm
                             return 'Select a customer to view their details, loyalty status, and wallet balance.';
                         }
                         
-                        $customer = \App\Models\Customer::with('customerGroup')->find($customerId);
+                        $customer = \App\Models\Customer::with(['customerGroup', 'membershipPlan'])->find($customerId);
                         if (! $customer) return 'Customer not found.';
                         
                         $group = $customer->customerGroup;
+                        $plan = $customer->membershipPlan;
                         $card = \Illuminate\Support\Facades\DB::table('loyalty_cards')->where('customer_id', $customerId)->where('status', true)->first();
                         
+                        $program = \App\Models\LoyaltyProgram::where('status', true)
+                            ->where(function($q) use ($customer) {
+                                $q->where('membership_plan_id', $customer->membership_plan_id)
+                                  ->orWhere('customer_group_id', $customer->customer_group_id)
+                                  ->orWhere(function($q2) {
+                                      $q2->whereNull('membership_plan_id')->whereNull('customer_group_id');
+                                  });
+                            })->orderBy('id', 'desc')->first();
+
                         $html = "<strong>Name:</strong> {$customer->name} ({$customer->phone})<br>";
                         $html .= "<strong>Group:</strong> " . ($group ? "{$group->name} ({$group->discount_percentage}% off)" : "None") . "<br>";
+                        $html .= "<strong>Membership:</strong> " . ($plan ? $plan->name : "None") . "<br>";
+                        $html .= "<strong>Active Loyalty Program:</strong> " . ($program ? $program->name : "None") . "<br>";
+                        $html .= "<strong>Lifetime Purchases:</strong> ₹" . number_format($customer->lifetime_purchase_value, 2) . "<br>";
                         $html .= "<strong>Loyalty Card:</strong> " . ($card ? $card->card_number : "None") . "<br>";
                         $html .= "<strong>Available Points:</strong> {$customer->total_points} pts<br>";
                         $html .= "<strong>Wallet Balance:</strong> ₹" . number_format($customer->wallet_balance, 2) . "<br>";
@@ -99,7 +113,8 @@ class PosSaleForm
                     ->dehydrated()
                     ->required(),
                 DatePicker::make('sale_date')
-                    ->required(),
+                    ->required()
+                    ->default(now()->timezone('Asia/Kolkata')),
                 TextInput::make('total_amount')
                     ->required()
                     ->numeric()
@@ -144,6 +159,41 @@ class PosSaleForm
                                     }
                                 }
                             }),
+                        \Filament\Forms\Components\Placeholder::make('promotion_info')
+                            ->label('Active Promotions & Discounts')
+                            ->content(function ($get) {
+                                $variantId = $get('product_variant_id');
+                                if (! $variantId) return 'Select a product to view applicable promotions.';
+                                
+                                $variant = \App\Models\ProductVariant::find($variantId);
+                                if (! $variant) return 'Invalid product.';
+
+                                $html = '';
+                                
+                                $customerId = $get('../../customer_id');
+                                if ($customerId) {
+                                    $group = \App\Models\Customer::with('customerGroup')->find($customerId)?->customerGroup;
+                                    if ($group && $group->discount_percentage) {
+                                        $html .= "<span class='text-primary-600 font-medium'>Customer Group Discount:</span> {$group->discount_percentage}%<br>";
+                                    }
+                                }
+
+                                $activeDiscounts = \App\Models\DiscountRule::where('status', true)->whereDate('end_date', '>=', now())->get();
+                                foreach($activeDiscounts as $rule) {
+                                    $val = $rule->discount_percentage ? "{$rule->discount_percentage}%" : "₹{$rule->discount_amount}";
+                                    $html .= "<span class='text-success-600 font-medium'>Discount Rule ({$rule->code}):</span> {$rule->name} - {$val}<br>";
+                                }
+
+                                $festivalOffers = \App\Models\FestivalOffer::where('status', true)->whereDate('end_date', '>=', now())->get();
+                                foreach($festivalOffers as $offer) {
+                                    $val = $offer->discount_percentage ? "{$offer->discount_percentage}%" : "₹{$offer->discount_amount}";
+                                    $html .= "<span class='text-warning-600 font-medium'>Festival Offer:</span> {$offer->name} - {$val}<br>";
+                                }
+                                
+                                if (! $html) return 'No active promotions available.';
+                                return new \Illuminate\Support\HtmlString($html);
+                            })
+                            ->columnSpanFull(),
                         TextInput::make('quantity')
                             ->numeric()
                             ->default(1)
@@ -191,7 +241,8 @@ class PosSaleForm
                         
                         $redeemPointsAmount = (float) ($get('redeem_points_amount') ?? 0);
                         $walletAmount = (float) ($get('use_wallet_balance') ?? 0);
-                        $netAmount = ($totalAmount + $taxAmount) - $redeemPointsAmount - $walletAmount;
+                        $voucherAmount = (float) ($get('gift_voucher_amount') ?? 0);
+                        $netAmount = ($totalAmount + $taxAmount) - $redeemPointsAmount - $walletAmount - $voucherAmount;
                         
                         $set('total_amount', $totalAmount);
                         $set('discount_amount', $totalDiscount);
@@ -200,17 +251,45 @@ class PosSaleForm
                     })
                     ->columns(3)
                     ->columnSpanFull(),
-                TextInput::make('redeem_points_amount')
-                    ->label('Redeem Loyalty Points (Amount)')
+                \Filament\Forms\Components\TextInput::make('redeem_points')
+                    ->label('Redeem Loyalty Points')
                     ->numeric()
                     ->default(0)
                     ->live()
                     ->afterStateUpdated(function ($state, $set, $get) {
+                        $customerId = $get('customer_id');
+                        $pointsAmount = 0;
+                        if ($customerId && $state > 0) {
+                            $customer = \App\Models\Customer::find($customerId);
+                            $program = \App\Models\LoyaltyProgram::where('status', true)
+                                ->where(function($q) use ($customer) {
+                                    $q->where('membership_plan_id', $customer->membership_plan_id)
+                                      ->orWhere('customer_group_id', $customer->customer_group_id)
+                                      ->orWhere(function($q2) {
+                                          $q2->whereNull('membership_plan_id')->whereNull('customer_group_id');
+                                      });
+                                })->orderBy('id', 'desc')->first();
+                            
+                            if ($program) {
+                                // Validation for max points etc can go here, but for now just calculate value
+                                $pointsAmount = (float) $state * $program->value_per_point;
+                            }
+                        }
+                        
+                        $set('redeem_points_amount', $pointsAmount);
+                        
                         $total = (float) $get('total_amount');
                         $tax = (float) $get('tax_amount');
                         $wallet = (float) $get('use_wallet_balance');
-                        $set('net_amount', max(0, ($total + $tax) - (float) $state - $wallet));
+                        $voucher = (float) $get('gift_voucher_amount');
+                        $set('net_amount', max(0, ($total + $tax) - $pointsAmount - $wallet - $voucher));
                     }),
+                TextInput::make('redeem_points_amount')
+                    ->label('Points Value (Amount)')
+                    ->numeric()
+                    ->default(0)
+                    ->readOnly(),
+
                 TextInput::make('use_wallet_balance')
                     ->label('Use Wallet Balance (Amount)')
                     ->numeric()
@@ -220,8 +299,44 @@ class PosSaleForm
                         $total = (float) $get('total_amount');
                         $tax = (float) $get('tax_amount');
                         $points = (float) $get('redeem_points_amount');
-                        $set('net_amount', max(0, ($total + $tax) - $points - (float) $state));
+                        $voucher = (float) $get('gift_voucher_amount');
+                        $set('net_amount', max(0, ($total + $tax) - $points - (float) $state - $voucher));
                     }),
+                \Filament\Forms\Components\Select::make('gift_voucher_id')
+                    ->label('Gift Voucher')
+                    ->relationship('giftVoucher', 'voucher_code', function ($query) {
+                        $query->where('is_redeemed', false)->where('amount', '>', 0)->whereDate('expiry_date', '>=', now());
+                    })
+                    ->searchable()
+                    ->preload()
+                    ->live()
+                    ->afterStateUpdated(function ($state, $set, $get) {
+                        if ($state) {
+                            $voucher = \App\Models\GiftVoucher::find($state);
+                            if ($voucher) {
+                                $total = (float) $get('total_amount');
+                                $tax = (float) $get('tax_amount');
+                                $points = (float) $get('redeem_points_amount');
+                                $wallet = (float) $get('use_wallet_balance');
+                                $remaining = max(0, ($total + $tax) - $points - $wallet);
+                                $applyAmount = min($voucher->amount, $remaining);
+                                $set('gift_voucher_amount', $applyAmount);
+                                $set('net_amount', max(0, $remaining - $applyAmount));
+                            }
+                        } else {
+                            $set('gift_voucher_amount', 0);
+                            $total = (float) $get('total_amount');
+                            $tax = (float) $get('tax_amount');
+                            $points = (float) $get('redeem_points_amount');
+                            $wallet = (float) $get('use_wallet_balance');
+                            $set('net_amount', max(0, ($total + $tax) - $points - $wallet));
+                        }
+                    }),
+                TextInput::make('gift_voucher_amount')
+                    ->label('Gift Voucher Amount Applied')
+                    ->numeric()
+                    ->default(0)
+                    ->readOnly(),
                 \Filament\Forms\Components\Repeater::make('payments')
                     ->schema([
                         \Filament\Forms\Components\Select::make('payment_mode_id')
@@ -235,7 +350,13 @@ class PosSaleForm
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
-                TextInput::make('status')
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'completed' => 'Completed',
+                        'pending' => 'Pending',
+                        'cancelled' => 'Cancelled',
+                        'refunded' => 'Refunded',
+                    ])
                     ->required()
                     ->default('completed'),
             ]);

@@ -36,6 +36,7 @@ class PosReturnsTable
             ->filters([
                 //
             ])
+            ->defaultSort('return_date', 'desc')
             ->recordActions([
                 EditAction::make(),
             ])

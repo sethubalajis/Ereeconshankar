@@ -39,6 +39,7 @@ class LoyaltyCardsTable
             ->filters([
                 //
             ])
+            ->defaultSort('issue_date', 'desc')
             ->recordActions([
                 EditAction::make(),
             ])

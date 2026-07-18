@@ -22,7 +22,8 @@ class LoyaltyPointForm
                     ->default(0),
                 TextInput::make('description'),
                 DatePicker::make('transaction_date')
-                    ->required(),
+                    ->required()
+                    ->default(now()->timezone('Asia/Kolkata')),
             ]);
     }
 }

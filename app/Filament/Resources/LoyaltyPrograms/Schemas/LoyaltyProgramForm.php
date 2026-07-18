@@ -16,10 +16,20 @@ class LoyaltyProgramForm
                     ->required(),
                 TextInput::make('code')
                     ->required(),
+                \Filament\Forms\Components\Select::make('customer_group_id')
+                    ->relationship('customerGroup', 'name')
+                    ->nullable(),
+                \Filament\Forms\Components\Select::make('membership_plan_id')
+                    ->relationship('membershipPlan', 'name')
+                    ->nullable(),
                 TextInput::make('points_per_amount')
                     ->required()
                     ->numeric()
                     ->default(1.0),
+                TextInput::make('amount_per_point')
+                    ->required()
+                    ->numeric()
+                    ->default(100.0),
                 TextInput::make('minimum_points_to_redeem')
                     ->required()
                     ->numeric()
@@ -28,6 +38,15 @@ class LoyaltyProgramForm
                     ->required()
                     ->numeric()
                     ->default(1.0),
+                TextInput::make('max_redemption_percentage')
+                    ->numeric()
+                    ->nullable()
+                    ->maxValue(100),
+                TextInput::make('points_expiry_months')
+                    ->numeric()
+                    ->nullable(),
+                \Filament\Forms\Components\DatePicker::make('effective_from')->nullable(),
+                \Filament\Forms\Components\DatePicker::make('effective_to')->nullable(),
                 Toggle::make('status')
                     ->required(),
             ]);

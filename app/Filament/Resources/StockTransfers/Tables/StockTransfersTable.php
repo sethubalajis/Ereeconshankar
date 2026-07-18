@@ -48,6 +48,7 @@ class StockTransfersTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('transfer_date', 'desc');
     }
 }

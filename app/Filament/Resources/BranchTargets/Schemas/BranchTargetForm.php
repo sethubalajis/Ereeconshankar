@@ -15,7 +15,8 @@ class BranchTargetForm
                 \Filament\Forms\Components\Select::make('branch_id')->relationship('branch', 'name')
                     ->required(),
                 DatePicker::make('target_month')
-                    ->required(),
+                    ->required()
+                    ->default(now()->timezone('Asia/Kolkata')),
                 TextInput::make('target_amount')
                     ->required()
                     ->numeric()

@@ -43,6 +43,7 @@ class BranchExpensesTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('expense_date', 'desc');
     }
 }

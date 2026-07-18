@@ -19,7 +19,8 @@ class GiftVoucherForm
                     ->required()
                     ->numeric()
                     ->default(0.0),
-                DatePicker::make('expiry_date'),
+                DatePicker::make('expiry_date')
+                    ->default(now()->timezone('Asia/Kolkata')),
                 Toggle::make('is_redeemed')
                     ->required(),
             ]);

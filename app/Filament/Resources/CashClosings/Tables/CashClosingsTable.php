@@ -14,7 +14,7 @@ class CashClosingsTable
     {
         return $table
             ->columns([
-                TextColumn::make('cashRegister.status')
+                TextColumn::make('cashRegister.name')
                     ->sortable(),
                 TextColumn::make('closing_time')
                     ->dateTime()
@@ -37,6 +37,7 @@ class CashClosingsTable
             ->filters([
                 //
             ])
+            ->defaultSort('created_at', 'desc')
             ->recordActions([
                 EditAction::make(),
             ])

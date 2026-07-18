@@ -44,6 +44,7 @@ class BranchTargetsTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('target_month', 'desc');
     }
 }

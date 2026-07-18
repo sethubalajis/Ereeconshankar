@@ -17,7 +17,8 @@ class WarehouseTransferForm
                 \Filament\Forms\Components\Select::make('to_warehouse_id')->relationship('toWarehouse', 'name')
                     ->required(),
                 DatePicker::make('transfer_date')
-                    ->required(),
+                    ->required()
+                    ->default(now()->timezone('Asia/Kolkata')),
                 TextInput::make('status')
                     ->required()
                     ->default('pending'),

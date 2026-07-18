@@ -19,8 +19,7 @@ class TransferReceiptsTable
                 TextColumn::make('receive_date')
                     ->date()
                     ->sortable(),
-                TextColumn::make('received_by')
-                    ->numeric()
+                TextColumn::make('receivedBy.name')
                     ->sortable(),
                 TextColumn::make('status')
                     ->searchable(),
