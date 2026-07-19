@@ -15,7 +15,9 @@ class GstCategoryForm
                 TextInput::make('name')
                     ->required(),
                 TextInput::make('code')
-                    ->required(),
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->placeholder('Auto-generated'),
                 Toggle::make('status')
                     ->required(),
             ]);

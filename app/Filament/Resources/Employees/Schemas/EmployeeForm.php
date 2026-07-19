@@ -17,12 +17,15 @@ class EmployeeForm
                 \Filament\Forms\Components\Select::make('designation_id')->relationship('designation', 'name'),
                 \Filament\Forms\Components\Select::make('branch_id')->relationship('branch', 'name'),
                 TextInput::make('employee_code')
-                    ->required(),
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->placeholder('Auto-generated'),
                 TextInput::make('first_name')
                     ->required(),
                 TextInput::make('last_name'),
                 DatePicker::make('dob'),
-                DatePicker::make('joining_date'),
+                DatePicker::make('joining_date')
+                    ->default(now('Asia/Kolkata')),
                 TextInput::make('pan_number'),
                 TextInput::make('pf_number'),
                 \Filament\Forms\Components\Toggle::make('pf_opt_in')
@@ -32,7 +35,13 @@ class EmployeeForm
                 \Filament\Forms\Components\Toggle::make('esi_opt_in')
                     ->label('Opt-in for ESI')
                     ->default(true),
-                TextInput::make('status')
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'active' => 'Active',
+                        'inactive' => 'Inactive',
+                        'terminated' => 'Terminated',
+                        'resigned' => 'Resigned',
+                    ])
                     ->required()
                     ->default('active'),
             ]);

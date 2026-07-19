@@ -18,6 +18,8 @@ class EmployeeTaxDeclarationResource extends Resource
 {
     protected static ?string $model = EmployeeTaxDeclaration::class;
 
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static string|\UnitEnum|null $navigationGroup = '17. Payroll';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

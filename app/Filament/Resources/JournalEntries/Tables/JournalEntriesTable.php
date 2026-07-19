@@ -16,7 +16,7 @@ class JournalEntriesTable
             ->columns([
                 TextColumn::make('journal.journal_number')
                     ->sortable(),
-                TextColumn::make('chartOfAccount.account_code')
+                TextColumn::make('chartOfAccount.account_name')
                     ->sortable(),
                 TextColumn::make('description')
                     ->searchable(),

@@ -13,8 +13,9 @@ class TrialBalanceForm
         return $schema
             ->components([
                 DatePicker::make('as_of_date')
+                    ->default(now('Asia/Kolkata'))
                     ->required(),
-                \Filament\Forms\Components\Select::make('chart_of_account_id')->relationship('chartOfAccount', 'account_code')
+                \Filament\Forms\Components\Select::make('chart_of_account_id')->relationship('chartOfAccount', 'account_name')
                     ->required(),
                 TextInput::make('debit_balance')
                     ->required()

@@ -14,8 +14,11 @@ class JournalForm
         return $schema
             ->components([
                 TextInput::make('journal_number')
-                    ->required(),
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->placeholder('Auto-generated'),
                 DatePicker::make('journal_date')
+                    ->default(now('Asia/Kolkata'))
                     ->required(),
                 TextInput::make('reference'),
                 TextInput::make('total_debit')
@@ -28,7 +31,12 @@ class JournalForm
                     ->default(0.0),
                 Textarea::make('notes')
                     ->columnSpanFull(),
-                TextInput::make('status')
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'draft' => 'Draft',
+                        'posted' => 'Posted',
+                        'cancelled' => 'Cancelled',
+                    ])
                     ->required()
                     ->default('posted'),
             ]);

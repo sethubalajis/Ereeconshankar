@@ -14,7 +14,11 @@ class CustomerWalletForm
             ->components([
                 \Filament\Forms\Components\Select::make('customer_id')->relationship('customer', 'name')
                     ->required(),
-                TextInput::make('transaction_type')
+                \Filament\Forms\Components\Select::make('transaction_type')
+                    ->options([
+                        'credit' => 'Credit',
+                        'debit' => 'Debit',
+                    ])
                     ->required(),
                 TextInput::make('amount')
                     ->required()

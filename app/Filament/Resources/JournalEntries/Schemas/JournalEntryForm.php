@@ -13,7 +13,7 @@ class JournalEntryForm
             ->components([
                 \Filament\Forms\Components\Select::make('journal_id')->relationship('journal', 'journal_number')
                     ->required(),
-                \Filament\Forms\Components\Select::make('chart_of_account_id')->relationship('chartOfAccount', 'account_code')
+                \Filament\Forms\Components\Select::make('chart_of_account_id')->relationship('chartOfAccount', 'account_name')
                     ->required(),
                 TextInput::make('description'),
                 TextInput::make('debit')

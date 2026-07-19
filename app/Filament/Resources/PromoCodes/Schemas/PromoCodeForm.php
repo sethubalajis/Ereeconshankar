@@ -14,13 +14,19 @@ class PromoCodeForm
         return $schema
             ->components([
                 TextInput::make('code')
-                    ->required(),
+                    ->default(fn () => 'PC-' . strtoupper(\Illuminate\Support\Str::random(6)))
+                    ->disabled()
+                    ->dehydrated()
+                    ->required()
+                    ->unique(ignoreRecord: true),
                 TextInput::make('discount_percentage')
                     ->numeric(),
                 TextInput::make('discount_amount')
                     ->numeric(),
-                DatePicker::make('valid_from'),
-                DatePicker::make('valid_to'),
+                DatePicker::make('valid_from')
+                    ->default(now()->timezone('Asia/Kolkata')),
+                DatePicker::make('valid_to')
+                    ->default(now()->timezone('Asia/Kolkata')),
                 Toggle::make('status')
                     ->required(),
             ]);

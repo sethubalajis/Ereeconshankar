@@ -14,9 +14,18 @@ class AccountGroupForm
                 TextInput::make('name')
                     ->required(),
                 TextInput::make('code')
-                    ->required(),
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->placeholder('Auto-generated'),
                 \Filament\Forms\Components\Select::make('parent_id')->relationship('parent', 'name'),
-                TextInput::make('type')
+                \Filament\Forms\Components\Select::make('type')
+                    ->options([
+                        'asset' => 'Asset',
+                        'liability' => 'Liability',
+                        'equity' => 'Equity',
+                        'revenue' => 'Revenue',
+                        'expense' => 'Expense',
+                    ])
                     ->required(),
             ]);
     }

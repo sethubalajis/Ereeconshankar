@@ -10,6 +10,10 @@ class CreateProductVariant extends CreateRecord
 {
     protected static string $resource = ProductVariantResource::class;
 
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         unset($data['attribute_inputs']);

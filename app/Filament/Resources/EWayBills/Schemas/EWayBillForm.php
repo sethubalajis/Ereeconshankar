@@ -16,11 +16,17 @@ class EWayBillForm
                     ->required(),
                 TextInput::make('eway_bill_no')
                     ->required(),
-                DatePicker::make('valid_until'),
+                DatePicker::make('valid_until')
+                    ->default(now('Asia/Kolkata')),
                 \Filament\Forms\Components\TextInput::make('transporter_id')->numeric()
                     ,
                 TextInput::make('vehicle_no'),
-                TextInput::make('status')
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'active' => 'Active',
+                        'expired' => 'Expired',
+                        'cancelled' => 'Cancelled',
+                    ])
                     ->required()
                     ->default('active'),
             ]);

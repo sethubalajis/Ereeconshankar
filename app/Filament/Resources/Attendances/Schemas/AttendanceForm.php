@@ -16,10 +16,19 @@ class AttendanceForm
                 \Filament\Forms\Components\Select::make('employee_id')->relationship('employee', 'first_name')
                     ->required(),
                 DatePicker::make('date')
+                    ->default(now('Asia/Kolkata'))
                     ->required(),
-                TimePicker::make('check_in'),
-                TimePicker::make('check_out'),
-                TextInput::make('status')
+                TimePicker::make('check_in')
+                    ->default(now('Asia/Kolkata')),
+                TimePicker::make('check_out')
+                    ->default(now('Asia/Kolkata')),
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'present' => 'Present',
+                        'absent' => 'Absent',
+                        'half_day' => 'Half Day',
+                        'leave' => 'Leave',
+                    ])
                     ->required()
                     ->default('present'),
             ]);

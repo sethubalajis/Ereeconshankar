@@ -13,10 +13,11 @@ class ContraEntryForm
         return $schema
             ->components([
                 DatePicker::make('date')
+                    ->default(now('Asia/Kolkata'))
                     ->required(),
-                \Filament\Forms\Components\Select::make('from_account_id')->relationship('fromAccount', 'name')
+                \Filament\Forms\Components\Select::make('from_account_id')->relationship('fromAccount', 'account_name')
                     ->required(),
-                \Filament\Forms\Components\Select::make('to_account_id')->relationship('toAccount', 'name')
+                \Filament\Forms\Components\Select::make('to_account_id')->relationship('toAccount', 'account_name')
                     ->required(),
                 TextInput::make('amount')
                     ->required()

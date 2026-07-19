@@ -25,8 +25,10 @@ class BuyXGetYOfferForm
                     ->required()
                     ->numeric()
                     ->default(1),
-                DatePicker::make('start_date'),
-                DatePicker::make('end_date'),
+                DatePicker::make('start_date')
+                    ->default(now()->timezone('Asia/Kolkata')),
+                DatePicker::make('end_date')
+                    ->default(now()->timezone('Asia/Kolkata')),
                 Toggle::make('status')
                     ->required(),
             ]);

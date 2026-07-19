@@ -13,6 +13,7 @@ class CashBookForm
         return $schema
             ->components([
                 DatePicker::make('date')
+                    ->default(now('Asia/Kolkata'))
                     ->required(),
                 TextInput::make('description'),
                 TextInput::make('receipt_amount')

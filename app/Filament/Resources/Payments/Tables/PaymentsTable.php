@@ -18,7 +18,7 @@ class PaymentsTable
                     ->sortable(),
                 TextColumn::make('customer.name')
                     ->sortable(),
-                TextColumn::make('chartOfAccount.account_code')
+                TextColumn::make('chartOfAccount.account_name')
                     ->sortable(),
                 TextColumn::make('payment_date')
                     ->date()

@@ -17,8 +17,14 @@ class EInvoiceForm
                 TextInput::make('irn')
                     ->required(),
                 TextInput::make('ack_no'),
-                DatePicker::make('ack_date'),
-                TextInput::make('status')
+                DatePicker::make('ack_date')
+                    ->default(now('Asia/Kolkata')),
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'generated' => 'Generated',
+                        'cancelled' => 'Cancelled',
+                        'failed' => 'Failed',
+                    ])
                     ->required()
                     ->default('generated'),
             ]);

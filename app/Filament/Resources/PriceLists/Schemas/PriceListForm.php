@@ -16,9 +16,15 @@ class PriceListForm
                 TextInput::make('name')
                     ->required(),
                 TextInput::make('code')
-                    ->required(),
-                DatePicker::make('valid_from'),
-                DatePicker::make('valid_to'),
+                    ->default(fn () => 'PL-' . strtoupper(\Illuminate\Support\Str::random(6)))
+                    ->disabled()
+                    ->dehydrated()
+                    ->required()
+                    ->unique(ignoreRecord: true),
+                DatePicker::make('valid_from')
+                    ->default(now()->timezone('Asia/Kolkata')),
+                DatePicker::make('valid_to')
+                    ->default(now()->timezone('Asia/Kolkata')),
                 Toggle::make('status')
                     ->required(),
             ]);
