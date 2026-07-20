@@ -3,8 +3,10 @@
 namespace App\Filament\Resources\Brands\Pages;
 
 use App\Filament\Resources\Brands\BrandResource;
+use App\Models\Brand;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Illuminate\Support\Facades\Gate;
 
 class ListBrands extends ListRecords
 {
@@ -13,7 +15,8 @@ class ListBrands extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make()
+                ->visible(fn (): bool => Gate::allows('create', Brand::class)),
         ];
     }
 }
