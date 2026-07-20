@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Roles\Tables;
 
+use App\Filament\Resources\Roles\RoleResource;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -33,6 +35,9 @@ class RolesTable
             ])
             ->recordActions([
                 EditAction::make(),
+                Action::make('permissions')
+                    ->label('Permissions')
+                    ->url(fn ($record): string => RoleResource::getUrl('permissions', ['record' => $record])),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
