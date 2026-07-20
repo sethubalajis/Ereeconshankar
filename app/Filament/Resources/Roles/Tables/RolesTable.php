@@ -10,26 +10,34 @@ use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Schema;
 
 class RolesTable
 {
     public static function configure(Table $table): Table
     {
+        $columns = [
+            TextColumn::make('name')
+                ->searchable(),
+        ];
+
+        if (Schema::hasColumn('roles', 'status')) {
+            $columns[] = IconColumn::make('status')
+                ->boolean();
+        }
+
+        $columns[] = TextColumn::make('created_at')
+            ->dateTime()
+            ->sortable()
+            ->toggleable(isToggledHiddenByDefault: true);
+
+        $columns[] = TextColumn::make('updated_at')
+            ->dateTime()
+            ->sortable()
+            ->toggleable(isToggledHiddenByDefault: true);
+
         return $table
-            ->columns([
-                TextColumn::make('name')
-                    ->searchable(),
-                IconColumn::make('status')
-                    ->boolean(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ->columns($columns)
             ->filters([
                 //
             ])
