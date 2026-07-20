@@ -27,9 +27,6 @@ class StockTransactionForm
                     ->numeric()
                     ->default(0.0),
                 \Filament\Forms\Components\TextInput::make('reference')
-                    ->default(fn () => 'TXN-' . str_pad((string)(\App\Models\StockTransaction::max('id') + 1), 5, '0', STR_PAD_LEFT))
-                    ->disabled()
-                    ->dehydrated()
                     ->required(),
                 \Filament\Forms\Components\Select::make('reference_type')
                     ->options([

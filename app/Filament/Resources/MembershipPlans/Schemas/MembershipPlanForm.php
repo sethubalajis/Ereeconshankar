@@ -16,7 +16,11 @@ class MembershipPlanForm
                 TextInput::make('name')
                     ->required(),
                 TextInput::make('code')
-                    ->required(),
+                    ->default(fn () => 'MP-' . strtoupper(\Illuminate\Support\Str::random(6)))
+                    ->disabled()
+                    ->dehydrated()
+                    ->required()
+                    ->unique(ignoreRecord: true),
                 TextInput::make('fee')
                     ->required()
                     ->numeric()

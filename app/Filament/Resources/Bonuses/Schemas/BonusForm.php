@@ -20,8 +20,15 @@ class BonusForm
                     ->required()
                     ->numeric()
                     ->default(0.0),
-                DatePicker::make('payout_date'),
-                TextInput::make('status')
+                DatePicker::make('payout_date')
+                    ->default(now()->timezone('Asia/Kolkata')),
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'approved' => 'Approved',
+                        'paid' => 'Paid',
+                        'cancelled' => 'Cancelled',
+                    ])
                     ->required()
                     ->default('pending'),
             ]);

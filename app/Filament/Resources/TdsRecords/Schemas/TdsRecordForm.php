@@ -50,7 +50,12 @@ class TdsRecordForm
                 \Filament\Forms\Components\TextInput::make('remaining_tds')
                     ->numeric()
                     ->default(0.00),
-                \Filament\Forms\Components\TextInput::make('status')
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'processed' => 'Processed',
+                        'filed' => 'Filed',
+                    ])
                     ->default('processed'),
             ]);
     }

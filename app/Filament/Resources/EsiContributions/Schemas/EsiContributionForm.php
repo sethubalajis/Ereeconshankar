@@ -23,6 +23,7 @@ class EsiContributionForm
                     ->numeric()
                     ->default(0.0),
                 DatePicker::make('month')
+                    ->default(now()->timezone('Asia/Kolkata'))
                     ->required(),
             ]);
     }

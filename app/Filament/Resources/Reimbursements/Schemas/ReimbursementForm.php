@@ -15,13 +15,20 @@ class ReimbursementForm
                 \Filament\Forms\Components\Select::make('employee_id')->relationship('employee', 'first_name')
                     ->required(),
                 DatePicker::make('expense_date')
+                    ->default(now()->timezone('Asia/Kolkata'))
                     ->required(),
                 TextInput::make('amount')
                     ->required()
                     ->numeric()
                     ->default(0.0),
-                TextInput::make('receipt_path'),
-                TextInput::make('status')
+                \Filament\Forms\Components\FileUpload::make('receipt_path'),
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'approved' => 'Approved',
+                        'rejected' => 'Rejected',
+                        'paid' => 'Paid',
+                    ])
                     ->required()
                     ->default('pending'),
             ]);

@@ -17,8 +17,15 @@ class ServiceAssignmentForm
                 \Filament\Forms\Components\Select::make('employee_id')->relationship('employee', 'first_name')
                     ->required(),
                 DatePicker::make('assigned_date')
+                    ->default(now()->timezone('Asia/Kolkata'))
                     ->required(),
-                TextInput::make('status')
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'assigned' => 'Assigned',
+                        'in_progress' => 'In Progress',
+                        'completed' => 'Completed',
+                        'cancelled' => 'Cancelled',
+                    ])
                     ->required()
                     ->default('assigned'),
             ]);

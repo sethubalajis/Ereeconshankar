@@ -16,6 +16,7 @@ class TechnicianVisitForm
                 \Filament\Forms\Components\Select::make('service_assignment_id')->relationship('serviceAssignment', 'status')
                     ->required(),
                 DatePicker::make('visit_date')
+                    ->default(now()->timezone('Asia/Kolkata'))
                     ->required(),
                 Textarea::make('remarks')
                     ->columnSpanFull(),

@@ -15,7 +15,11 @@ class CustomerGroupForm
                 TextInput::make('name')
                     ->required(),
                 TextInput::make('code')
-                    ->required(),
+                    ->default(fn () => 'CG-' . strtoupper(\Illuminate\Support\Str::random(6)))
+                    ->disabled()
+                    ->dehydrated()
+                    ->required()
+                    ->unique(ignoreRecord: true),
                 TextInput::make('discount_percentage')
                     ->required()
                     ->numeric()

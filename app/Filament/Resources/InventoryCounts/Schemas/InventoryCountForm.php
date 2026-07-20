@@ -18,7 +18,13 @@ class InventoryCountForm
                 DatePicker::make('count_date')
                     ->required()
                     ->default(now()->timezone('Asia/Kolkata')),
-                TextInput::make('status')
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'draft' => 'Draft',
+                        'active' => 'Active',
+                        'completed' => 'Completed',
+                        'cancelled' => 'Cancelled',
+                    ])
                     ->required()
                     ->default('draft'),
             ]);

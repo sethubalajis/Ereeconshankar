@@ -16,6 +16,7 @@ class AssetDisposalForm
                 \Filament\Forms\Components\Select::make('asset_id')->relationship('asset', 'name')
                     ->required(),
                 DatePicker::make('disposal_date')
+                    ->default(now()->timezone('Asia/Kolkata'))
                     ->required(),
                 TextInput::make('sale_value')
                     ->required()

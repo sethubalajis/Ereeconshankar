@@ -19,8 +19,15 @@ class AssetTransferForm
                 \Filament\Forms\Components\Select::make('to_branch_id')->relationship('toBranch', 'name')
                     ->required(),
                 DatePicker::make('transfer_date')
+                    ->default(now()->timezone('Asia/Kolkata'))
                     ->required(),
-                TextInput::make('status')
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'in_transit' => 'In Transit',
+                        'completed' => 'Completed',
+                        'cancelled' => 'Cancelled',
+                    ])
                     ->required()
                     ->default('pending'),
             ]);

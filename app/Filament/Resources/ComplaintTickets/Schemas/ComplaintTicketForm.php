@@ -20,7 +20,13 @@ class ComplaintTicketForm
                     ->required(),
                 Textarea::make('description')
                     ->columnSpanFull(),
-                TextInput::make('status')
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'open' => 'Open',
+                        'in_progress' => 'In Progress',
+                        'resolved' => 'Resolved',
+                        'closed' => 'Closed',
+                    ])
                     ->required()
                     ->default('open'),
             ]);

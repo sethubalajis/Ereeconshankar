@@ -18,6 +18,7 @@ class ServiceReportForm
                 Textarea::make('resolution_details')
                     ->columnSpanFull(),
                 DatePicker::make('report_date')
+                    ->default(now()->timezone('Asia/Kolkata'))
                     ->required(),
             ]);
     }

@@ -20,13 +20,20 @@ class AssetForm
                     ->required(),
                 TextInput::make('asset_code')
                     ->required(),
-                DatePicker::make('purchase_date'),
+                DatePicker::make('purchase_date')
+                    ->default(now()->timezone('Asia/Kolkata')),
                 TextInput::make('purchase_cost')
                     ->required()
                     ->numeric()
                     ->default(0.0)
                     ->prefix('$'),
-                TextInput::make('status')
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'active' => 'Active',
+                        'inactive' => 'Inactive',
+                        'maintenance' => 'Maintenance',
+                        'disposed' => 'Disposed',
+                    ])
                     ->required()
                     ->default('active'),
             ]);

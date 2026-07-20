@@ -61,7 +61,13 @@ class PayrollProcessingForm
                     ->numeric()
                     ->default(0.0)
                     ->readonly(),
-                TextInput::make('status')
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'draft' => 'Draft',
+                        'processed' => 'Processed',
+                        'approved' => 'Approved',
+                        'paid' => 'Paid',
+                    ])
                     ->required()
                     ->default('processed'),
             ]);
