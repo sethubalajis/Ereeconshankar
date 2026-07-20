@@ -2,12 +2,14 @@
 
 namespace App\Filament\Resources\Brands\Tables;
 
+use App\Models\Brand;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Gate;
 
 class BrandsTable
 {
@@ -39,11 +41,13 @@ class BrandsTable
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()
+                    ->visible(fn (Brand $record): bool => Gate::allows('update', $record)),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->visible(fn (): bool => Gate::allows('deleteAny', Brand::class)),
                 ]),
             ]);
     }

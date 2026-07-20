@@ -22,6 +22,7 @@ use App\Models\ProductImage;
 use App\Models\ProductCategory;
 use App\Models\ProductBarcode;
 use App\Models\ProductAttribute;
+use App\Models\User;
 use App\Policies\CompanyPolicy;
 use App\Policies\BusinessUnitPolicy;
 use App\Policies\CostCenterPolicy;
@@ -62,6 +63,15 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Schema::defaultStringLength(191);
+
+        Gate::before(function (User $user, string $ability): ?bool {
+            if ($user->hasAnyRole(['Super Admin', 'super admin'])) {
+                return true;
+            }
+
+            return null;
+        });
+
         Gate::policy(Company::class, CompanyPolicy::class);
         Gate::policy(BusinessUnit::class, BusinessUnitPolicy::class);
         Gate::policy(CostCenter::class, CostCenterPolicy::class);
