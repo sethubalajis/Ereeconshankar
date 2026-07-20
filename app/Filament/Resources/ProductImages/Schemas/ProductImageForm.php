@@ -17,6 +17,7 @@ class ProductImageForm
                     ->required(),
                 \Filament\Forms\Components\Select::make('product_variant_id')->relationship('productVariant', 'sku'),
                 FileUpload::make('image_path')
+                ->disk("public")
                     ->image()
                     ->required(),
                 Toggle::make('is_primary')

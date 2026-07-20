@@ -20,7 +20,8 @@ class ProductImagesTable
                     ->sortable(),
                 TextColumn::make('productVariant.sku')
                     ->sortable(),
-                ImageColumn::make('image_path'),
+                ImageColumn::make('image_path')
+                    ->disk("public"),
                 IconColumn::make('is_primary')
                     ->boolean(),
                 TextColumn::make('created_at')

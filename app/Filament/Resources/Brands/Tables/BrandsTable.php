@@ -19,7 +19,11 @@ class BrandsTable
                     ->searchable(),
                 TextColumn::make('code')
                     ->searchable(),
-                \Filament\Tables\Columns\ImageColumn::make('logo'),
+                \Filament\Tables\Columns\ImageColumn::make('logo')
+                    ->disk("public"),
+                
+
+
                 IconColumn::make('status')
                     ->boolean(),
                 TextColumn::make('created_at')

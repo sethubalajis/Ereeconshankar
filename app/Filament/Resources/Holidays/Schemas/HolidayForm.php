@@ -17,6 +17,7 @@ class HolidayForm
                 TextInput::make('name')
                     ->required(),
                 DatePicker::make('date')
+                    ->default(now()->timezone('Asia/Kolkata')->toDateString())
                     ->required(),
                 Textarea::make('description')
                     ->columnSpanFull(),

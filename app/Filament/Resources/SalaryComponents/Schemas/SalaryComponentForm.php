@@ -14,7 +14,12 @@ class SalaryComponentForm
             ->components([
                 TextInput::make('name')
                     ->required(),
-                TextInput::make('type')
+                \Filament\Forms\Components\Select::make('type')
+                    ->options([
+                        'earning' => 'Earning / Allowance',
+                        'deduction' => 'Deduction',
+                        'reimbursement' => 'Reimbursement',
+                    ])
                     ->required(),
                 Toggle::make('is_taxable')
                     ->required(),

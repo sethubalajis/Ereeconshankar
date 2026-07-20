@@ -16,12 +16,25 @@ class EmployeeExitForm
                 \Filament\Forms\Components\Select::make('employee_id')->relationship('employee', 'first_name')
                     ->required(),
                 DatePicker::make('resignation_date')
+                    ->default(now()->timezone('Asia/Kolkata')->toDateString())
                     ->required(),
-                DatePicker::make('last_working_day'),
-                TextInput::make('exit_type'),
+                DatePicker::make('last_working_day')
+                    ->default(now()->timezone('Asia/Kolkata')->toDateString()),
+                \Filament\Forms\Components\Select::make('exit_type')
+                    ->options([
+                        'resignation' => 'Resignation',
+                        'termination' => 'Termination',
+                        'retirement' => 'Retirement',
+                        'contract_end' => 'Contract End',
+                    ]),
                 Textarea::make('reason')
                     ->columnSpanFull(),
-                TextInput::make('status')
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'approved' => 'Approved',
+                        'rejected' => 'Rejected',
+                    ])
                     ->required()
                     ->default('pending'),
             ]);
