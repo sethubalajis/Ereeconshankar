@@ -1,23 +1,30 @@
 <?php
 
-namespace App\Filament\Resources\UserRoles\Tables;
+namespace App\Filament\Resources\Users\Tables;
 
+use App\Filament\Resources\Users\UserResource;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class UserRolesTable
+class UsersTable
 {
     public static function configure(Table $table): Table
     {
         return $table
             ->columns([
-                TextColumn::make('user.name')
+                TextColumn::make('name')
+                    ->searchable()
                     ->sortable(),
-                TextColumn::make('role.name')
+                TextColumn::make('email')
+                    ->label('Email address')
+                    ->searchable()
                     ->sortable(),
+                TextColumn::make('roles.name')
+                    ->badge(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -32,6 +39,9 @@ class UserRolesTable
             ])
             ->recordActions([
                 EditAction::make(),
+                Action::make('permissions')
+                    ->label('Permissions')
+                    ->url(fn ($record): string => UserResource::getUrl('permissions', ['record' => $record])),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
