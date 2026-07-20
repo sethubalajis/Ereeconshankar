@@ -16,6 +16,7 @@ class IncentiveForm
                 \Filament\Forms\Components\Select::make('employee_id')->relationship('employee', 'first_name')
                     ->required(),
                 DatePicker::make('month')
+                    ->default(now()->timezone('Asia/Kolkata'))
                     ->required(),
                 TextInput::make('amount')
                     ->required()

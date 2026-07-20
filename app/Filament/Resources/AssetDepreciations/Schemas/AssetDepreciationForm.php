@@ -15,6 +15,7 @@ class AssetDepreciationForm
                 \Filament\Forms\Components\Select::make('asset_id')->relationship('asset', 'name')
                     ->required(),
                 DatePicker::make('depreciation_date')
+                    ->default(now()->timezone('Asia/Kolkata'))
                     ->required(),
                 TextInput::make('amount')
                     ->required()

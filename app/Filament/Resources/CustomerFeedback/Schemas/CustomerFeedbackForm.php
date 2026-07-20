@@ -23,6 +23,7 @@ class CustomerFeedbackForm
                 Textarea::make('comments')
                     ->columnSpanFull(),
                 DatePicker::make('feedback_date')
+                    ->default(now()->timezone('Asia/Kolkata'))
                     ->required(),
             ]);
     }

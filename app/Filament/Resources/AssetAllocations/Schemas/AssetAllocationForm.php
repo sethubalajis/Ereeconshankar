@@ -17,9 +17,15 @@ class AssetAllocationForm
                 \Filament\Forms\Components\Select::make('employee_id')->relationship('employee', 'first_name')
                     ->required(),
                 DatePicker::make('allocation_date')
+                    ->default(now()->timezone('Asia/Kolkata'))
                     ->required(),
                 DatePicker::make('return_date'),
-                TextInput::make('status')
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'allocated' => 'Allocated',
+                        'returned' => 'Returned',
+                        'lost' => 'Lost',
+                    ])
                     ->required()
                     ->default('allocated'),
             ]);

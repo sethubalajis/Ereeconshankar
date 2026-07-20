@@ -20,12 +20,7 @@ class LoyaltyProgramForm
                     ->dehydrated()
                     ->required()
                     ->unique(ignoreRecord: true),
-                \Filament\Forms\Components\Select::make('customer_group_id')
-                    ->relationship('customerGroup', 'name')
-                    ->nullable(),
-                \Filament\Forms\Components\Select::make('membership_plan_id')
-                    ->relationship('membershipPlan', 'name')
-                    ->nullable(),
+
                 TextInput::make('points_per_amount')
                     ->required()
                     ->numeric()

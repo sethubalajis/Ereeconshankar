@@ -18,10 +18,17 @@ class ServiceRequestForm
                 TextInput::make('request_number')
                     ->required(),
                 DatePicker::make('request_date')
+                    ->default(now()->timezone('Asia/Kolkata'))
                     ->required(),
                 Textarea::make('issue_description')
                     ->columnSpanFull(),
-                TextInput::make('status')
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'open' => 'Open',
+                        'in_progress' => 'In Progress',
+                        'resolved' => 'Resolved',
+                        'closed' => 'Closed',
+                    ])
                     ->required()
                     ->default('open'),
             ]);

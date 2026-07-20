@@ -19,8 +19,15 @@ class WarrantyClaimForm
                 TextInput::make('claim_number')
                     ->required(),
                 DatePicker::make('claim_date')
+                    ->default(now()->timezone('Asia/Kolkata'))
                     ->required(),
-                TextInput::make('status')
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'approved' => 'Approved',
+                        'rejected' => 'Rejected',
+                        'resolved' => 'Resolved',
+                    ])
                     ->required()
                     ->default('pending'),
             ]);
