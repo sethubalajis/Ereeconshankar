@@ -21,6 +21,8 @@ class BrandForm
                     ->required()
                     ->unique(ignoreRecord: true),
                 FileUpload::make('logo')
+                ->disk("public")
+                
                     ->image(),
                 Textarea::make('description')
                     ->columnSpanFull(),

@@ -24,7 +24,13 @@ class BranchExpenseForm
                     ->default(0.0),
                 Textarea::make('description')
                     ->columnSpanFull(),
-                TextInput::make('status')
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'approved' => 'Approved',
+                        'rejected' => 'Rejected',
+                        'paid' => 'Paid',
+                    ])
                     ->required()
                     ->default('pending'),
             ]);

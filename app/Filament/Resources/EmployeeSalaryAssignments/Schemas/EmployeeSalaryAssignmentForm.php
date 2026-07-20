@@ -21,6 +21,7 @@ class EmployeeSalaryAssignmentForm
                     ->numeric()
                     ->default(0.0),
                 DatePicker::make('effective_from')
+                    ->default(now()->timezone('Asia/Kolkata')->toDateString())
                     ->required(),
             ]);
     }

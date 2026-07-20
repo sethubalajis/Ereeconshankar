@@ -16,12 +16,12 @@ class AttendanceForm
                 \Filament\Forms\Components\Select::make('employee_id')->relationship('employee', 'first_name')
                     ->required(),
                 DatePicker::make('date')
-                    ->default(now('Asia/Kolkata'))
+                    ->default(now()->timezone('Asia/Kolkata')->toDateString())
                     ->required(),
                 TimePicker::make('check_in')
-                    ->default(now('Asia/Kolkata')),
+                    ->default(now()->timezone('Asia/Kolkata')->toTimeString()),
                 TimePicker::make('check_out')
-                    ->default(now('Asia/Kolkata')),
+                    ->default(now()->timezone('Asia/Kolkata')->toTimeString()),
                 \Filament\Forms\Components\Select::make('status')
                     ->options([
                         'present' => 'Present',

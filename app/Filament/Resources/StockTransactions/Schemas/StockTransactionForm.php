@@ -14,17 +14,35 @@ class StockTransactionForm
                 \Filament\Forms\Components\Select::make('stock_id')
                     ->relationship('stock', 'id')
                     ->getOptionLabelFromRecordUsing(fn ($record) => $record->product->name ?? 'Stock #'.$record->id)
-                    ->searchable()
+                    ->preload()
                     ->required(),
-                TextInput::make('transaction_type')
+                \Filament\Forms\Components\Select::make('transaction_type')
+                    ->options([
+                        'in' => 'Inward (In)',
+                        'out' => 'Outward (Out)',
+                    ])
                     ->required(),
                 TextInput::make('quantity')
                     ->required()
                     ->numeric()
                     ->default(0.0),
                 \Filament\Forms\Components\TextInput::make('reference')
-                    ,
-                TextInput::make('reference_type'),
+                    ->default(fn () => 'TXN-' . str_pad((string)(\App\Models\StockTransaction::max('id') + 1), 5, '0', STR_PAD_LEFT))
+                    ->disabled()
+                    ->dehydrated()
+                    ->required(),
+                \Filament\Forms\Components\Select::make('reference_type')
+                    ->options([
+                        'App\Models\PosSale' => 'POS Sale',
+                        'App\Models\PosReturn' => 'POS Return',
+                        'App\Models\PurchaseOrder' => 'Purchase Order',
+                        'App\Models\PurchaseReturn' => 'Purchase Return',
+                        'App\Models\StockAdjustment' => 'Stock Adjustment',
+                        'App\Models\StockTransfer' => 'Stock Transfer',
+                        'App\Models\WarehouseTransfer' => 'Warehouse Transfer',
+                        'App\Models\Grn' => 'GRN',
+                    ])
+                    ->searchable(),
             ]);
     }
 }

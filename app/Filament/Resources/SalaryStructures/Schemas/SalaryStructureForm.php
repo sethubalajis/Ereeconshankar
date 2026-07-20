@@ -15,7 +15,11 @@ class SalaryStructureForm
                 TextInput::make('name')
                     ->required(),
                 TextInput::make('code')
-                    ->required(),
+                    ->required()
+                    ->default(fn () => 'SAL-' . str_pad((string)(\App\Models\SalaryStructure::max('id') + 1), 4, '0', STR_PAD_LEFT))
+                    ->disabled()
+                    ->dehydrated()
+                    ->unique(ignoreRecord: true),
                 TextInput::make('basic_percentage')
                     ->required()
                     ->numeric()
