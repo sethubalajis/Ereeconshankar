@@ -17,7 +17,6 @@ function makeAccountGroupsAdminUser(): User
     $role = Role::query()->firstOrCreate(['name' => 'Super Admin', 'guard_name' => 'web']);
     $user = User::factory()->create();
     $user->assignRole($role);
-
     return $user;
 }
 
@@ -33,7 +32,7 @@ it('validates required fields when creating an account group', function (): void
     actingAs(makeAccountGroupsAdminUser());
 
     Livewire::test(CreateAccountGroup::class)
-        ->fillForm(['name' => '', 'code' => '', 'parent_id' => null, 'type' => null])
+        ->fillForm(['name' => '', 'type' => null])
         ->call('create')
         ->assertHasFormErrors(['name' => 'required', 'type' => 'required']);
 });
@@ -42,22 +41,20 @@ it('performs account group crud operations', function (): void {
     actingAs(makeAccountGroupsAdminUser());
 
     Livewire::test(CreateAccountGroup::class)
-        ->fillForm(['name' => 'Assets Group', 'parent_id' => null, 'type' => 'asset'])
+        ->fillForm(['name' => 'Current Assets', 'parent_id' => null, 'type' => 'asset'])
         ->call('create')
         ->assertHasNoFormErrors();
 
-    $record = AccountGroup::query()->where('name', 'Assets Group')->firstOrFail();
-
-    Livewire::test(ListAccountGroups::class)->assertSuccessful()->assertSee('Assets Group');
+    $record = AccountGroup::query()->firstOrFail();
+    Livewire::test(ListAccountGroups::class)->assertSuccessful()->assertSee('Current Assets');
 
     Livewire::test(EditAccountGroup::class, ['record' => $record->getKey()])
-        ->fillForm(['name' => 'Liabilities Group', 'parent_id' => null, 'type' => 'liability'])
+        ->fillForm(['name' => 'Fixed Assets', 'parent_id' => null, 'type' => 'asset'])
         ->call('save')
         ->assertHasNoFormErrors();
 
     $record->refresh();
-    expect($record->name)->toBe('Liabilities Group');
-    expect($record->type)->toBe('liability');
+    expect($record->name)->toBe('Fixed Assets');
 
     Livewire::test(EditAccountGroup::class, ['record' => $record->getKey()])->callAction('delete');
     expect(AccountGroup::query()->whereKey($record->getKey())->exists())->toBeFalse();

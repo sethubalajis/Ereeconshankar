@@ -22,29 +22,26 @@ function makeAssetAllocationsAdminUser(): User
     $role = Role::query()->firstOrCreate(['name' => 'Super Admin', 'guard_name' => 'web']);
     $user = User::factory()->create();
     $user->assignRole($role);
-
     return $user;
 }
 
-function createAssetAllocationTestBranchAndAsset(): array
+function createAssetAllocationSetup(): array
 {
-    $company = Company::query()->create(['name' => 'Asset Allocation Co', 'code' => 'AAC001', 'status' => true]);
-    $branch = Branch::query()->create(['company_id' => $company->getKey(), 'name' => 'Asset Branch', 'code' => 'ABR001', 'status' => true]);
-    $category = AssetCategory::query()->create(['name' => 'Computer Assets', 'status' => true]);
+    $category = AssetCategory::query()->create(['name' => 'AA Cat', 'status' => true]);
+    $company = Company::query()->create(['name' => 'AA Co', 'code' => 'AACO1', 'status' => true]);
+    $branch = Branch::query()->create(['company_id' => $company->getKey(), 'name' => 'AA Branch', 'code' => 'AAB01', 'status' => true]);
     $asset = Asset::query()->create([
         'asset_category_id' => $category->getKey(),
         'branch_id' => $branch->getKey(),
-        'name' => 'Laptop',
-        'asset_code' => 'AST001',
-        'purchase_cost' => 1000,
+        'name' => 'AA Asset',
+        'asset_code' => 'AA-AST-1',
+        'purchase_cost' => 12000,
         'status' => 'active',
     ]);
     $employee = Employee::query()->create([
-        'first_name' => 'John',
-        'last_name' => 'Doe',
+        'first_name' => 'Alloc Emp',
         'status' => 'active',
     ]);
-
     return compact('asset', 'employee');
 }
 
@@ -60,15 +57,14 @@ it('validates required fields when creating an asset allocation', function (): v
     actingAs(makeAssetAllocationsAdminUser());
 
     Livewire::test(CreateAssetAllocation::class)
-        ->fillForm(['asset_id' => null, 'employee_id' => null, 'allocation_date' => null, 'return_date' => null, 'status' => null])
+        ->fillForm(['asset_id' => null, 'employee_id' => null, 'allocation_date' => null, 'status' => null])
         ->call('create')
         ->assertHasFormErrors(['asset_id' => 'required', 'employee_id' => 'required', 'allocation_date' => 'required', 'status' => 'required']);
 });
 
 it('performs asset allocation crud operations', function (): void {
     actingAs(makeAssetAllocationsAdminUser());
-
-    ['asset' => $asset, 'employee' => $employee] = createAssetAllocationTestBranchAndAsset();
+    ['asset' => $asset, 'employee' => $employee] = createAssetAllocationSetup();
 
     Livewire::test(CreateAssetAllocation::class)
         ->fillForm([
@@ -82,15 +78,14 @@ it('performs asset allocation crud operations', function (): void {
         ->assertHasNoFormErrors();
 
     $record = AssetAllocation::query()->firstOrFail();
-
-    Livewire::test(ListAssetAllocations::class)->assertSuccessful()->assertSee('allocated');
+    Livewire::test(ListAssetAllocations::class)->assertSuccessful()->assertSee('AA Asset');
 
     Livewire::test(EditAssetAllocation::class, ['record' => $record->getKey()])
         ->fillForm([
             'asset_id' => $asset->getKey(),
             'employee_id' => $employee->getKey(),
             'allocation_date' => '2026-07-21',
-            'return_date' => '2026-07-22',
+            'return_date' => '2026-07-30',
             'status' => 'returned',
         ])
         ->call('save')

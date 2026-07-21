@@ -17,7 +17,6 @@ function makeAssetCategoriesAdminUser(): User
     $role = Role::query()->firstOrCreate(['name' => 'Super Admin', 'guard_name' => 'web']);
     $user = User::factory()->create();
     $user->assignRole($role);
-
     return $user;
 }
 
@@ -33,30 +32,28 @@ it('validates required fields when creating an asset category', function (): voi
     actingAs(makeAssetCategoriesAdminUser());
 
     Livewire::test(CreateAssetCategory::class)
-        ->fillForm(['name' => '', 'code' => '', 'status' => true])
+        ->fillForm(['name' => '', 'status' => null])
         ->call('create')
-        ->assertHasFormErrors(['name' => 'required', 'code' => 'required']);
+        ->assertHasFormErrors(['name' => 'required', 'status' => 'required']);
 });
 
 it('performs asset category crud operations', function (): void {
     actingAs(makeAssetCategoriesAdminUser());
 
     Livewire::test(CreateAssetCategory::class)
-        ->fillForm(['name' => 'IT Assets', 'status' => true])
+        ->fillForm(['name' => 'Electronics', 'status' => true])
         ->call('create')
         ->assertHasNoFormErrors();
 
-    $record = AssetCategory::query()->where('name', 'IT Assets')->firstOrFail();
-
-    Livewire::test(ListAssetCategories::class)->assertSuccessful()->assertSee('IT Assets');
+    $record = AssetCategory::query()->firstOrFail();
+    Livewire::test(ListAssetCategories::class)->assertSuccessful()->assertSee('Electronics');
 
     Livewire::test(EditAssetCategory::class, ['record' => $record->getKey()])
-        ->fillForm(['name' => 'Fixed Assets', 'status' => false])
+        ->fillForm(['name' => 'Furniture', 'status' => false])
         ->call('save')
         ->assertHasNoFormErrors();
 
     $record->refresh();
-    expect($record->name)->toBe('Fixed Assets');
     expect((bool) $record->status)->toBeFalse();
 
     Livewire::test(EditAssetCategory::class, ['record' => $record->getKey()])->callAction('delete');

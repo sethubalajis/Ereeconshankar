@@ -21,22 +21,20 @@ function makeAssetDisposalsAdminUser(): User
     $role = Role::query()->firstOrCreate(['name' => 'Super Admin', 'guard_name' => 'web']);
     $user = User::factory()->create();
     $user->assignRole($role);
-
     return $user;
 }
 
-function createAssetDisposalAsset(): Asset
+function createAssetForDisposal(): Asset
 {
-    $company = Company::query()->create(['name' => 'Disposal Co', 'code' => 'DISC01', 'status' => true]);
-    $branch = Branch::query()->create(['company_id' => $company->getKey(), 'name' => 'Disposal Branch', 'code' => 'DSBR1', 'status' => true]);
-    $category = AssetCategory::query()->create(['name' => 'Disposal Assets', 'status' => true]);
-
+    $category = AssetCategory::query()->create(['name' => 'ADS Cat', 'status' => true]);
+    $company = Company::query()->create(['name' => 'ADS Co', 'code' => 'ADSCO', 'status' => true]);
+    $branch = Branch::query()->create(['company_id' => $company->getKey(), 'name' => 'ADS Branch', 'code' => 'ADSB1', 'status' => true]);
     return Asset::query()->create([
         'asset_category_id' => $category->getKey(),
         'branch_id' => $branch->getKey(),
-        'name' => 'Old Printer',
-        'asset_code' => 'DSP001',
-        'purchase_cost' => 800,
+        'name' => 'ADS Asset',
+        'asset_code' => 'ADS-AST-1',
+        'purchase_cost' => 6000,
         'status' => 'active',
     ]);
 }
@@ -53,32 +51,40 @@ it('validates required fields when creating an asset disposal', function (): voi
     actingAs(makeAssetDisposalsAdminUser());
 
     Livewire::test(CreateAssetDisposal::class)
-        ->fillForm(['asset_id' => null, 'disposal_date' => null, 'sale_value' => null, 'reason' => ''])
+        ->fillForm(['asset_id' => null, 'disposal_date' => null, 'sale_value' => null])
         ->call('create')
         ->assertHasFormErrors(['asset_id' => 'required', 'disposal_date' => 'required', 'sale_value' => 'required']);
 });
 
 it('performs asset disposal crud operations', function (): void {
     actingAs(makeAssetDisposalsAdminUser());
-
-    $asset = createAssetDisposalAsset();
+    $asset = createAssetForDisposal();
 
     Livewire::test(CreateAssetDisposal::class)
-        ->fillForm(['asset_id' => $asset->getKey(), 'disposal_date' => '2026-07-21', 'sale_value' => 250, 'reason' => 'Scrapped'])
+        ->fillForm([
+            'asset_id' => $asset->getKey(),
+            'disposal_date' => '2026-07-21',
+            'sale_value' => 3500,
+            'reason' => 'Damaged beyond repair',
+        ])
         ->call('create')
         ->assertHasNoFormErrors();
 
     $record = AssetDisposal::query()->firstOrFail();
-
-    Livewire::test(ListAssetDisposals::class)->assertSuccessful()->assertSee('250');
+    Livewire::test(ListAssetDisposals::class)->assertSuccessful()->assertSee('ADS Asset');
 
     Livewire::test(EditAssetDisposal::class, ['record' => $record->getKey()])
-        ->fillForm(['asset_id' => $asset->getKey(), 'disposal_date' => '2026-07-22', 'sale_value' => 300, 'reason' => 'Sold'])
+        ->fillForm([
+            'asset_id' => $asset->getKey(),
+            'disposal_date' => '2026-07-23',
+            'sale_value' => 3200,
+            'reason' => 'Obsolete',
+        ])
         ->call('save')
         ->assertHasNoFormErrors();
 
     $record->refresh();
-    expect((float) $record->sale_value)->toBe(300.0);
+    expect((float) $record->sale_value)->toBe(3200.0);
 
     Livewire::test(EditAssetDisposal::class, ['record' => $record->getKey()])->callAction('delete');
     expect(AssetDisposal::query()->whereKey($record->getKey())->exists())->toBeFalse();

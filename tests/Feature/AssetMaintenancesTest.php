@@ -21,23 +21,21 @@ function makeAssetMaintenancesAdminUser(): User
     $role = Role::query()->firstOrCreate(['name' => 'Super Admin', 'guard_name' => 'web']);
     $user = User::factory()->create();
     $user->assignRole($role);
-
     return $user;
 }
 
-function createAssetMaintenanceAsset(): Asset
+function createAssetForMaintenance(): Asset
 {
-    $company = Company::query()->create(['name' => 'Maintenance Co', 'code' => 'MNTC1', 'status' => true]);
-    $branch = Branch::query()->create(['company_id' => $company->getKey(), 'name' => 'Maintenance Branch', 'code' => 'MNBR1', 'status' => true]);
-    $category = AssetCategory::query()->create(['name' => 'Maintenance Assets', 'status' => true]);
-
+    $category = AssetCategory::query()->create(['name' => 'AM Cat', 'status' => true]);
+    $company = Company::query()->create(['name' => 'AM Co', 'code' => 'AMCO1', 'status' => true]);
+    $branch = Branch::query()->create(['company_id' => $company->getKey(), 'name' => 'AM Branch', 'code' => 'AMB01', 'status' => true]);
     return Asset::query()->create([
         'asset_category_id' => $category->getKey(),
         'branch_id' => $branch->getKey(),
-        'name' => 'AC Unit',
-        'asset_code' => 'MNT001',
-        'purchase_cost' => 3000,
-        'status' => 'maintenance',
+        'name' => 'AM Asset',
+        'asset_code' => 'AM-AST-1',
+        'purchase_cost' => 11000,
+        'status' => 'active',
     ]);
 }
 
@@ -53,32 +51,40 @@ it('validates required fields when creating an asset maintenance', function (): 
     actingAs(makeAssetMaintenancesAdminUser());
 
     Livewire::test(CreateAssetMaintenance::class)
-        ->fillForm(['asset_id' => null, 'maintenance_date' => null, 'cost' => null, 'description' => ''])
+        ->fillForm(['asset_id' => null, 'maintenance_date' => null, 'cost' => null])
         ->call('create')
         ->assertHasFormErrors(['asset_id' => 'required', 'maintenance_date' => 'required', 'cost' => 'required']);
 });
 
 it('performs asset maintenance crud operations', function (): void {
     actingAs(makeAssetMaintenancesAdminUser());
-
-    $asset = createAssetMaintenanceAsset();
+    $asset = createAssetForMaintenance();
 
     Livewire::test(CreateAssetMaintenance::class)
-        ->fillForm(['asset_id' => $asset->getKey(), 'maintenance_date' => '2026-07-21', 'cost' => 125, 'description' => 'Repair work'])
+        ->fillForm([
+            'asset_id' => $asset->getKey(),
+            'maintenance_date' => '2026-07-21',
+            'cost' => 1500,
+            'description' => 'Preventive maintenance',
+        ])
         ->call('create')
         ->assertHasNoFormErrors();
 
     $record = AssetMaintenance::query()->firstOrFail();
-
-    Livewire::test(ListAssetMaintenances::class)->assertSuccessful()->assertSee('125');
+    Livewire::test(ListAssetMaintenances::class)->assertSuccessful()->assertSee('AM Asset');
 
     Livewire::test(EditAssetMaintenance::class, ['record' => $record->getKey()])
-        ->fillForm(['asset_id' => $asset->getKey(), 'maintenance_date' => '2026-07-22', 'cost' => 150, 'description' => 'Service done'])
+        ->fillForm([
+            'asset_id' => $asset->getKey(),
+            'maintenance_date' => '2026-07-22',
+            'cost' => 1700,
+            'description' => 'Corrective maintenance',
+        ])
         ->call('save')
         ->assertHasNoFormErrors();
 
     $record->refresh();
-    expect((float) $record->cost)->toBe(150.0);
+    expect((float) $record->cost)->toBe(1700.0);
 
     Livewire::test(EditAssetMaintenance::class, ['record' => $record->getKey()])->callAction('delete');
     expect(AssetMaintenance::query()->whereKey($record->getKey())->exists())->toBeFalse();
