@@ -250,15 +250,8 @@ class ProductVariantForm
 
     private static function updateVariantPrices(Set $set, Get $get): void
     {
-        $basePrice = Product::query()->whereKey($get('product_id'))->value('base_price');
-
-        if ($basePrice === null) {
-            return;
-        }
-
-        $set('mrp', $basePrice);
-        $set('selling_price', $basePrice);
-        $set('cost_price', $basePrice);
+        // Removed base_price lookup because the products table does not store prices.
+        // Prices are set directly on variants.
     }
 
     private static function generateSku(mixed $productId, mixed $attributeInputs): string
