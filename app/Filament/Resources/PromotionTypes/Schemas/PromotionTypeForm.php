@@ -20,6 +20,13 @@ class PromotionTypeForm
                     ->dehydrated()
                     ->required()
                     ->unique(ignoreRecord: true),
+                \Filament\Forms\Components\Select::make('discount_type')
+                    ->options([
+                        'percentage' => 'Percentage',
+                        'value' => 'Value',
+                    ])
+                    ->default('percentage')
+                    ->required(),
                 Textarea::make('description')
                     ->columnSpanFull(),
             ]);

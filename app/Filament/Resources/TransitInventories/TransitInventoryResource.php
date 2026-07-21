@@ -17,7 +17,7 @@ use Filament\Tables\Table;
 class TransitInventoryResource extends Resource
 {
     protected static \UnitEnum|string|null $navigationGroup = '10. Stock Transfer';
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 6;
     protected static ?string $model = TransitInventory::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

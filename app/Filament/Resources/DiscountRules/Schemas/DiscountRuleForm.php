@@ -14,7 +14,8 @@ class DiscountRuleForm
         return $schema
             ->components([
                 \Filament\Forms\Components\Select::make('promotion_type_id')->relationship('promotionType', 'name')
-                    ->required(),
+                    ->required()
+                    ->live(),
                 TextInput::make('name')
                     ->required(),
                 TextInput::make('code')
@@ -24,9 +25,21 @@ class DiscountRuleForm
                     ->required()
                     ->unique(ignoreRecord: true),
                 TextInput::make('discount_percentage')
-                    ->numeric(),
+                    ->numeric()
+                    ->visible(function ($get) {
+                        $promotionTypeId = $get('promotion_type_id');
+                        if (! $promotionTypeId) return false;
+                        $promotionType = \App\Models\PromotionType::find($promotionTypeId);
+                        return $promotionType?->discount_type === 'percentage';
+                    }),
                 TextInput::make('discount_amount')
-                    ->numeric(),
+                    ->numeric()
+                    ->visible(function ($get) {
+                        $promotionTypeId = $get('promotion_type_id');
+                        if (! $promotionTypeId) return false;
+                        $promotionType = \App\Models\PromotionType::find($promotionTypeId);
+                        return $promotionType?->discount_type === 'value';
+                    }),
                 DatePicker::make('start_date')
                     ->default(now()->timezone('Asia/Kolkata')),
                 DatePicker::make('end_date')

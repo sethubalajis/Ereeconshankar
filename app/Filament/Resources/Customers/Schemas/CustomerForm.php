@@ -25,8 +25,10 @@ class CustomerForm
                     ->email(),
                 Textarea::make('address')
                     ->columnSpanFull(),
-                DatePicker::make('dob'),
-                DatePicker::make('anniversary'),
+                DatePicker::make('dob')
+                    ->default(now()->timezone('Asia/Kolkata')),
+                DatePicker::make('anniversary')
+                    ->default(now()->timezone('Asia/Kolkata')),
                 TextInput::make('gst_number'),
                 TextInput::make('total_points')
                     ->required()
