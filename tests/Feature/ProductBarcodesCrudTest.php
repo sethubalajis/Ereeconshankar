@@ -1,10 +1,11 @@
 <?php
 
-use App\Filament\Resources\ProductBarcodes\Pages\CreateProductBarcode;
-use App\Filament\Resources\ProductBarcodes\Pages\EditProductBarcode;
+use App\Filament\Resources\ProductBarcodes\ProductBarcodeResource;
+use App\Filament\Resources\ProductVariants\Schemas\ProductVariantForm;
 use App\Filament\Resources\ProductBarcodes\Pages\ListProductBarcodes;
 use App\Models\Product;
 use App\Models\ProductBarcode;
+use App\Models\ProductVariant;
 use App\Models\Role;
 use App\Models\User;
 use Livewire\Livewire;
@@ -21,25 +22,26 @@ function makeProductBarcodeCrudAdminUser(): User
     return $user;
 }
 
-it('performs product barcode crud operations', function (): void {
+it('shows product barcodes synced from product variants as view only', function (): void {
     actingAs(makeProductBarcodeCrudAdminUser());
 
     $product = Product::query()->create([
-        'name' => 'Barcode Parent',
+        'name' => 'Variant Barcode Parent',
         'code' => 'PRDB01',
-        'base_price' => 100,
         'is_active' => true,
     ]);
 
-    Livewire::test(CreateProductBarcode::class)
-        ->fillForm([
-            'product_id' => $product->getKey(),
-            'product_variant_id' => null,
-            'barcode' => 'PBC001',
-            'barcode_type' => 'Code128',
-        ])
-        ->call('create')
-        ->assertHasNoFormErrors();
+    $variant = ProductVariant::query()->create([
+        'product_id' => $product->getKey(),
+        'sku' => 'VARPBC01',
+        'mrp' => 150,
+        'selling_price' => 130,
+        'cost_price' => 100,
+        'barcode' => 'PBC001',
+        'is_active' => true,
+    ]);
+
+    ProductVariantForm::syncBarcodeRecord($variant);
 
     $record = ProductBarcode::query()->where('barcode', 'PBC001')->firstOrFail();
 
@@ -47,21 +49,8 @@ it('performs product barcode crud operations', function (): void {
         ->assertSuccessful()
         ->assertSee($record->barcode);
 
-    Livewire::test(EditProductBarcode::class, ['record' => $record->getKey()])
-        ->fillForm([
-            'product_id' => $product->getKey(),
-            'product_variant_id' => null,
-            'barcode' => 'PBC002',
-            'barcode_type' => 'EAN13',
-        ])
-        ->call('save')
-        ->assertHasNoFormErrors();
+    $pages = ProductBarcodeResource::getPages();
 
-    $record->refresh();
-    expect($record->barcode)->toBe('PBC002');
-
-    Livewire::test(EditProductBarcode::class, ['record' => $record->getKey()])
-        ->callAction('delete');
-
-    expect(ProductBarcode::query()->whereKey($record->getKey())->exists())->toBeFalse();
+    expect(array_key_exists('create', $pages))->toBeFalse();
+    expect(array_key_exists('edit', $pages))->toBeFalse();
 });
