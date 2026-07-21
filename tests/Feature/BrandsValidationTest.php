@@ -67,7 +67,7 @@ it('prevents duplicate brand code at validation level', function (): void {
 });
 
 it('uploads and stores brand logo image', function (): void {
-    $disk = config('filament.default_filesystem_disk', 'public');
+    $disk = 'public';
     Storage::fake($disk);
     actingAs(makeBrandValidationAdminUser());
 

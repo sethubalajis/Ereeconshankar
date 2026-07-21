@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Colors\Schemas;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 
 class ColorForm
@@ -16,7 +17,7 @@ class ColorForm
                 TextInput::make('name')
                     ->required()
                     ->live(onBlur: true)
-                    ->afterStateUpdated(function (?string $state, \Filament\Forms\Set $set) {
+                    ->afterStateUpdated(function (?string $state, Set $set) {
                         if (blank($state)) return;
                         
                         $colors = [

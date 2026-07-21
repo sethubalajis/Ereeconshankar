@@ -30,7 +30,6 @@ it('performs product image crud operations', function (): void {
     $product = Product::query()->create([
         'name' => 'Image Parent',
         'code' => 'PRDI01',
-        'base_price' => 110,
         'is_active' => true,
     ]);
 
