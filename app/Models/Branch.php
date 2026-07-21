@@ -9,6 +9,15 @@ class Branch extends Model
 
     protected $guarded = [];
 
+    protected static function booted()
+    {
+        static::creating(function ($model) {
+            if (empty($model->code)) {
+                $model->code = 'BR-' . strtoupper(\Illuminate\Support\Str::random(6));
+            }
+        });
+    }
+
     public function company() {
         return $this->belongsTo(Company::class);
     }

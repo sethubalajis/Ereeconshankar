@@ -18,7 +18,11 @@ class BranchForm
                 TextInput::make('name')
                     ->required(),
                 TextInput::make('code')
-                    ->required(),
+                    ->default(fn () => 'BR-' . strtoupper(\Illuminate\Support\Str::random(6)))
+                    ->disabled()
+                    ->dehydrated()
+                    ->required()
+                    ->unique(ignoreRecord: true),
                 TextInput::make('type'),
                 TextInput::make('email')
                     ->label('Email address')

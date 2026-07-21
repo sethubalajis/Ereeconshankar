@@ -122,9 +122,18 @@ class PosSaleForm
                 \Filament\Forms\Components\Repeater::make('posSaleItems')
                     ->relationship('posSaleItems')
                     ->schema([
-                        \Filament\Forms\Components\Select::make('product_id')->relationship('product', 'name')->required(),
+                        \Filament\Forms\Components\Select::make('product_id')
+                            ->relationship('product', 'name')
+                            ->live()
+                            ->afterStateUpdated(fn ($set) => $set('product_variant_id', null))
+                            ->required(),
                         \Filament\Forms\Components\Select::make('product_variant_id')
-                            ->relationship('productVariant', 'sku')
+                            ->relationship('productVariant', 'sku', function ($query, $get) {
+                                $productId = $get('product_id');
+                                if ($productId) {
+                                    $query->where('product_id', $productId);
+                                }
+                            })
                             ->live()
                             ->afterStateUpdated(function ($state, $set, $get) use ($updateParentTotals) {
                                 if ($state) {
