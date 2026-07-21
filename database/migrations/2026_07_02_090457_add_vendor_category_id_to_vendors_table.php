@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('vendors', function (Blueprint $table) {
-            $table->foreignId('vendor_category_id')->nullable()->constrained()->onDelete('set null');
-        });
+        if (! Schema::hasColumn('vendors', 'vendor_category_id')) {
+            Schema::table('vendors', function (Blueprint $table) {
+                $table->foreignId('vendor_category_id')->nullable()->constrained()->nullOnDelete();
+            });
+        }
     }
 
     /**
@@ -21,9 +23,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('vendors', function (Blueprint $table) {
-            $table->dropForeign(['vendor_category_id']);
-            $table->dropColumn('vendor_category_id');
-        });
+        if (Schema::hasColumn('vendors', 'vendor_category_id')) {
+            Schema::table('vendors', function (Blueprint $table) {
+                $table->dropColumn('vendor_category_id');
+            });
+        }
     }
 };
