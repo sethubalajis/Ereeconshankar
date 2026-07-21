@@ -8,8 +8,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use Filament\Models\Contracts\HasTenants;
+use Filament\Panel;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
-class User extends Authenticatable
+class User extends Authenticatable implements HasTenants
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, HasRoles;
@@ -54,5 +58,18 @@ class User extends Authenticatable
     public function loginHistories() {
         return $this->hasMany(LoginHistory::class);
     }
+    
+    public function branches() {
+        return $this->belongsToMany(Branch::class, 'user_branch_accesses', 'user_id', 'branch_id');
+    }
 
+    public function getTenants(Panel $panel): Collection
+    {
+        return $this->branches;
+    }
+
+    public function canAccessTenant(Model $tenant): bool
+    {
+        return $this->branches()->where('branches.id', $tenant->id)->exists();
+    }
 }

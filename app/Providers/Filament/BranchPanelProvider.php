@@ -26,6 +26,8 @@ class BranchPanelProvider extends PanelProvider
         return $panel
             ->id('branch')
             ->path('branch')
+            ->login()
+            ->tenant(\App\Models\Branch::class)
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -37,8 +39,8 @@ class BranchPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Branch/Widgets'), for: 'App\Filament\Branch\Widgets')
             ->widgets([
                 AccountWidget::class,
-                FilamentInfoWidget::class,
             ])
+            ->brandName('Branch Admin Panel')
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

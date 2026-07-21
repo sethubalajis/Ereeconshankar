@@ -1,0 +1,54 @@
+<?php
+
+namespace App\Filament\Branch\Resources\StockTransfers\Tables;
+
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+
+class StockTransfersTable
+{
+    public static function configure(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('transferRequest.status')
+                    ->sortable(),
+                TextColumn::make('fromBranch.name')
+                    ->sortable(),
+                TextColumn::make('toBranch.name')
+                    ->sortable(),
+                TextColumn::make('transfer_date')
+                    ->date()
+                    ->sortable(),
+                TextColumn::make('vehicle_number')
+                    ->searchable(),
+                TextColumn::make('driver_name')
+                    ->searchable(),
+                TextColumn::make('status')
+                    ->searchable(),
+                TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                //
+            ])
+            ->recordActions([
+                EditAction::make(),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                ]),
+            ])
+            ->defaultSort('transfer_date', 'desc');
+    }
+}
