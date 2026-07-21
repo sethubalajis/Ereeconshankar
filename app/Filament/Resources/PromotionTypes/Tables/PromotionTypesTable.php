@@ -18,6 +18,10 @@ class PromotionTypesTable
                     ->searchable(),
                 TextColumn::make('code')
                     ->searchable(),
+                TextColumn::make('discount_type')
+                    ->label('Discount Type')
+                    ->formatStateUsing(fn (string $state): string => ucfirst($state))
+                    ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

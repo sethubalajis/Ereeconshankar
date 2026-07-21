@@ -39,20 +39,8 @@ class PosSaleForm
                 \Filament\Forms\Components\Select::make('pos_terminal_id')->relationship('posTerminal', 'terminal_name')
                     ->required(),
                 \Filament\Forms\Components\Select::make('customer_id')
-                    ->label('Customer (Search by Name, Mobile, or Loyalty Card)')
+                    ->label('Customer')
                     ->relationship('customer', 'name')
-                    ->searchable()
-                    ->getSearchResultsUsing(function (string $search): array {
-                        return \App\Models\Customer::where('name', 'like', "%{$search}%")
-                            ->orWhere('phone', 'like', "%{$search}%")
-                            ->orWhereHas('loyaltyCards', function ($query) use ($search) {
-                                $query->where('card_number', 'like', "%{$search}%");
-                            })
-                            ->limit(50)
-                            ->pluck('name', 'id')
-                            ->toArray();
-                    })
-                    ->getOptionLabelUsing(fn ($value): ?string => \App\Models\Customer::find($value)?->name)
                     ->createOptionForm([
                         \Filament\Forms\Components\TextInput::make('name')
                             ->required()
