@@ -5,6 +5,7 @@ namespace App\Filament\Resources\DashboardWidgets\Schemas;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Select;
 use Filament\Schemas\Schema;
 
 class DashboardWidgetForm
@@ -13,9 +14,26 @@ class DashboardWidgetForm
     {
         return $schema
             ->components([
-                TextInput::make('name')
+                Select::make('name')
+                    ->options([
+                        'Sales Overview' => 'Sales Overview',
+                        'Inventory Status' => 'Inventory Status',
+                        'Recent Orders' => 'Recent Orders',
+                        'Top Products' => 'Top Products',
+                        'Revenue Chart' => 'Revenue Chart',
+                        'Expense Summary' => 'Expense Summary',
+                    ])
                     ->required(),
-                TextInput::make('type')
+                Select::make('type')
+                    ->options([
+                        'chart' => 'Chart',
+                        'table' => 'Table',
+                        'metric' => 'Metric',
+                        'list' => 'List',
+                        'bar' => 'Bar Chart',
+                        'line' => 'Line Chart',
+                        'pie' => 'Pie Chart',
+                    ])
                     ->required(),
                 Textarea::make('config')
                     ->columnSpanFull(),

@@ -6,6 +6,9 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Forms\Components\DatePicker;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Table;
 
 class SalesReportsTable
@@ -32,7 +35,18 @@ class SalesReportsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Filter::make('report_date')
+                    ->form([
+                        DatePicker::make('report_date')
+                            ->label('Filter by Report Date'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['report_date'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('report_date', '=', $date),
+                            );
+                    })
             ])
             ->recordActions([
                 EditAction::make(),
