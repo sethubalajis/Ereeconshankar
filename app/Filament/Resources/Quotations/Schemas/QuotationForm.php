@@ -24,6 +24,7 @@ class QuotationForm
                     ->default(now()->timezone('Asia/Kolkata')),
                 TextInput::make('total_amount')
                     ->required()
+                    ->prefix('₹')
                     ->numeric()
                     ->default(0.0),
                 \Filament\Forms\Components\Select::make('status')
