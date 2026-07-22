@@ -29,6 +29,10 @@ class AppServiceProvider extends ServiceProvider
                 return true;
             }
 
+            if ($ability === 'viewAny' && method_exists($user, 'branches') && $user->branches()->exists()) {
+                return true;
+            }
+
             return null;
         });
 
