@@ -3,11 +3,15 @@
 namespace App\Filament\Resources\Roles\Pages;
 
 use App\Filament\Resources\Roles\RoleResource;
+use App\Models\Branch;
 use App\Models\Permission;
 use App\Models\Role;
+use App\Models\RolePermission;
+use App\Models\User;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Schema;
 
 class RolePermissions extends Page
 {
@@ -22,6 +26,14 @@ class RolePermissions extends Page
     public array $modules = [];
 
     public array $availablePermissionsByAction = [];
+
+    public array $branchSpecificPermissions = [];
+
+    public array $branchPermissionMatrices = [];
+
+    public ?int $selectedBranchId = null;
+
+    public string $matrixRenderKey = '';
 
     protected const ACTION_ALIASES = [
         'view' => ['view', 'viewAny'],
@@ -40,7 +52,56 @@ class RolePermissions extends Page
     public function mount(Role $record): void
     {
         $this->record = $record;
-        $grantedPermissions = array_flip($record->permissions()->pluck('name')->all());
+        $this->selectedBranchId = $record->branch_id ?? null;
+        $this->matrixRenderKey = 'branch-' . ($this->selectedBranchId ?? 'none');
+        $this->loadPermissionsMatrix();
+    }
+
+    public function updatedSelectedBranchId($value, $oldValue): void
+    {
+        $this->persistBranchMatrix($oldValue);
+
+        $this->matrixRenderKey = 'branch-' . ($value ?? 'none');
+        $this->loadPermissionsMatrix();
+        $this->dispatch('$refresh');
+    }
+
+    public function refreshMatrix(): void
+    {
+        $this->persistBranchMatrix($this->selectedBranchId);
+
+        $this->matrixRenderKey = 'branch-' . ($this->selectedBranchId ?? 'none');
+        $this->loadPermissionsMatrix();
+        $this->dispatch('$refresh');
+    }
+
+    protected function loadPermissionsMatrix(): void
+    {
+        $this->modules = [];
+        $this->availablePermissionsByAction = [];
+        $this->matrix = [];
+        $this->branchSpecificPermissions = [];
+
+        $branchId = $this->selectedBranchId;
+
+        $grantedPermissions = array_flip(
+            Permission::query()
+                ->join('role_permissions', 'role_permissions.permission_id', '=', 'permissions.id')
+                ->where('role_permissions.role_id', $this->record->getKey())
+                ->when(
+                    schemaHasColumn('role_permissions', 'branch_id'),
+                    function ($query) use ($branchId): void {
+                        $query->where(function ($subQuery) use ($branchId): void {
+                            $subQuery->whereNull('role_permissions.branch_id');
+                            if ($branchId !== null && $branchId !== '') {
+                                $subQuery->orWhere('role_permissions.branch_id', $branchId);
+                            }
+                        });
+                    }
+                )
+                ->pluck('permissions.name')
+                ->all()
+        );
 
         foreach (Permission::query()->orderBy('name')->get() as $permission) {
             $parts = explode('.', $permission->name, 2);
@@ -62,12 +123,25 @@ class RolePermissions extends Page
 
         ksort($this->modules);
 
+        $branchState = null;
+        if ($this->selectedBranchId !== null && $this->selectedBranchId !== '') {
+            $branchState = $this->restoreBranchMatrix($this->selectedBranchId);
+        }
+
         foreach (array_keys($this->modules) as $module) {
             foreach (array_keys(self::ACTION_LABELS) as $action) {
                 $permissionNames = $this->availablePermissionsByAction[$module][$action] ?? [];
 
-                $this->matrix[$module][$action] = $permissionNames !== []
+                $defaultChecked = $permissionNames !== []
                     && collect($permissionNames)->contains(fn (string $permissionName): bool => isset($grantedPermissions[$permissionName]));
+
+                $checked = $defaultChecked;
+                if ($branchState !== null && isset($branchState[$module][$action])) {
+                    $checked = (bool) $branchState[$module][$action];
+                }
+
+                $this->matrix[$module][$action] = $checked;
+                $this->branchSpecificPermissions[$module][$action] = $checked;
             }
         }
     }
@@ -84,7 +158,16 @@ class RolePermissions extends Page
 
     public function save(): void
     {
+        if ($this->selectedBranchId) {
+            $this->persistBranchMatrix($this->selectedBranchId);
+
+            foreach (User::query()->whereHas('roles', fn ($query) => $query->where('roles.id', $this->record->id))->get() as $user) {
+                $user->grantBranchAccess($this->selectedBranchId);
+            }
+        }
+
         $permissions = [];
+        $guardName = $this->record->guard_name ?? 'web';
 
         foreach ($this->matrix as $module => $actions) {
             foreach ($actions as $action => $enabled) {
@@ -98,12 +181,44 @@ class RolePermissions extends Page
             }
         }
 
-        $this->record->syncPermissions(array_values(array_unique($permissions)));
+        $permissionIds = Permission::query()
+            ->whereIn('name', array_values(array_unique($permissions)))
+            ->where('guard_name', $guardName)
+            ->pluck('id')
+            ->all();
+
+        if ($this->selectedBranchId !== null && $this->selectedBranchId !== '' && schemaHasColumn('role_permissions', 'branch_id')) {
+            RolePermission::query()
+                ->where('role_id', $this->record->getKey())
+                ->where('branch_id', $this->selectedBranchId)
+                ->delete();
+
+            foreach ($permissionIds as $permissionId) {
+                RolePermission::query()->create([
+                    'role_id' => $this->record->getKey(),
+                    'permission_id' => $permissionId,
+                    'branch_id' => $this->selectedBranchId,
+                ]);
+            }
+        } else {
+            $this->record->permissions()->sync($permissionIds);
+        }
+
+        $this->record->forgetCachedPermissions();
 
         Notification::make()
             ->title('Permissions updated')
             ->success()
             ->send();
+    }
+
+    public function getBranchOptions(): array
+    {
+        return Branch::query()
+            ->orderBy('name')
+            ->get()
+            ->mapWithKeys(fn (Branch $branch): array => [$branch->id => $branch->name])
+            ->toArray();
     }
 
     protected function normalizeAction(string $action): ?string
@@ -116,4 +231,35 @@ class RolePermissions extends Page
 
         return null;
     }
+
+    protected function persistBranchMatrix($branchId): void
+    {
+        if ($branchId === null || $branchId === '' || ! isset($this->matrix)) {
+            return;
+        }
+
+        $this->branchPermissionMatrices[(int) $branchId] = $this->matrix;
+        session()->put($this->getBranchMatrixStorageKey($branchId), $this->matrix);
+    }
+
+    protected function restoreBranchMatrix(int $branchId): ?array
+    {
+        $stored = session()->get($this->getBranchMatrixStorageKey($branchId));
+
+        if (is_array($stored)) {
+            return $stored;
+        }
+
+        return $this->branchPermissionMatrices[$branchId] ?? null;
+    }
+
+    protected function getBranchMatrixStorageKey(int $branchId): string
+    {
+        return 'role-permissions.' . $this->record->getKey() . '.' . $branchId;
+    }
+}
+
+function schemaHasColumn(string $table, string $column): bool
+{
+    return Schema::hasColumn($table, $column);
 }

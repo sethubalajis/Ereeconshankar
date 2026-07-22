@@ -101,6 +101,7 @@ class UserPermissions extends Page
     public function save(): void
     {
         $permissions = [];
+        $guardName = $this->record->guard_name ?? 'web';
 
         foreach ($this->matrix as $module => $actions) {
             foreach ($actions as $action => $enabled) {
@@ -114,7 +115,14 @@ class UserPermissions extends Page
             }
         }
 
-        $this->record->syncPermissions(array_values(array_unique($permissions)));
+        $permissionIds = Permission::query()
+            ->whereIn('name', array_values(array_unique($permissions)))
+            ->where('guard_name', $guardName)
+            ->pluck('id')
+            ->all();
+
+        $this->record->permissions()->sync($permissionIds);
+        $this->record->forgetCachedPermissions();
 
         Notification::make()
             ->title('User permissions updated')
