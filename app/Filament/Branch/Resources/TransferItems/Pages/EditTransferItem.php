@@ -1,0 +1,24 @@
+<?php
+
+namespace App\Filament\Branch\Resources\TransferItems\Pages;
+
+use App\Filament\Branch\Resources\TransferItems\TransferItemResource;
+use Filament\Actions\DeleteAction;
+use Filament\Resources\Pages\EditRecord;
+
+class EditTransferItem extends EditRecord
+{
+    protected static string $resource = TransferItemResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DeleteAction::make(),
+        ];
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+}
