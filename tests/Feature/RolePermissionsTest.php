@@ -73,6 +73,38 @@ it('stores permissions separately for each selected branch', function (): void {
     expect($branchBPermissions)->not->toContain($permissionA->getKey());
 });
 
+it('loads the selected branch permissions instead of a stale cached matrix', function (): void {
+    $company = Company::query()->create(['name' => 'Role Perm Co', 'code' => 'RPC1', 'status' => true]);
+    $branchA = Branch::query()->create([
+        'company_id' => $company->getKey(),
+        'name' => 'Branch A',
+        'code' => 'BRA1',
+        'status' => true,
+    ]);
+    $branchB = Branch::query()->create([
+        'company_id' => $company->getKey(),
+        'name' => 'Branch B',
+        'code' => 'BRB1',
+        'status' => true,
+    ]);
+
+    $role = Role::query()->create(['name' => 'Branch Manager', 'guard_name' => 'web']);
+    $permissionA = Permission::query()->create(['name' => 'brands.view', 'guard_name' => 'web']);
+    $permissionB = Permission::query()->create(['name' => 'products.view', 'guard_name' => 'web']);
+
+    RolePermission::query()->create(['role_id' => $role->getKey(), 'permission_id' => $permissionA->getKey(), 'branch_id' => $branchA->getKey()]);
+    RolePermission::query()->create(['role_id' => $role->getKey(), 'permission_id' => $permissionB->getKey(), 'branch_id' => $branchB->getKey()]);
+
+    Livewire::test(RolePermissions::class, ['record' => $role])
+        ->set('selectedBranchId', $branchB->getKey())
+        ->set('matrix', ['brands' => ['view' => true], 'products' => ['view' => false]])
+        ->call('refreshMatrix')
+        ->set('selectedBranchId', $branchA->getKey())
+        ->set('selectedBranchId', $branchB->getKey())
+        ->assertSet('matrix.brands.view', false)
+        ->assertSet('matrix.products.view', true);
+});
+
 it('grants branch access to users assigned to the role when saving permissions', function (): void {
     $company = Company::query()->create(['name' => 'Role Perm Co', 'code' => 'RPC1', 'status' => true]);
     $branch = Branch::query()->create([

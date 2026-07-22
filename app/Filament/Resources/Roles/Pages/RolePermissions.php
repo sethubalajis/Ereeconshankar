@@ -84,24 +84,21 @@ class RolePermissions extends Page
 
         $branchId = $this->selectedBranchId;
 
-        $grantedPermissions = array_flip(
-            Permission::query()
-                ->join('role_permissions', 'role_permissions.permission_id', '=', 'permissions.id')
-                ->where('role_permissions.role_id', $this->record->getKey())
-                ->when(
-                    schemaHasColumn('role_permissions', 'branch_id'),
-                    function ($query) use ($branchId): void {
-                        $query->where(function ($subQuery) use ($branchId): void {
-                            $subQuery->whereNull('role_permissions.branch_id');
-                            if ($branchId !== null && $branchId !== '') {
-                                $subQuery->orWhere('role_permissions.branch_id', $branchId);
-                            }
-                        });
-                    }
-                )
-                ->pluck('permissions.name')
-                ->all()
-        );
+        $grantedPermissions = [];
+        $baseRolePermissions = Permission::query()
+            ->join('role_permissions', 'role_permissions.permission_id', '=', 'permissions.id')
+            ->where('role_permissions.role_id', $this->record->getKey());
+
+        if (schemaHasColumn('role_permissions', 'branch_id')) {
+            $baseRolePermissions = $baseRolePermissions->where(function ($query) use ($branchId): void {
+                $query->whereNull('role_permissions.branch_id');
+                if ($branchId !== null && $branchId !== '') {
+                    $query->orWhere('role_permissions.branch_id', $branchId);
+                }
+            });
+        }
+
+        $grantedPermissions = array_flip($baseRolePermissions->pluck('permissions.name')->all());
 
         foreach (Permission::query()->orderBy('name')->get() as $permission) {
             $parts = explode('.', $permission->name, 2);
