@@ -13,6 +13,12 @@ class BranchPolicy
             return true;
         }
 
+        if ($user->hasAnyRole(['Branch Manager', 'Branch Admin', 'branch manager', 'branch admin'])
+            && method_exists($user, 'branches')
+            && $user->branches()->exists()) {
+            return true;
+        }
+
         return null;
     }
 

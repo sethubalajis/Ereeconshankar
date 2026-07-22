@@ -20,6 +20,7 @@ class StockValuationsTable
                     ->date()
                     ->sortable(),
                 TextColumn::make('total_value')
+                    ->prefix('₹')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('created_at')

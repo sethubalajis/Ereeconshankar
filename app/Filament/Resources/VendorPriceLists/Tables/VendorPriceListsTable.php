@@ -21,7 +21,8 @@ class VendorPriceListsTable
                 TextColumn::make('productVariant.sku')
                     ->sortable(),
                 TextColumn::make('agreed_price')
-                    ->money()
+                    ->prefix('₹')
+                    ->numeric()
                     ->sortable(),
                 TextColumn::make('valid_from')
                     ->date()

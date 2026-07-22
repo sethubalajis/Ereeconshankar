@@ -63,6 +63,18 @@ class User extends Authenticatable implements HasTenants
         return $this->belongsToMany(Branch::class, 'user_branch_accesses', 'user_id', 'branch_id');
     }
 
+    public function hasBranchAccessTo(int $branchId): bool
+    {
+        return $this->branches()->where('branches.id', $branchId)->exists();
+    }
+
+    public function grantBranchAccess(int $branchId): void
+    {
+        if (! $this->hasBranchAccessTo($branchId)) {
+            $this->branches()->attach($branchId);
+        }
+    }
+
     public function getTenants(Panel $panel): Collection
     {
         return $this->branches;

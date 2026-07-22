@@ -27,6 +27,7 @@ class PurchaseOrdersTable
                     ->date()
                     ->sortable(),
                 TextColumn::make('total_amount')
+                    ->prefix('₹')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('status')

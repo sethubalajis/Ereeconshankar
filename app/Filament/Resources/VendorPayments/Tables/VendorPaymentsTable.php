@@ -22,6 +22,7 @@ class VendorPaymentsTable
                     ->date()
                     ->sortable(),
                 TextColumn::make('amount')
+                    ->prefix('₹')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('paymentMode.name')

@@ -55,6 +55,7 @@ class VendorPaymentForm
                     ->default(now()->timezone('Asia/Kolkata')),
                 TextInput::make('amount')
                     ->required()
+                    ->prefix('₹')
                     ->numeric()
                     ->default(0.0)
                     ->helperText(function (Get $get): string {

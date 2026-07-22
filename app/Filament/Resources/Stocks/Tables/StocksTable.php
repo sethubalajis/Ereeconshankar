@@ -26,7 +26,8 @@ class StocksTable
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('avg_cost')
-                    ->money()
+                    ->prefix('₹')
+                    ->numeric()
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

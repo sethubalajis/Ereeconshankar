@@ -16,7 +16,13 @@ class PickingListForm
                 \Filament\Forms\Components\TextInput::make('reference_id')->numeric()
                     ,
                 TextInput::make('reference_type'),
-                TextInput::make('status')
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'picked' => 'Picked',
+                        'packed' => 'Packed',
+                        'completed' => 'Completed',
+                    ])
                     ->required()
                     ->default('pending'),
             ]);

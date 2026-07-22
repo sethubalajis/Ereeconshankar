@@ -33,7 +33,7 @@ class StockForm
                     ->required()
                     ->numeric()
                     ->default(0.0)
-                    ->prefix('$'),
+                    ->prefix('₹'),
             ]);
     }
 
