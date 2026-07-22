@@ -29,6 +29,7 @@ class StockValuationForm
                     ->default(now()->timezone('Asia/Kolkata')),
                 TextInput::make('total_value')
                     ->required()
+                    ->prefix('₹')
                     ->numeric()
                     ->default(0.0),
             ]);

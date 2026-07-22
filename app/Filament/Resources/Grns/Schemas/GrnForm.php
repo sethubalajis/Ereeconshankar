@@ -84,6 +84,7 @@ class GrnForm
                                     }),
                                 \Filament\Forms\Components\TextInput::make('unit_price')
                                     ->required()
+                                    ->prefix('₹')
                                     ->numeric()
                                     ->default(0.0)
                                     ->live(debounce: 500)
@@ -93,6 +94,7 @@ class GrnForm
                                     }),
                                 \Filament\Forms\Components\TextInput::make('total_price')
                                     ->required()
+                                    ->prefix('₹')
                                     ->numeric()
                                     ->default(0.0),
                             ])

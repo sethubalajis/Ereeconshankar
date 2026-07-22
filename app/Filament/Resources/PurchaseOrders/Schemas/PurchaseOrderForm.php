@@ -30,6 +30,7 @@ class PurchaseOrderForm
                     ->default(now()->timezone('Asia/Kolkata')),
                 TextInput::make('total_amount')
                     ->required()
+                    ->prefix('₹')
                     ->numeric()
                     ->default(0.0),
                 Select::make('status')
@@ -88,6 +89,7 @@ class PurchaseOrderForm
                             }),
                         TextInput::make('unit_price')
                             ->required()
+                            ->prefix('₹')
                             ->numeric()
                             ->default(0.0)
                             ->live(debounce: 500)
@@ -100,6 +102,7 @@ class PurchaseOrderForm
                             }),
                         TextInput::make('total_price')
                             ->required()
+                            ->prefix('₹')
                             ->numeric()
                             ->default(0.0)
                             ->readOnly(),
