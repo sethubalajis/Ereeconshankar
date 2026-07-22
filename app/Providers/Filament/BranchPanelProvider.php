@@ -26,7 +26,6 @@ class BranchPanelProvider extends PanelProvider
             ->id('branch')
             ->path('branch')
             ->login()
-            ->tenant(\App\Models\Branch::class)
             ->colors([
                 'primary' => Color::Amber,
             ])
