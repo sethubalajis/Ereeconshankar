@@ -108,6 +108,7 @@ class PurchaseReturnForm
                                     }),
                                 \Filament\Forms\Components\TextInput::make('unit_price')
                                     ->numeric()
+                                    ->prefix('₹')
                                     ->live(debounce: 500)
                                     ->afterStateUpdated(function ($state, callable $set, callable $get) {
                                         $qty = (float)($get('quantity') ?: 1);
@@ -117,7 +118,8 @@ class PurchaseReturnForm
                                         $set('../../total_amount', $total);
                                     }),
                                 \Filament\Forms\Components\TextInput::make('total_price')
-                                    ->numeric(),
+                                    ->numeric()
+                                    ->prefix('₹'),
                             ])
                             ->columns(5)
                     ])
