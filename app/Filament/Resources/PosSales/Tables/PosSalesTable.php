@@ -27,15 +27,19 @@ class PosSalesTable
                     ->sortable(),
                 TextColumn::make('total_amount')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('tax_amount')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('discount_amount')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('net_amount')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
 
                 TextColumn::make('status')
