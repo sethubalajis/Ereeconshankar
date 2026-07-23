@@ -21,6 +21,7 @@ class AssetDisposalsTable
                     ->sortable(),
                 TextColumn::make('sale_value')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

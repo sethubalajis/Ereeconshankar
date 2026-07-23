@@ -21,6 +21,7 @@ class AssetDisposalForm
                 TextInput::make('sale_value')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
                 Textarea::make('reason')
                     ->columnSpanFull(),
