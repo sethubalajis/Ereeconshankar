@@ -29,7 +29,13 @@ function createSalaryAssignmentEmployee(): Employee
 
 function createSalaryStructure(): SalaryStructure
 {
-    return SalaryStructure::query()->create(['name' => 'Standard', 'basic_percentage' => 50, 'hra_percentage' => 20, 'status' => true]);
+    return SalaryStructure::query()->create([
+        'name' => 'Standard',
+        'code' => 'STD-001',
+        'basic_percentage' => 50,
+        'hra_percentage' => 20,
+        'status' => true,
+    ]);
 }
 
 it('redirects guests away from employee salary assignments list', function (): void { get('/admin/employee-salary-assignments')->assertRedirect('/admin/login'); });
@@ -54,7 +60,7 @@ it('performs employee salary assignment crud operations', function (): void {
         ->assertHasNoFormErrors();
 
     $record = EmployeeSalaryAssignment::query()->firstOrFail();
-    Livewire::test(ListEmployeeSalaryAssignments::class)->assertSuccessful()->assertSee('35000');
+    Livewire::test(ListEmployeeSalaryAssignments::class)->assertSuccessful()->assertSee(number_format(35000));
 
     Livewire::test(EditEmployeeSalaryAssignment::class, ['record' => $record->getKey()])
         ->fillForm(['employee_id' => $employee->getKey(), 'salary_structure_id' => $structure->getKey(), 'gross_salary' => 40000, 'effective_from' => '2026-08-01'])

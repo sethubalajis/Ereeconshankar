@@ -11,7 +11,9 @@ class TransferItemForm
     {
         return $schema
             ->components([
-                \Filament\Forms\Components\Select::make('stock_transfer_id')->relationship('stockTransfer', 'vehicle_number')
+                \Filament\Forms\Components\Select::make('stock_transfer_id')
+                    ->relationship('stockTransfer', 'vehicle_number')
+                    ->getOptionLabelFromRecordUsing(fn (\App\Models\StockTransfer $record): string => $record->vehicle_number ?: ('Transfer #' . $record->id . ' - ' . $record->transfer_date))
                     ->required(),
                 \Filament\Forms\Components\Select::make('product_id')->relationship('product', 'name')
                     ->required(),

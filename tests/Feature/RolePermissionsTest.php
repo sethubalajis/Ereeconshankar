@@ -8,10 +8,22 @@ use App\Models\Role;
 use App\Models\RolePermission;
 use App\Models\User;
 use Livewire\Livewire;
+use function Pest\Laravel\actingAs;
 
 uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
 
+function makeRolePermissionsAdminUser(): User
+{
+    $role = Role::query()->firstOrCreate(['name' => 'Super Admin', 'guard_name' => 'web']);
+    $user = User::factory()->create();
+    $user->assignRole($role);
+
+    return $user;
+}
+
 it('refreshes the permission matrix when the selected branch changes', function (): void {
+    actingAs(makeRolePermissionsAdminUser());
+
     $company = Company::query()->create(['name' => 'Role Perm Co', 'code' => 'RPC1', 'status' => true]);
     $branch = Branch::query()->create([
         'company_id' => $company->getKey(),
@@ -28,6 +40,8 @@ it('refreshes the permission matrix when the selected branch changes', function 
 });
 
 it('stores permissions separately for each selected branch', function (): void {
+    actingAs(makeRolePermissionsAdminUser());
+
     $company = Company::query()->create(['name' => 'Role Perm Co', 'code' => 'RPC1', 'status' => true]);
     $branchA = Branch::query()->create([
         'company_id' => $company->getKey(),
@@ -74,6 +88,8 @@ it('stores permissions separately for each selected branch', function (): void {
 });
 
 it('loads the selected branch permissions instead of a stale cached matrix', function (): void {
+    actingAs(makeRolePermissionsAdminUser());
+
     $company = Company::query()->create(['name' => 'Role Perm Co', 'code' => 'RPC1', 'status' => true]);
     $branchA = Branch::query()->create([
         'company_id' => $company->getKey(),
@@ -106,6 +122,8 @@ it('loads the selected branch permissions instead of a stale cached matrix', fun
 });
 
 it('grants branch access to users assigned to the role when saving permissions', function (): void {
+    actingAs(makeRolePermissionsAdminUser());
+
     $company = Company::query()->create(['name' => 'Role Perm Co', 'code' => 'RPC1', 'status' => true]);
     $branch = Branch::query()->create([
         'company_id' => $company->getKey(),

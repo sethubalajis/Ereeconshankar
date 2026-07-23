@@ -4,6 +4,8 @@ namespace App\Filament\Resources\SalaryStructures\Schemas;
 
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 
 class SalaryStructureForm
@@ -26,14 +28,14 @@ class SalaryStructureForm
                     ->suffix('%')
                     ->default(40.0)
                     ->live(onBlur: true)
-                    ->afterStateUpdated(fn (\Filament\Forms\Set $set, \Filament\Forms\Get $get) => self::calculateSpecialAllowance($set, $get)),
+                    ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateSpecialAllowance($set, $get)),
                 TextInput::make('hra_percentage')
                     ->required()
                     ->numeric()
                     ->suffix('%')
                     ->default(20.0)
                     ->live(onBlur: true)
-                    ->afterStateUpdated(fn (\Filament\Forms\Set $set, \Filament\Forms\Get $get) => self::calculateSpecialAllowance($set, $get)),
+                    ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateSpecialAllowance($set, $get)),
                 \Filament\Forms\Components\Repeater::make('other_allowances')
                     ->schema([
                         TextInput::make('name')->required(),
@@ -42,10 +44,10 @@ class SalaryStructureForm
                             ->numeric()
                             ->default(0.0)
                             ->live(onBlur: true)
-                            ->afterStateUpdated(fn (\Filament\Forms\Set $set, \Filament\Forms\Get $get) => self::calculateSpecialAllowance($set, $get)),
+                            ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateSpecialAllowance($set, $get)),
                     ])
                     ->live(onBlur: true)
-                    ->afterStateUpdated(fn (\Filament\Forms\Set $set, \Filament\Forms\Get $get) => self::calculateSpecialAllowance($set, $get))
+                    ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateSpecialAllowance($set, $get))
                     ->columnSpanFull()
                     ->default([]),
                 TextInput::make('special_allowance')
@@ -59,7 +61,7 @@ class SalaryStructureForm
             ]);
     }
 
-    protected static function calculateSpecialAllowance(\Filament\Forms\Set $set, \Filament\Forms\Get $get): void
+    protected static function calculateSpecialAllowance(Set $set, Get $get): void
     {
         $basic = (float) $get('basic_percentage') ?? 40.0;
         $hra = (float) $get('hra_percentage') ?? 20.0;

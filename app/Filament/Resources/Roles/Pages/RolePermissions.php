@@ -214,16 +214,23 @@ class RolePermissions extends Page
             }
 
             foreach ($newPermissionIds as $permissionId) {
+                $updateValues = [];
+
+                if (schemaHasColumn('role_permissions', 'updated_at')) {
+                    $updateValues['updated_at'] = now();
+                }
+
+                if (schemaHasColumn('role_permissions', 'created_at')) {
+                    $updateValues['created_at'] = now();
+                }
+
                 RolePermission::query()->updateOrCreate(
                     [
                         'role_id' => $this->record->getKey(),
                         'permission_id' => $permissionId,
                         'branch_id' => $this->selectedBranchId,
                     ],
-                    [
-                        'updated_at' => now(),
-                        'created_at' => now(),
-                    ]
+                    $updateValues
                 );
             }
         } else {

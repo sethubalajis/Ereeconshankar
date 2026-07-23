@@ -49,7 +49,9 @@ it('performs branch target crud operations', function (): void {
         ->assertHasNoFormErrors();
 
     $record = BranchTarget::query()->firstOrFail();
-    Livewire::test(ListBranchTargets::class)->assertSuccessful()->assertSee('50000');
+    Livewire::test(ListBranchTargets::class)
+        ->assertSuccessful()
+        ->assertSee(number_format(50000));
 
     Livewire::test(EditBranchTarget::class, ['record' => $record->getKey()])
         ->fillForm(['branch_id' => $branch->getKey(), 'target_month' => '2026-08-01', 'target_amount' => 60000, 'achieved_amount' => 30000])

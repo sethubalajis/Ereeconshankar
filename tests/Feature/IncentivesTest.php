@@ -47,7 +47,7 @@ it('performs incentive crud operations', function (): void {
         ->assertHasNoFormErrors();
 
     $record = Incentive::query()->firstOrFail();
-    Livewire::test(ListIncentives::class)->assertSuccessful()->assertSee('5000');
+    Livewire::test(ListIncentives::class)->assertSuccessful()->assertSee(number_format(5000));
 
     Livewire::test(EditIncentive::class, ['record' => $record->getKey()])
         ->fillForm(['employee_id' => $employee->getKey(), 'month' => '2026-08-01', 'amount' => 6000, 'remarks' => 'Updated'])
