@@ -28,6 +28,8 @@ class UserPermissions extends Page
 
     public array $inheritedPermissionsByAction = [];
 
+    public array $directPermissionsByAction = [];
+
     public array $branchPermissionMatrices = [];
 
     public ?int $selectedBranchId = null;
@@ -82,30 +84,48 @@ class UserPermissions extends Page
 
     protected function loadPermissionsMatrix(): void
     {
+        app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+        $this->record->loadMissing('roles');
+        $this->record->load('permissions');
+        $this->record->load('roles.permissions');
+        $this->record->forgetCachedPermissions();
+
         $this->modules = [];
         $this->availablePermissionsByAction = [];
         $this->inheritedPermissionsByAction = [];
+        $this->directPermissionsByAction = [];
         $this->matrix = [];
 
         $roleIds = $this->record->roles()->pluck('roles.id')->all();
         $branchId = $this->selectedBranchId;
 
-        $baseRolePermissions = Permission::query()
-            ->join('role_permissions', 'role_permissions.permission_id', '=', 'permissions.id')
-            ->whereIn('role_permissions.role_id', $roleIds);
+        $permissionsViaRoles = [];
 
-        if (Schema::hasColumn('role_permissions', 'branch_id')) {
-            $baseRolePermissions = $baseRolePermissions->where(function ($query) use ($branchId): void {
-                $query->whereNull('role_permissions.branch_id');
-                if ($branchId !== null && $branchId !== '') {
-                    $query->orWhere('role_permissions.branch_id', $branchId);
-                }
-            });
+        if (Schema::hasColumn('role_permissions', 'branch_id') && $branchId !== null && $branchId !== '') {
+            $permissionsViaRoles = Permission::query()
+                ->join('role_permissions', 'role_permissions.permission_id', '=', 'permissions.id')
+                ->whereIn('role_permissions.role_id', $roleIds)
+                ->where('role_permissions.branch_id', $branchId)
+                ->pluck('permissions.name')
+                ->all();
+        } else {
+            $baseRolePermissions = Permission::query()
+                ->join('role_permissions', 'role_permissions.permission_id', '=', 'permissions.id')
+                ->whereIn('role_permissions.role_id', $roleIds);
+
+            if (Schema::hasColumn('role_permissions', 'branch_id')) {
+                $baseRolePermissions = $baseRolePermissions->where(function ($query): void {
+                    $query->whereNull('role_permissions.branch_id');
+                });
+            }
+
+            $permissionsViaRoles = $baseRolePermissions->pluck('permissions.name')->all();
         }
 
-        $permissionsViaRoles = $baseRolePermissions->pluck('permissions.name')->all();
+        $directPermissionNames = $this->record->getDirectPermissions()->pluck('name')->all();
+        $directPermissions = array_flip($directPermissionNames);
 
-        $directPermissions = array_flip($this->record->getDirectPermissions()->pluck('name')->all());
+        $branchPermissionNames = $permissionsViaRoles;
 
         foreach (Permission::query()->orderBy('name')->get() as $permission) {
             $parts = explode('.', $permission->name, 2);
@@ -127,25 +147,30 @@ class UserPermissions extends Page
             if (in_array($permission->name, $permissionsViaRoles, true)) {
                 $this->inheritedPermissionsByAction[$module][$normalizedAction] = true;
             }
+
+            if (isset($directPermissions[$permission->name])) {
+                $this->directPermissionsByAction[$module][$normalizedAction] = true;
+            }
         }
 
         ksort($this->modules);
-
-        $branchState = null;
-        if ($this->selectedBranchId !== null && $this->selectedBranchId !== '') {
-            $branchState = $this->restoreBranchMatrix($this->selectedBranchId);
-        }
 
         foreach (array_keys($this->modules) as $module) {
             foreach (array_keys(self::ACTION_LABELS) as $action) {
                 $permissionNames = $this->availablePermissionsByAction[$module][$action] ?? [];
 
-                $checked = $permissionNames !== []
-                    && ! $this->isInheritedAction($module, $action)
-                    && collect($permissionNames)->contains(fn (string $permissionName): bool => isset($directPermissions[$permissionName]));
+                $checked = false;
 
-                if ($branchState !== null && isset($branchState[$module][$action])) {
-                    $checked = (bool) $branchState[$module][$action];
+                if ($permissionNames !== []) {
+                    foreach ($permissionNames as $permissionName) {
+                        $isDirect = isset($directPermissions[$permissionName]);
+                        $isInheritedFromBranch = in_array($permissionName, $branchPermissionNames, true);
+
+                        if ($isDirect || $isInheritedFromBranch) {
+                            $checked = true;
+                            break;
+                        }
+                    }
                 }
 
                 $this->matrix[$module][$action] = $checked;
@@ -163,9 +188,15 @@ class UserPermissions extends Page
         return ($this->availablePermissionsByAction[$module][$action] ?? []) !== [];
     }
 
+    public function hasDirectPermission(string $module, string $action): bool
+    {
+        return (bool) ($this->directPermissionsByAction[$module][$action] ?? false);
+    }
+
     public function isInheritedAction(string $module, string $action): bool
     {
-        return (bool) ($this->inheritedPermissionsByAction[$module][$action] ?? false);
+        return (bool) ($this->inheritedPermissionsByAction[$module][$action] ?? false)
+            && ! $this->hasDirectPermission($module, $action);
     }
 
     public function save(): void
@@ -175,13 +206,18 @@ class UserPermissions extends Page
         $permissions = [];
         $guardName = $this->record->guard_name ?? 'web';
 
-        foreach ($this->matrix as $module => $actions) {
-            foreach ($actions as $action => $enabled) {
-                if (! $enabled || $this->isInheritedAction($module, $action)) {
+        foreach ($this->availablePermissionsByAction as $module => $actions) {
+            foreach ($actions as $action => $permissionNames) {
+                if ($this->isInheritedAction($module, $action) && ! $this->hasDirectPermission($module, $action)) {
                     continue;
                 }
 
-                foreach ($this->availablePermissionsByAction[$module][$action] ?? [] as $permissionName) {
+                $isChecked = (bool) ($this->matrix[$module][$action] ?? false);
+                if (! $isChecked) {
+                    continue;
+                }
+
+                foreach ($permissionNames as $permissionName) {
                     $permissions[] = $permissionName;
                 }
             }
@@ -193,8 +229,11 @@ class UserPermissions extends Page
             ->pluck('id')
             ->all();
 
-        $this->record->permissions()->sync($permissionIds);
+        $this->record->syncPermissions($permissionIds);
         $this->record->forgetCachedPermissions();
+
+        $this->record->load('permissions');
+        $this->record->refresh();
 
         Notification::make()
             ->title('User permissions updated')
