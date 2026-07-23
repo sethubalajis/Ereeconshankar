@@ -21,6 +21,7 @@ class PurchaseReportsTable
                     ->sortable(),
                 TextColumn::make('total_purchases')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

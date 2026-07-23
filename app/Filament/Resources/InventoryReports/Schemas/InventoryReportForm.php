@@ -25,6 +25,7 @@ class InventoryReportForm
                 TextInput::make('total_inventory_value')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
             
                 Placeholder::make('report_details')

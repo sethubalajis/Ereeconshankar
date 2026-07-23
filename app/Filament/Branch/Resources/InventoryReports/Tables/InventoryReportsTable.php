@@ -21,6 +21,7 @@ class InventoryReportsTable
                     ->sortable(),
                 TextColumn::make('total_inventory_value')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

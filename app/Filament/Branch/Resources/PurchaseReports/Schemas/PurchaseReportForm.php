@@ -25,6 +25,7 @@ class PurchaseReportForm
                 TextInput::make('total_purchases')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
             
                 Placeholder::make('report_details')
@@ -74,8 +75,7 @@ $val = $record->po_number;
 $html .= '<td class="p-2 border">' . $val . '</td>';
 $val = $record->vendor ? $record->vendor->name : 'N/A';
 $html .= '<td class="p-2 border">' . $val . '</td>';
-$val = $record->total_amount;
-$html .= '<td class="p-2 border">' . $val . '</td>';
+$html .= '<td class="p-2 border">₹' . number_format((float) $record->total_amount, 2) . '</td>';
 $val = $record->status;
 $html .= '<td class="p-2 border">' . $val . '</td>';
 $html .= '</tr>';

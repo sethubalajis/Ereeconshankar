@@ -24,6 +24,7 @@ class SalesReportsTable
                     ->sortable(),
                 TextColumn::make('total_sales')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
