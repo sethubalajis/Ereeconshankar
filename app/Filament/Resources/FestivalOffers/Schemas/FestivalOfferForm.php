@@ -24,6 +24,7 @@ class FestivalOfferForm
                 TextInput::make('discount_percentage')
                     ->required()
                     ->numeric()
+                    ->suffix('%')
                     ->default(0.0),
                 Toggle::make('status')
                     ->required(),

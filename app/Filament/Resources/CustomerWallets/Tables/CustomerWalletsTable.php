@@ -20,6 +20,7 @@ class CustomerWalletsTable
                     ->searchable(),
                 TextColumn::make('amount')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('description')
                     ->searchable(),

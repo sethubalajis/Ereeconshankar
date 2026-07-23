@@ -24,9 +24,11 @@ class ChartOfAccountsTable
                     ->searchable(),
                 TextColumn::make('opening_balance')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('current_balance')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

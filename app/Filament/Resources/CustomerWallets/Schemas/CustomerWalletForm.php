@@ -23,6 +23,7 @@ class CustomerWalletForm
                 TextInput::make('amount')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
                 TextInput::make('description'),
                 DatePicker::make('transaction_date')

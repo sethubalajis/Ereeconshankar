@@ -20,9 +20,11 @@ class PromoCodeForm
                     ->required()
                     ->unique(ignoreRecord: true),
                 TextInput::make('discount_percentage')
-                    ->numeric(),
+                    ->numeric()
+                    ->suffix('%'),
                 TextInput::make('discount_amount')
-                    ->numeric(),
+                    ->numeric()
+                    ->prefix('₹'),
                 DatePicker::make('valid_from')
                     ->default(now()->timezone('Asia/Kolkata')),
                 DatePicker::make('valid_to')
