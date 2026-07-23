@@ -42,6 +42,7 @@
                                         type="checkbox"
                                         wire:key="user-checkbox-{{ $module }}-{{ $action }}-{{ $this->matrixRenderKey }}"
                                         wire:model.live="matrix.{{ $module }}.{{ $action }}"
+                                        @checked($this->matrix[$module][$action] ?? false)
                                         class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                                     >
                                 @endif

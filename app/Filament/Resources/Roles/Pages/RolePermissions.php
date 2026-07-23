@@ -120,11 +120,6 @@ class RolePermissions extends Page
 
         ksort($this->modules);
 
-        $branchState = null;
-        if ($this->selectedBranchId !== null && $this->selectedBranchId !== '') {
-            $branchState = $this->restoreBranchMatrix($this->selectedBranchId);
-        }
-
         foreach (array_keys($this->modules) as $module) {
             foreach (array_keys(self::ACTION_LABELS) as $action) {
                 $permissionNames = $this->availablePermissionsByAction[$module][$action] ?? [];
@@ -132,13 +127,32 @@ class RolePermissions extends Page
                 $defaultChecked = $permissionNames !== []
                     && collect($permissionNames)->contains(fn (string $permissionName): bool => isset($grantedPermissions[$permissionName]));
 
-                $checked = $defaultChecked;
-                if ($branchState !== null && isset($branchState[$module][$action])) {
-                    $checked = (bool) $branchState[$module][$action];
-                }
+                $this->matrix[$module][$action] = $defaultChecked;
+                $this->branchSpecificPermissions[$module][$action] = $defaultChecked;
+            }
+        }
 
-                $this->matrix[$module][$action] = $checked;
-                $this->branchSpecificPermissions[$module][$action] = $checked;
+        if ($this->selectedBranchId !== null && $this->selectedBranchId !== '' && schemaHasColumn('role_permissions', 'branch_id')) {
+            $branchPermissions = RolePermission::query()
+                ->where('role_id', $this->record->getKey())
+                ->where('branch_id', $this->selectedBranchId)
+                ->pluck('permission_id')
+                ->all();
+
+            if ($branchPermissions !== []) {
+                $branchPermissionNames = Permission::query()
+                    ->whereIn('id', $branchPermissions)
+                    ->pluck('name')
+                    ->all();
+
+                foreach (array_keys($this->modules) as $module) {
+                    foreach (array_keys(self::ACTION_LABELS) as $action) {
+                        $permissionNames = $this->availablePermissionsByAction[$module][$action] ?? [];
+                        $checked = collect($permissionNames)->contains(fn (string $permissionName): bool => in_array($permissionName, $branchPermissionNames, true));
+                        $this->matrix[$module][$action] = $checked;
+                        $this->branchSpecificPermissions[$module][$action] = $checked;
+                    }
+                }
             }
         }
     }
@@ -185,17 +199,32 @@ class RolePermissions extends Page
             ->all();
 
         if ($this->selectedBranchId !== null && $this->selectedBranchId !== '' && schemaHasColumn('role_permissions', 'branch_id')) {
-            RolePermission::query()
+            $existingRows = RolePermission::query()
                 ->where('role_id', $this->record->getKey())
                 ->where('branch_id', $this->selectedBranchId)
-                ->delete();
+                ->get();
 
-            foreach ($permissionIds as $permissionId) {
-                RolePermission::query()->create([
-                    'role_id' => $this->record->getKey(),
-                    'permission_id' => $permissionId,
-                    'branch_id' => $this->selectedBranchId,
-                ]);
+            $existingPermissionIds = $existingRows->pluck('permission_id')->all();
+            $newPermissionIds = array_values(array_unique($permissionIds));
+
+            foreach ($existingRows as $row) {
+                if (! in_array($row->permission_id, $newPermissionIds, true)) {
+                    $row->delete();
+                }
+            }
+
+            foreach ($newPermissionIds as $permissionId) {
+                RolePermission::query()->updateOrCreate(
+                    [
+                        'role_id' => $this->record->getKey(),
+                        'permission_id' => $permissionId,
+                        'branch_id' => $this->selectedBranchId,
+                    ],
+                    [
+                        'updated_at' => now(),
+                        'created_at' => now(),
+                    ]
+                );
             }
         } else {
             $this->record->permissions()->sync($permissionIds);
