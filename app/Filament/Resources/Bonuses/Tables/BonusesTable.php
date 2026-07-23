@@ -20,6 +20,7 @@ class BonusesTable
                     ->searchable(),
                 TextColumn::make('amount')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('payout_date')
                     ->date()

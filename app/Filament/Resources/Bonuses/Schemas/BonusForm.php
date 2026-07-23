@@ -19,6 +19,7 @@ class BonusForm
                 TextInput::make('amount')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
                 DatePicker::make('payout_date')
                     ->default(now()->timezone('Asia/Kolkata')),

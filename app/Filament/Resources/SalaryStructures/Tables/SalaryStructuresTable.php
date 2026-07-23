@@ -21,12 +21,15 @@ class SalaryStructuresTable
                     ->searchable(),
                 TextColumn::make('basic_percentage')
                     ->numeric()
+                    ->suffix('%')
                     ->sortable(),
                 TextColumn::make('hra_percentage')
                     ->numeric()
+                    ->suffix('%')
                     ->sortable(),
                 TextColumn::make('special_allowance')
                     ->numeric()
+                    ->suffix('%')
                     ->sortable(),
                 IconColumn::make('status')
                     ->boolean(),
