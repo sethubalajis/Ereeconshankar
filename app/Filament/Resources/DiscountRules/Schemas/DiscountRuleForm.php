@@ -26,6 +26,7 @@ class DiscountRuleForm
                     ->unique(ignoreRecord: true),
                 TextInput::make('discount_percentage')
                     ->numeric()
+                    ->suffix('%')
                     ->visible(function ($get) {
                         $promotionTypeId = $get('promotion_type_id');
                         if (! $promotionTypeId) return false;
@@ -34,6 +35,7 @@ class DiscountRuleForm
                     }),
                 TextInput::make('discount_amount')
                     ->numeric()
+                    ->prefix('₹')
                     ->visible(function ($get) {
                         $promotionTypeId = $get('promotion_type_id');
                         if (! $promotionTypeId) return false;
@@ -47,6 +49,7 @@ class DiscountRuleForm
                 TextInput::make('min_purchase_amount')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
                 Toggle::make('status')
                     ->required(),

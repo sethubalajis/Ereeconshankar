@@ -23,9 +23,11 @@ class DiscountRulesTable
                     ->searchable(),
                 TextColumn::make('discount_percentage')
                     ->numeric()
+                    ->suffix('%')
                     ->sortable(),
                 TextColumn::make('discount_amount')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('start_date')
                     ->date()
@@ -35,6 +37,7 @@ class DiscountRulesTable
                     ->sortable(),
                 TextColumn::make('min_purchase_amount')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 IconColumn::make('status')
                     ->boolean(),
