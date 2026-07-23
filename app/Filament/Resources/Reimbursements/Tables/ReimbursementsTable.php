@@ -21,6 +21,7 @@ class ReimbursementsTable
                     ->sortable(),
                 TextColumn::make('amount')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('receipt_path')
                     ->searchable(),

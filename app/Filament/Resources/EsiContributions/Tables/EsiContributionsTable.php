@@ -18,9 +18,11 @@ class EsiContributionsTable
                     ->sortable(),
                 TextColumn::make('employee_share')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('employer_share')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('month')
                     ->date()
