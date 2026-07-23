@@ -25,7 +25,7 @@ class ComboOfferForm
                     ->required()
                     ->numeric()
                     ->default(0.0)
-                    ->prefix('$'),
+                    ->prefix('₹'),
                 DatePicker::make('start_date')
                     ->default(now()->timezone('Asia/Kolkata')),
                 DatePicker::make('end_date')

@@ -19,9 +19,11 @@ class PromoCodesTable
                     ->searchable(),
                 TextColumn::make('discount_percentage')
                     ->numeric()
+                    ->suffix('%')
                     ->sortable(),
                 TextColumn::make('discount_amount')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('valid_from')
                     ->date()

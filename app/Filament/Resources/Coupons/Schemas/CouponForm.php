@@ -16,9 +16,11 @@ class CouponForm
                 TextInput::make('code')
                     ->required(),
                 TextInput::make('discount_percentage')
-                    ->numeric(),
+                    ->numeric()
+                    ->suffix('%'),
                 TextInput::make('discount_amount')
-                    ->numeric(),
+                    ->numeric()
+                    ->prefix('₹'),
                 DatePicker::make('start_date')
                     ->default(now()->timezone('Asia/Kolkata')),
                 DatePicker::make('end_date')
@@ -26,6 +28,7 @@ class CouponForm
                 TextInput::make('min_purchase_amount')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
                 TextInput::make('max_usage')
                     ->required()

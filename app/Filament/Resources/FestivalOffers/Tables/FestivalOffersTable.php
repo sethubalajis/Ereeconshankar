@@ -25,6 +25,7 @@ class FestivalOffersTable
                     ->sortable(),
                 TextColumn::make('discount_percentage')
                     ->numeric()
+                    ->suffix('%')
                     ->sortable(),
                 IconColumn::make('status')
                     ->boolean(),

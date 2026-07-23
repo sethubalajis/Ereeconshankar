@@ -31,10 +31,12 @@ class ChartOfAccountForm
                 TextInput::make('opening_balance')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
                 TextInput::make('current_balance')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
             ]);
     }
