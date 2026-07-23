@@ -15,18 +15,22 @@ class GstRateForm
                 TextInput::make('cgst_percentage')
                     ->required()
                     ->numeric()
+                    ->suffix('%')
                     ->default(0.0),
                 TextInput::make('sgst_percentage')
                     ->required()
                     ->numeric()
+                    ->suffix('%')
                     ->default(0.0),
                 TextInput::make('igst_percentage')
                     ->required()
                     ->numeric()
+                    ->suffix('%')
                     ->default(0.0),
                 TextInput::make('cess_percentage')
                     ->required()
                     ->numeric()
+                    ->suffix('%')
                     ->default(0.0),
                 Toggle::make('status')
                     ->required(),

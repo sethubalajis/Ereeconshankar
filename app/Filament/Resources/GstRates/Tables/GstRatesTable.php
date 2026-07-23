@@ -17,15 +17,19 @@ class GstRatesTable
             ->columns([
                 TextColumn::make('cgst_percentage')
                     ->numeric()
+                    ->suffix('%')
                     ->sortable(),
                 TextColumn::make('sgst_percentage')
                     ->numeric()
+                    ->suffix('%')
                     ->sortable(),
                 TextColumn::make('igst_percentage')
                     ->numeric()
+                    ->suffix('%')
                     ->sortable(),
                 TextColumn::make('cess_percentage')
                     ->numeric()
+                    ->suffix('%')
                     ->sortable(),
                 IconColumn::make('status')
                     ->boolean(),
