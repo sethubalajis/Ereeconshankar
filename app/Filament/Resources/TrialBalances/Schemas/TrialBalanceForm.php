@@ -20,10 +20,12 @@ class TrialBalanceForm
                 TextInput::make('debit_balance')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
                 TextInput::make('credit_balance')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
             ]);
     }
