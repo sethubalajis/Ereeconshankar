@@ -20,3 +20,11 @@ it('saves direct user permissions from the checkbox matrix', function (): void {
 
     expect($directPermissions)->toContain('brands.view');
 });
+
+it('shows inherited tick marks for a branch even when a direct permission already exists', function (): void {
+    $page = new UserPermissions();
+    $page->inheritedPermissionsByAction = ['brands' => ['view' => true]];
+    $page->directPermissionsByAction = ['brands' => ['view' => true]];
+
+    expect($page->isInheritedAction('brands', 'view'))->toBeTrue();
+});

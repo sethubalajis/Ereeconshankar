@@ -195,8 +195,7 @@ class UserPermissions extends Page
 
     public function isInheritedAction(string $module, string $action): bool
     {
-        return (bool) ($this->inheritedPermissionsByAction[$module][$action] ?? false)
-            && ! $this->hasDirectPermission($module, $action);
+        return (bool) ($this->inheritedPermissionsByAction[$module][$action] ?? false);
     }
 
     public function save(): void
