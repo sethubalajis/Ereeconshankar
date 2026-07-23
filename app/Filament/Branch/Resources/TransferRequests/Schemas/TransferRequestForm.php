@@ -12,6 +12,11 @@ class TransferRequestForm
     {
         return $schema
             ->components([
+                TextInput::make('transfer_request_code')
+                    ->label('Transfer Request Code')
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->placeholder('Auto-generated on save'),
                 \Filament\Forms\Components\Select::make('from_branch_id')->relationship('fromBranch', 'name')
                     ->required(),
                 \Filament\Forms\Components\Select::make('to_branch_id')->relationship('toBranch', 'name')

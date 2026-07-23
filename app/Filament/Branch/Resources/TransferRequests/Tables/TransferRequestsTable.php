@@ -14,6 +14,9 @@ class TransferRequestsTable
     {
         return $table
             ->columns([
+                TextColumn::make('transfer_request_code')
+                    ->label('Transfer Request Code')
+                    ->searchable(),
                 TextColumn::make('fromBranch.name')
                     ->sortable(),
                 TextColumn::make('toBranch.name')

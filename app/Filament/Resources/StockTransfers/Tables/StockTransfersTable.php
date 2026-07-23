@@ -14,7 +14,9 @@ class StockTransfersTable
     {
         return $table
             ->columns([
-                TextColumn::make('transferRequest.status')
+                TextColumn::make('transferRequest.transfer_request_code')
+                    ->label('Transfer Request Code')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('fromBranch.name')
                     ->sortable(),

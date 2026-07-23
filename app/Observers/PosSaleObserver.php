@@ -15,14 +15,7 @@ class PosSaleObserver
             $customer = \App\Models\Customer::find($model->customer_id);
             if ($customer) {
                 // Find Active Loyalty Program
-                $program = \App\Models\LoyaltyProgram::where('status', true)
-                    ->where(function($q) use ($customer) {
-                        $q->where('membership_plan_id', $customer->membership_plan_id)
-                          ->orWhere('customer_group_id', $customer->customer_group_id)
-                          ->orWhere(function($q2) {
-                              $q2->whereNull('membership_plan_id')->whereNull('customer_group_id');
-                          });
-                    })->orderBy('id', 'desc')->first();
+                $program = \App\Models\LoyaltyProgram::resolveForCustomer($customer);
 
                 // Deduct redeemed points
                 if ($model->redeem_points > 0) {
