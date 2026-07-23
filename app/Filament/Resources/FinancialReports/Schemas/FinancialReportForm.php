@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\FinancialReports\Schemas;
 
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Schema;
@@ -16,7 +17,13 @@ class FinancialReportForm
     {
         return $schema
             ->components([
-                TextInput::make('report_type')
+                Select::make('report_type')
+                    ->options([
+                        'Profit & Loss' => 'Profit & Loss',
+                        'Balance Sheet' => 'Balance Sheet',
+                        'Cash Flow' => 'Cash Flow',
+                        'Trial Balance' => 'Trial Balance',
+                    ])
                     ->required()
                     ->live(),
                 DatePicker::make('as_of_date')
@@ -43,10 +50,14 @@ class FinancialReportForm
                         
                         // Parse date properly if needed (sometimes it comes as Y-m)
                         if (strlen($date) === 7) { // Y-m
-                            $query = \App\Models\JournalEntry::whereYear('entry_date', substr($date, 0, 4))
-                                ->whereMonth('entry_date', substr($date, 5, 2));
+                            $query = \App\Models\JournalEntry::whereHas('journal', function ($journalQuery) use ($date) {
+                                $journalQuery->whereYear('journal_date', substr($date, 0, 4))
+                                    ->whereMonth('journal_date', substr($date, 5, 2));
+                            });
                         } else {
-                            $query = \App\Models\JournalEntry::whereDate('entry_date', $date);
+                            $query = \App\Models\JournalEntry::whereHas('journal', function ($journalQuery) use ($date) {
+                                $journalQuery->whereDate('journal_date', $date);
+                            });
                         }
                         
                         if ($branchId) {
