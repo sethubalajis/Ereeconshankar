@@ -25,6 +25,7 @@ class DeductionForm
                 TextInput::make('amount')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
                 DatePicker::make('month')
                     ->default(now()->timezone('Asia/Kolkata'))

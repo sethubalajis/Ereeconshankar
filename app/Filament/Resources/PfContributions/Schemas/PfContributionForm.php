@@ -17,10 +17,12 @@ class PfContributionForm
                 TextInput::make('employee_share')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
                 TextInput::make('employer_share')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
                 DatePicker::make('month')
                     ->default(now()->timezone('Asia/Kolkata'))

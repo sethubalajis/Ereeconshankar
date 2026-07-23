@@ -19,6 +19,7 @@ class EmployeeSalaryAssignmentForm
                 TextInput::make('gross_salary')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
                 DatePicker::make('effective_from')
                     ->default(now()->timezone('Asia/Kolkata')->toDateString())

@@ -20,6 +20,7 @@ class ReimbursementForm
                 TextInput::make('amount')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
                 \Filament\Forms\Components\FileUpload::make('receipt_path'),
                 \Filament\Forms\Components\Select::make('status')

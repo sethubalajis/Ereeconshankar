@@ -21,6 +21,7 @@ class IncentiveForm
                 TextInput::make('amount')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
                 Textarea::make('remarks')
                     ->columnSpanFull(),

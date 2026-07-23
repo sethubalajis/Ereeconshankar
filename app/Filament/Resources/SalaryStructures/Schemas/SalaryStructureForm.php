@@ -23,12 +23,14 @@ class SalaryStructureForm
                 TextInput::make('basic_percentage')
                     ->required()
                     ->numeric()
+                    ->suffix('%')
                     ->default(40.0)
                     ->live(onBlur: true)
                     ->afterStateUpdated(fn (\Filament\Forms\Set $set, \Filament\Forms\Get $get) => self::calculateSpecialAllowance($set, $get)),
                 TextInput::make('hra_percentage')
                     ->required()
                     ->numeric()
+                    ->suffix('%')
                     ->default(20.0)
                     ->live(onBlur: true)
                     ->afterStateUpdated(fn (\Filament\Forms\Set $set, \Filament\Forms\Get $get) => self::calculateSpecialAllowance($set, $get)),
@@ -49,6 +51,7 @@ class SalaryStructureForm
                 TextInput::make('special_allowance')
                     ->required()
                     ->numeric()
+                    ->suffix('%')
                     ->readOnly()
                     ->default(40.0),
                 Toggle::make('status')

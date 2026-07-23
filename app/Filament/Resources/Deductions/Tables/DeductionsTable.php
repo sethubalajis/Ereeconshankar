@@ -20,6 +20,7 @@ class DeductionsTable
                     ->searchable(),
                 TextColumn::make('amount')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('month')
                     ->date()

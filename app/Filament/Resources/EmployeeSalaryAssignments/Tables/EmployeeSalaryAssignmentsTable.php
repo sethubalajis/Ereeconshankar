@@ -20,6 +20,7 @@ class EmployeeSalaryAssignmentsTable
                     ->sortable(),
                 TextColumn::make('gross_salary')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('effective_from')
                     ->date()
