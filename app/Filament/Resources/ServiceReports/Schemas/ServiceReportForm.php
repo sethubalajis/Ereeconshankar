@@ -43,15 +43,15 @@ class ServiceReportForm
                         
                         // Parse date properly if needed (sometimes it comes as Y-m)
                         if (strlen($date) === 7) { // Y-m
-                            $query = \App\Models\ServiceJob::whereYear('job_date', substr($date, 0, 4))
-                                ->whereMonth('job_date', substr($date, 5, 2));
+                            $query = \App\Models\ServiceRequest::whereYear('request_date', substr($date, 0, 4))
+                                ->whereMonth('request_date', substr($date, 5, 2));
                         } else {
-                            $query = \App\Models\ServiceJob::whereDate('job_date', $date);
+                            $query = \App\Models\ServiceRequest::whereDate('request_date', $date);
                         }
                         
                         if ($branchId) {
                             // Check if branch_id exists on the model
-                            if (\Illuminate\Support\Facades\Schema::hasColumn((new \App\Models\ServiceJob)->getTable(), 'branch_id')) {
+                            if (\Illuminate\Support\Facades\Schema::hasColumn((new \App\Models\ServiceRequest)->getTable(), 'branch_id')) {
                                 $query->where('branch_id', $branchId);
                             }
                         }
@@ -62,17 +62,17 @@ class ServiceReportForm
                         
                         $html = '<div class="overflow-x-auto"><table class="w-full text-sm text-left border-collapse">';
                         $html .= '<thead><tr class="bg-gray-100">';
-                        $html .= '<th class="p-2 border">Job Number</th>';
+                        $html .= '<th class="p-2 border">Request Number</th>';
 $html .= '<th class="p-2 border">Status</th>';
-$html .= '<th class="p-2 border">Amount</th>';
+$html .= '<th class="p-2 border">Request Date</th>';
 $html .= '</tr></thead><tbody>';
 foreach ($records as $record) {
 $html .= '<tr>';
-$val = $record->job_number;
+$val = $record->request_number;
 $html .= '<td class="p-2 border">' . $val . '</td>';
 $val = $record->status;
 $html .= '<td class="p-2 border">' . $val . '</td>';
-$val = $record->amount;
+$val = $record->request_date;
 $html .= '<td class="p-2 border">' . $val . '</td>';
 $html .= '</tr>';
 }
