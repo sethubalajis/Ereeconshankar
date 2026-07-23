@@ -24,7 +24,25 @@ class ShiftsTable
                     ->time()
                     ->sortable(),
                 TextColumn::make('break_time')
-                    ->time()
+                    ->formatStateUsing(function (?string $state): string {
+                        if (blank($state)) {
+                            return '-';
+                        }
+
+                        [$hours, $minutes] = array_map('intval', explode(':', $state));
+
+                        $labelParts = [];
+
+                        if ($hours > 0) {
+                            $labelParts[] = $hours . ' ' . ($hours === 1 ? 'hour' : 'hours');
+                        }
+
+                        if ($minutes > 0) {
+                            $labelParts[] = $minutes . ' min';
+                        }
+
+                        return implode(' ', $labelParts);
+                    })
                     ->sortable(),
                 IconColumn::make('status')
                     ->boolean(),
