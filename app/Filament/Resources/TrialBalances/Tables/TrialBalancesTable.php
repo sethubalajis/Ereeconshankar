@@ -21,9 +21,11 @@ class TrialBalancesTable
                     ->sortable(),
                 TextColumn::make('debit_balance')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('credit_balance')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

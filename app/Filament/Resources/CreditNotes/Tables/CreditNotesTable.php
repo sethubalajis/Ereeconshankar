@@ -23,6 +23,7 @@ class CreditNotesTable
                     ->sortable(),
                 TextColumn::make('amount')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('status')
                     ->searchable(),
