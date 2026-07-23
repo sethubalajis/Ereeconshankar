@@ -26,22 +26,23 @@ class PayrollProcessingForm
                     ->afterStateUpdated(function ($set, $get, $state) {
                         self::updateCalculations($set, $state, $get('payroll_cycle_id'));
                     }),
-                TextInput::make('basic_pay')->numeric()->default(0.0)->readonly(),
-                TextInput::make('hra')->numeric()->default(0.0)->readonly(),
-                TextInput::make('special_allowance')->numeric()->default(0.0)->readonly(),
-                TextInput::make('pf')->numeric()->default(0.0)->readonly(),
-                TextInput::make('esi')->numeric()->default(0.0)->readonly(),
-                TextInput::make('loss_of_pay')->numeric()->default(0.0)->readonly(),
-                TextInput::make('extra_deductions')->numeric()->default(0.0)->readonly(),
-                TextInput::make('bonuses')->numeric()->default(0.0)->readonly(),
-                TextInput::make('incentives')->numeric()->default(0.0)->readonly(),
-                TextInput::make('reimbursement')->numeric()->default(0.0)->readonly(),
-                TextInput::make('professional_taxes')->numeric()->default(0.0)->readonly(),
-                TextInput::make('tds_records')->numeric()->default(0.0)->readonly(),
+                TextInput::make('basic_pay')->numeric()->prefix('₹')->default(0.0)->readonly(),
+                TextInput::make('hra')->numeric()->prefix('₹')->default(0.0)->readonly(),
+                TextInput::make('special_allowance')->numeric()->prefix('₹')->default(0.0)->readonly(),
+                TextInput::make('pf')->numeric()->prefix('₹')->default(0.0)->readonly(),
+                TextInput::make('esi')->numeric()->prefix('₹')->default(0.0)->readonly(),
+                TextInput::make('loss_of_pay')->numeric()->prefix('₹')->default(0.0)->readonly(),
+                TextInput::make('extra_deductions')->numeric()->prefix('₹')->default(0.0)->readonly(),
+                TextInput::make('bonuses')->numeric()->prefix('₹')->default(0.0)->readonly(),
+                TextInput::make('incentives')->numeric()->prefix('₹')->default(0.0)->readonly(),
+                TextInput::make('reimbursement')->numeric()->prefix('₹')->default(0.0)->readonly(),
+                TextInput::make('professional_taxes')->numeric()->prefix('₹')->default(0.0)->readonly(),
+                TextInput::make('tds_records')->numeric()->prefix('₹')->default(0.0)->readonly(),
                 
                 TextInput::make('gross_pay')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0)
                     ->live(onBlur: true)
                     ->afterStateUpdated(function ($set, $get) {
@@ -50,6 +51,7 @@ class PayrollProcessingForm
                 TextInput::make('total_deductions')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0)
                     ->live(onBlur: true)
                     ->afterStateUpdated(function ($set, $get) {
@@ -59,6 +61,7 @@ class PayrollProcessingForm
                 TextInput::make('net_pay')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0)
                     ->readonly(),
                 \Filament\Forms\Components\Select::make('status')

@@ -21,9 +21,11 @@ class AssetDepreciationsTable
                     ->sortable(),
                 TextColumn::make('amount')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('current_value')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

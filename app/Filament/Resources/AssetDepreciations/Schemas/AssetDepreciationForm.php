@@ -20,10 +20,12 @@ class AssetDepreciationForm
                 TextInput::make('amount')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
                 TextInput::make('current_value')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
             ]);
     }
