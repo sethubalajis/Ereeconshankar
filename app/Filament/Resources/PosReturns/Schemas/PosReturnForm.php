@@ -21,6 +21,7 @@ class PosReturnForm
                 TextInput::make('return_amount')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
                 Textarea::make('reason')
                     ->columnSpanFull(),

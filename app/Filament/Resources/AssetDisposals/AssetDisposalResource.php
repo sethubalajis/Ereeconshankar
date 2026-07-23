@@ -20,7 +20,7 @@ class AssetDisposalResource extends Resource
     protected static ?int $navigationSort = 7;
     protected static ?string $model = AssetDisposal::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedWrenchScrewdriver;
 
     public static function form(Schema $schema): Schema
     {

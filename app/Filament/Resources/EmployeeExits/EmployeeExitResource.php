@@ -20,7 +20,7 @@ class EmployeeExitResource extends Resource
     protected static ?int $navigationSort = 11;
     protected static ?string $model = EmployeeExit::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
 
     public static function form(Schema $schema): Schema
     {

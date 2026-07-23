@@ -20,7 +20,7 @@ class VendorPaymentResource extends Resource
     protected static ?string $model = VendorPayment::class;
     protected static ?int $navigationSort = 7;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTruck;
 
     public static function form(Schema $schema): Schema
     {

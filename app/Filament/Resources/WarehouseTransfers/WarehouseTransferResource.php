@@ -20,7 +20,7 @@ class WarehouseTransferResource extends Resource
     protected static ?string $model = WarehouseTransfer::class;
     protected static ?int $navigationSort = 6;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCube;
 
     public static function form(Schema $schema): Schema
     {

@@ -20,7 +20,7 @@ class PaymentModeResource extends Resource
     protected static ?int $navigationSort = 10;
     protected static ?string $model = PaymentMode::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShoppingCart;
 
     public static function form(Schema $schema): Schema
     {

@@ -20,7 +20,7 @@ class KpiReportResource extends Resource
     protected static ?int $navigationSort = 9;
     protected static ?string $model = KpiReport::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBar;
 
     public static function form(Schema $schema): Schema
     {

@@ -20,7 +20,7 @@ class ShiftResource extends Resource
     protected static ?int $navigationSort = 6;
     protected static ?string $model = Shift::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
 
     public static function form(Schema $schema): Schema
     {

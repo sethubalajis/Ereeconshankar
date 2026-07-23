@@ -20,7 +20,7 @@ class AssetResource extends Resource
     protected static ?int $navigationSort = 2;
     protected static ?string $model = Asset::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedWrenchScrewdriver;
 
     public static function form(Schema $schema): Schema
     {

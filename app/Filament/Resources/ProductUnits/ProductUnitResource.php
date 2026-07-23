@@ -20,7 +20,7 @@ class ProductUnitResource extends Resource
     protected static ?string $model = ProductUnit::class;
     protected static ?int $navigationSort = 10;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTag;
 
     public static function form(Schema $schema): Schema
     {

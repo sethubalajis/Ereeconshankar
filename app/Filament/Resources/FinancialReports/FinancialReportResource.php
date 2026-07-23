@@ -20,7 +20,7 @@ class FinancialReportResource extends Resource
     protected static ?int $navigationSort = 6;
     protected static ?string $model = FinancialReport::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;
 
     public static function form(Schema $schema): Schema
     {

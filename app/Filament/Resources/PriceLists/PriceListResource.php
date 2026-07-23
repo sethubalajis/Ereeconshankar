@@ -20,7 +20,7 @@ class PriceListResource extends Resource
     protected static ?int $navigationSort = 8;
     protected static ?string $model = PriceList::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTag;
 
     public static function form(Schema $schema): Schema
     {

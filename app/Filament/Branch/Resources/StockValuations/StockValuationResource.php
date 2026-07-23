@@ -20,7 +20,7 @@ class StockValuationResource extends Resource
     protected static ?string $model = StockValuation::class;
     protected static ?int $navigationSort = 5;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCube;
 
     // Removed canCreate and canEdit to allow these actions
 

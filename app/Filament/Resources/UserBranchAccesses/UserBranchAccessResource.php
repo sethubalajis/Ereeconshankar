@@ -20,7 +20,7 @@ class UserBranchAccessResource extends Resource
     protected static ?string $model = UserBranchAccess::class;
     protected static ?int $navigationSort = 6;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShieldCheck;
 
     public static function form(Schema $schema): Schema
     {

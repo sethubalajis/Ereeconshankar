@@ -20,7 +20,7 @@ class TransferRequestResource extends Resource
     protected static ?int $navigationSort = 1;
     protected static ?string $model = TransferRequest::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedArrowsRightLeft;
 
     public static function form(Schema $schema): Schema
     {

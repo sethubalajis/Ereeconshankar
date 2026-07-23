@@ -20,7 +20,7 @@ class StockAdjustmentResource extends Resource
     protected static ?string $model = StockAdjustment::class;
     protected static ?int $navigationSort = 3;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCube;
 
     public static function form(Schema $schema): Schema
     {

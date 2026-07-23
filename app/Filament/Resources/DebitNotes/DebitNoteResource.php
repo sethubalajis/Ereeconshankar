@@ -20,7 +20,7 @@ class DebitNoteResource extends Resource
     protected static ?string $model = DebitNote::class;
     protected static ?int $navigationSort = 12;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;
 
     public static function form(Schema $schema): Schema
     {

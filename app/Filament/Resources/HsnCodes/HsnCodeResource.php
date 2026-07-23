@@ -20,7 +20,7 @@ class HsnCodeResource extends Resource
     protected static ?string $model = HsnCode::class;
     protected static ?int $navigationSort = 11;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTag;
 
     public static function form(Schema $schema): Schema
     {
