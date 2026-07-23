@@ -20,7 +20,7 @@ class QuotationResource extends Resource
     protected static ?string $model = Quotation::class;
     protected static ?int $navigationSort = 3;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedReceiptPercent;
 
     public static function form(Schema $schema): Schema
     {

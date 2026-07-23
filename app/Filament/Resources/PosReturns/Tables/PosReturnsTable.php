@@ -21,6 +21,7 @@ class PosReturnsTable
                     ->sortable(),
                 TextColumn::make('return_amount')
                     ->numeric()
+                    ->prefix('₹')
                     ->sortable(),
                 TextColumn::make('status')
                     ->searchable(),

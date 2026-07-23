@@ -20,7 +20,7 @@ class StockTransferResource extends Resource
     protected static ?int $navigationSort = 3;
     protected static ?string $model = StockTransfer::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCube;
 
     public static function form(Schema $schema): Schema
     {

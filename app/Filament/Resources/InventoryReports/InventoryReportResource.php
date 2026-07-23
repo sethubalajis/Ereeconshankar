@@ -20,7 +20,7 @@ class InventoryReportResource extends Resource
     protected static ?int $navigationSort = 4;
     protected static ?string $model = InventoryReport::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCube;
 
     public static function form(Schema $schema): Schema
     {

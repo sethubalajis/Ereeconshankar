@@ -20,7 +20,7 @@ class DashboardWidgetResource extends Resource
     protected static ?int $navigationSort = 1;
     protected static ?string $model = DashboardWidget::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBar;
 
     public static function form(Schema $schema): Schema
     {

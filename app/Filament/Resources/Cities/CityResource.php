@@ -20,7 +20,7 @@ class CityResource extends Resource
     protected static ?string $model = City::class;
     protected static ?int $navigationSort = 10;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingStorefront;
 
     public static function form(Schema $schema): Schema
     {

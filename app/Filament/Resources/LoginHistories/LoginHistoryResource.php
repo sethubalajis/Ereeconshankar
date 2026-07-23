@@ -20,7 +20,7 @@ class LoginHistoryResource extends Resource
     protected static ?string $model = LoginHistory::class;
     protected static ?int $navigationSort = 7;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShieldCheck;
 
     public static function form(Schema $schema): Schema
     {

@@ -18,7 +18,7 @@ class ProductBarcodeResource extends Resource
     protected static ?string $model = ProductBarcode::class;
     protected static ?int $navigationSort = 9;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTag;
 
     public static function form(Schema $schema): Schema
     {

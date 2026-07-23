@@ -20,7 +20,7 @@ class TdsRecordResource extends Resource
     protected static ?int $navigationSort = 12;
     protected static ?string $model = TdsRecord::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;
 
     public static function form(Schema $schema): Schema
     {

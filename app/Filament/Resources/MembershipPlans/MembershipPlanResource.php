@@ -20,7 +20,7 @@ class MembershipPlanResource extends Resource
     protected static ?int $navigationSort = 7;
     protected static ?string $model = MembershipPlan::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
 
     public static function form(Schema $schema): Schema
     {

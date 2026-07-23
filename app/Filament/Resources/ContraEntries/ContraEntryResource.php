@@ -20,7 +20,7 @@ class ContraEntryResource extends Resource
     protected static ?int $navigationSort = 10;
     protected static ?string $model = ContraEntry::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;
 
     public static function form(Schema $schema): Schema
     {

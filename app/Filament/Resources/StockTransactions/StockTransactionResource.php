@@ -20,7 +20,7 @@ class StockTransactionResource extends Resource
     protected static ?string $model = StockTransaction::class;
     protected static ?int $navigationSort = 2;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCube;
 
     // Removed canCreate and canEdit to allow these actions
 

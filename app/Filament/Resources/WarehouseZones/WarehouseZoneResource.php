@@ -20,7 +20,7 @@ class WarehouseZoneResource extends Resource
     protected static ?string $model = WarehouseZone::class;
     protected static ?int $navigationSort = 2;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCube;
 
     public static function form(Schema $schema): Schema
     {

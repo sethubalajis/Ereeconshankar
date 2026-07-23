@@ -20,7 +20,7 @@ class LoyaltyProgramResource extends Resource
     protected static ?int $navigationSort = 3;
     protected static ?string $model = LoyaltyProgram::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
 
     public static function form(Schema $schema): Schema
     {

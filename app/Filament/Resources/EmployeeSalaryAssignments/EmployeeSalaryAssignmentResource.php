@@ -20,7 +20,7 @@ class EmployeeSalaryAssignmentResource extends Resource
     protected static ?int $navigationSort = 3;
     protected static ?string $model = EmployeeSalaryAssignment::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
 
     public static function form(Schema $schema): Schema
     {

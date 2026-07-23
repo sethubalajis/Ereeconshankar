@@ -20,7 +20,7 @@ class ProductSubCategoryResource extends Resource
     protected static ?string $model = ProductSubCategory::class;
     protected static ?int $navigationSort = 2;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTag;
 
     public static function form(Schema $schema): Schema
     {

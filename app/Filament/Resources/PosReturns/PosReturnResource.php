@@ -20,7 +20,7 @@ class PosReturnResource extends Resource
     protected static ?int $navigationSort = 8;
     protected static ?string $model = PosReturn::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedReceiptRefund;
 
     public static function form(Schema $schema): Schema
     {

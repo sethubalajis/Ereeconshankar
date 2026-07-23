@@ -20,7 +20,7 @@ class CashBookResource extends Resource
     protected static ?int $navigationSort = 7;
     protected static ?string $model = CashBook::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;
 
     public static function form(Schema $schema): Schema
     {

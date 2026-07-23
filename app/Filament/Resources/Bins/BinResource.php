@@ -20,7 +20,7 @@ class BinResource extends Resource
     protected static ?string $model = Bin::class;
     protected static ?int $navigationSort = 4;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCube;
 
     public static function form(Schema $schema): Schema
     {

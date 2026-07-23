@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\LoginHistories\Pages;
 
 use App\Filament\Resources\LoginHistories\LoginHistoryResource;
-use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
 class ListLoginHistories extends ListRecords
@@ -12,8 +11,6 @@ class ListLoginHistories extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [
-            CreateAction::make(),
-        ];
+        return [];
     }
 }

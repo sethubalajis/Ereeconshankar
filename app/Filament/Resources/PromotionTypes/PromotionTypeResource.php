@@ -20,7 +20,7 @@ class PromotionTypeResource extends Resource
     protected static ?int $navigationSort = 1;
     protected static ?string $model = PromotionType::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedReceiptPercent;
 
     public static function form(Schema $schema): Schema
     {

@@ -20,7 +20,9 @@ class PosSaleItemResource extends Resource
     protected static ?int $navigationSort = 7;
     protected static ?string $model = PosSaleItem::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static bool $shouldRegisterNavigation = false;
+
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShoppingCart;
 
     public static function form(Schema $schema): Schema
     {

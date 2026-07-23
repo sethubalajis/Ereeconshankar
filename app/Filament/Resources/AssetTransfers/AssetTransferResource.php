@@ -20,7 +20,7 @@ class AssetTransferResource extends Resource
     protected static ?int $navigationSort = 4;
     protected static ?string $model = AssetTransfer::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedArrowsRightLeft;
 
     public static function form(Schema $schema): Schema
     {

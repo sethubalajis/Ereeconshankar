@@ -20,7 +20,7 @@ class ServiceReportResource extends Resource
     protected static ?int $navigationSort = 7;
     protected static ?string $model = ServiceReport::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBar;
 
     public static function form(Schema $schema): Schema
     {
