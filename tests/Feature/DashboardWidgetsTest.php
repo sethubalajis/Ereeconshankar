@@ -35,20 +35,20 @@ it('performs dashboard widget crud operations', function (): void {
     actingAs(makeDashboardWidgetsAdminUser());
 
     Livewire::test(CreateDashboardWidget::class)
-        ->fillForm(['name' => 'Sales KPI', 'type' => 'kpi', 'config' => '{"color":"blue"}', 'status' => true])
+        ->fillForm(['name' => 'Sales Overview', 'type' => 'metric', 'config' => '{"color":"blue"}', 'status' => true])
         ->call('create')
         ->assertHasNoFormErrors();
 
     $record = DashboardWidget::query()->firstOrFail();
-    Livewire::test(ListDashboardWidgets::class)->assertSuccessful()->assertSee('Sales KPI');
+    Livewire::test(ListDashboardWidgets::class)->assertSuccessful()->assertSee('Sales Overview');
 
     Livewire::test(EditDashboardWidget::class, ['record' => $record->getKey()])
-        ->fillForm(['name' => 'Revenue Widget', 'type' => 'chart', 'config' => '{"color":"green"}', 'status' => false])
+        ->fillForm(['name' => 'Revenue Chart', 'type' => 'chart', 'config' => '{"color":"green"}', 'status' => true])
         ->call('save')
         ->assertHasNoFormErrors();
 
     $record->refresh();
-    expect($record->name)->toBe('Revenue Widget');
+    expect($record->name)->toBe('Revenue Chart');
 
     Livewire::test(EditDashboardWidget::class, ['record' => $record->getKey()])->callAction('delete');
     expect(DashboardWidget::query()->whereKey($record->getKey())->exists())->toBeFalse();

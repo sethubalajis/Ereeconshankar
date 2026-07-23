@@ -63,12 +63,12 @@ it('performs packing list crud operations', function (): void {
     Livewire::test(ListPackingLists::class)->assertSuccessful()->assertSee('packed');
 
     Livewire::test(EditPackingList::class, ['record' => $record->getKey()])
-        ->fillForm(['picking_list_id' => $pickingList->getKey(), 'status' => 'shipped'])
+        ->fillForm(['picking_list_id' => $pickingList->getKey(), 'status' => 'active'])
         ->call('save')
         ->assertHasNoFormErrors();
 
     $record->refresh();
-    expect($record->status)->toBe('shipped');
+    expect($record->status)->toBe('active');
 
     Livewire::test(EditPackingList::class, ['record' => $record->getKey()])->callAction('delete');
     expect(PackingList::query()->whereKey($record->getKey())->exists())->toBeFalse();

@@ -92,4 +92,4 @@ it('performs transfer item crud operations', function (): void {
 
     Livewire::test(EditTransferItem::class, ['record' => $record->getKey()])->callAction('delete');
     expect(TransferItem::query()->whereKey($record->getKey())->exists())->toBeFalse();
-})->skip('Blocked by app-level Filament Select option label null issue in TransferItem form rendering.');
+});

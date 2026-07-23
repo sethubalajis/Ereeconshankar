@@ -48,7 +48,7 @@ it('validates required fields when creating a salary structure', function (): vo
             'special_allowance' => 'required',
             'status' => 'required',
         ]);
-})->skip('Blocked by application-side Filament callback type mismatch in SalaryStructureForm.');
+});
 
 it('performs salary structure crud operations', function (): void {
     actingAs(makeSalaryStructuresAdminUser());
@@ -88,4 +88,4 @@ it('performs salary structure crud operations', function (): void {
 
     Livewire::test(EditSalaryStructure::class, ['record' => $record->getKey()])->callAction('delete');
     expect(SalaryStructure::query()->whereKey($record->getKey())->exists())->toBeFalse();
-})->skip('Blocked by application-side Filament callback type mismatch in SalaryStructureForm.');
+});
