@@ -23,9 +23,11 @@ class JournalsTable
                     ->searchable(),
                 TextColumn::make('total_debit')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('total_credit')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('status')
                     ->searchable(),

@@ -25,6 +25,7 @@ class PaymentsTable
                     ->sortable(),
                 TextColumn::make('amount')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('paymentMode.name')
                     ->sortable(),

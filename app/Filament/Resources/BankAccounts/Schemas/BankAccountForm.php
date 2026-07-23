@@ -22,10 +22,12 @@ class BankAccountForm
                 TextInput::make('opening_balance')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
                 TextInput::make('current_balance')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
                 Toggle::make('is_default')
                     ->required(),

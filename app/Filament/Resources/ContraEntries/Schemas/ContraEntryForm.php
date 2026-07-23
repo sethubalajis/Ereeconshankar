@@ -22,6 +22,7 @@ class ContraEntryForm
                 TextInput::make('amount')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
                 TextInput::make('description'),
             ]);

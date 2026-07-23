@@ -27,9 +27,11 @@ class BankAccountsTable
                     ->searchable(),
                 TextColumn::make('opening_balance')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('current_balance')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 IconColumn::make('is_default')
                     ->boolean(),
