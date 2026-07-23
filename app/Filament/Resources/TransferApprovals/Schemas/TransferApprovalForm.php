@@ -12,7 +12,11 @@ class TransferApprovalForm
     {
         return $schema
             ->components([
-                \Filament\Forms\Components\Select::make('transfer_request_id')->relationship('transferRequest', 'status')
+                \Filament\Forms\Components\Select::make('transfer_request_id')
+                    ->label('Transfer Request Code')
+                    ->relationship('transferRequest', 'transfer_request_code')
+                    ->searchable()
+                    ->preload()
                     ->required(),
                 \Filament\Forms\Components\Select::make('approver_id')->relationship('approver', 'name'),
                 DatePicker::make('approval_date')

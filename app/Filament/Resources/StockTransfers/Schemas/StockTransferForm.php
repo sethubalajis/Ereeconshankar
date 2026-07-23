@@ -12,7 +12,11 @@ class StockTransferForm
     {
         return $schema
             ->components([
-                \Filament\Forms\Components\Select::make('transfer_request_id')->relationship('transferRequest', 'status'),
+                \Filament\Forms\Components\Select::make('transfer_request_id')
+                    ->label('Transfer Request Code')
+                    ->relationship('transferRequest', 'transfer_request_code')
+                    ->searchable()
+                    ->preload(),
                 \Filament\Forms\Components\Select::make('from_branch_id')->relationship('fromBranch', 'name')
                     ->required(),
                 \Filament\Forms\Components\Select::make('to_branch_id')->relationship('toBranch', 'name')

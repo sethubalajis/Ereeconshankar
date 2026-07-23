@@ -74,14 +74,7 @@ class PosSaleForm
                         $plan = $customer->membershipPlan;
                         $card = \Illuminate\Support\Facades\DB::table('loyalty_cards')->where('customer_id', $customerId)->where('status', true)->first();
                         
-                        $program = \App\Models\LoyaltyProgram::where('status', true)
-                            ->where(function($q) use ($customer) {
-                                $q->where('membership_plan_id', $customer->membership_plan_id)
-                                  ->orWhere('customer_group_id', $customer->customer_group_id)
-                                  ->orWhere(function($q2) {
-                                      $q2->whereNull('membership_plan_id')->whereNull('customer_group_id');
-                                  });
-                            })->orderBy('id', 'desc')->first();
+                        $program = \App\Models\LoyaltyProgram::resolveForCustomer($customer);
 
                         $html = "<strong>Name:</strong> {$customer->name} ({$customer->phone})<br>";
                         $html .= "<strong>Group:</strong> " . ($group ? "{$group->name} ({$group->discount_percentage}% off)" : "None") . "<br>";
@@ -258,14 +251,7 @@ class PosSaleForm
                         $pointsAmount = 0;
                         if ($customerId && $state > 0) {
                             $customer = \App\Models\Customer::find($customerId);
-                            $program = \App\Models\LoyaltyProgram::where('status', true)
-                                ->where(function($q) use ($customer) {
-                                    $q->where('membership_plan_id', $customer->membership_plan_id)
-                                      ->orWhere('customer_group_id', $customer->customer_group_id)
-                                      ->orWhere(function($q2) {
-                                          $q2->whereNull('membership_plan_id')->whereNull('customer_group_id');
-                                      });
-                                })->orderBy('id', 'desc')->first();
+                            $program = \App\Models\LoyaltyProgram::resolveForCustomer($customer);
                             
                             if ($program) {
                                 // Validation for max points etc can go here, but for now just calculate value
