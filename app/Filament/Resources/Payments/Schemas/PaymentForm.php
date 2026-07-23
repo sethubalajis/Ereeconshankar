@@ -21,6 +21,7 @@ class PaymentForm
                 TextInput::make('amount')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
                 \Filament\Forms\Components\Select::make('payment_mode_id')->relationship('paymentMode', 'name'),
                 TextInput::make('reference_no'),

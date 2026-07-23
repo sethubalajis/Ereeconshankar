@@ -21,12 +21,15 @@ class CashBooksTable
                     ->searchable(),
                 TextColumn::make('receipt_amount')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('payment_amount')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('balance')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

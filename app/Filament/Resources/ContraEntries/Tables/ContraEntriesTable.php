@@ -23,6 +23,7 @@ class ContraEntriesTable
                     ->sortable(),
                 TextColumn::make('amount')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('description')
                     ->searchable(),

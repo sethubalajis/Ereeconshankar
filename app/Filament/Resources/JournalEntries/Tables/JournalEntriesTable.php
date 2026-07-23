@@ -22,9 +22,11 @@ class JournalEntriesTable
                     ->searchable(),
                 TextColumn::make('debit')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('credit')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

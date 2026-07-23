@@ -24,10 +24,12 @@ class JournalForm
                 TextInput::make('total_debit')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
                 TextInput::make('total_credit')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
                 Textarea::make('notes')
                     ->columnSpanFull(),
