@@ -20,6 +20,7 @@ class ProfessionalTaxesTable
                     ->sortable(),
                 TextColumn::make('amount')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('month')
                     ->date()

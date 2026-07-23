@@ -34,21 +34,27 @@ class TdsRecordForm
                     ->afterStateUpdated(fn ($set, $get) => self::updateCalculations($set, $get)),
                 \Filament\Forms\Components\TextInput::make('annual_gross_salary')
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.00),
                 \Filament\Forms\Components\TextInput::make('approved_tax_deductions')
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.00),
                 \Filament\Forms\Components\TextInput::make('taxable_income')
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.00),
                 \Filament\Forms\Components\TextInput::make('annual_income_tax')
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.00),
                 \Filament\Forms\Components\TextInput::make('monthly_tds')
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.00),
                 \Filament\Forms\Components\TextInput::make('remaining_tds')
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.00),
                 \Filament\Forms\Components\Select::make('status')
                     ->options([
