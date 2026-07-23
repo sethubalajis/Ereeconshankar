@@ -16,6 +16,7 @@ class TcsRecordForm
                 TextInput::make('tcs_percentage')
                     ->required()
                     ->numeric()
+                    ->suffix('%')
                     ->default(0.0),
                 \Filament\Forms\Components\TextInput::make('collectee_id')->numeric()
                     ->required(),
@@ -24,6 +25,7 @@ class TcsRecordForm
                 TextInput::make('amount')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
             ]);
     }

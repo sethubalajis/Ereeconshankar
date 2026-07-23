@@ -18,6 +18,7 @@ class TcsRecordsTable
                     ->searchable(),
                 TextColumn::make('tcs_percentage')
                     ->numeric()
+                    ->suffix('%')
                     ->sortable(),
                 TextColumn::make('collectee_id')->numeric()
                     ->sortable(),
@@ -25,6 +26,7 @@ class TcsRecordsTable
                     ->searchable(),
                 TextColumn::make('amount')
                     ->numeric()
+                    ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
