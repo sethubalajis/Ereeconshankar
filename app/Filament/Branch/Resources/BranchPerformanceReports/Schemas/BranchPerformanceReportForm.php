@@ -70,8 +70,7 @@ foreach ($records as $record) {
 $html .= '<tr>';
 $val = $record->invoice_number;
 $html .= '<td class="p-2 border">' . $val . '</td>';
-$val = $record->net_amount;
-$html .= '<td class="p-2 border">' . $val . '</td>';
+$html .= '<td class="p-2 border">₹' . number_format((float) $record->net_amount, 2) . '</td>';
 $html .= '</tr>';
 }
 $html .= '</tbody></table></div>';

@@ -26,6 +26,7 @@ class SalesReportForm
                 TextInput::make('total_sales')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
                 Placeholder::make('sales_reports_list')
                     ->label('Sales Reports for Selected Date')

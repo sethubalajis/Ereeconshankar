@@ -72,8 +72,7 @@ $val = $record->entry_number;
 $html .= '<td class="p-2 border">' . $val . '</td>';
 $val = $record->description;
 $html .= '<td class="p-2 border">' . $val . '</td>';
-$val = $record->total_credit;
-$html .= '<td class="p-2 border">' . $val . '</td>';
+$html .= '<td class="p-2 border">₹' . number_format((float) $record->total_credit, 2) . '</td>';
 $html .= '</tr>';
 }
 $html .= '</tbody></table></div>';

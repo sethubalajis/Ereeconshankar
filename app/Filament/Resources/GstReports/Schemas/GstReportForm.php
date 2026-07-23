@@ -74,10 +74,8 @@ foreach ($records as $record) {
 $html .= '<tr>';
 $val = $record->invoice_number;
 $html .= '<td class="p-2 border">' . $val . '</td>';
-$val = $record->tax_amount;
-$html .= '<td class="p-2 border">' . $val . '</td>';
-$val = $record->total_amount;
-$html .= '<td class="p-2 border">' . $val . '</td>';
+$html .= '<td class="p-2 border">₹' . number_format((float) $record->tax_amount, 2) . '</td>';
+$html .= '<td class="p-2 border">₹' . number_format((float) $record->total_amount, 2) . '</td>';
 $html .= '</tr>';
 }
 $html .= '</tbody></table></div>';
