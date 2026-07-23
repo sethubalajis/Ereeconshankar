@@ -20,7 +20,7 @@ class AssetMaintenancesTable
                     ->date()
                     ->sortable(),
                 TextColumn::make('cost')
-                    ->money()
+                    ->money('INR')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

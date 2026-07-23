@@ -22,7 +22,7 @@ class AssetMaintenanceForm
                     ->required()
                     ->numeric()
                     ->default(0.0)
-                    ->prefix('$'),
+                    ->prefix('₹'),
                 Textarea::make('description')
                     ->columnSpanFull(),
             ]);

@@ -26,7 +26,7 @@ class AssetForm
                     ->required()
                     ->numeric()
                     ->default(0.0)
-                    ->prefix('$'),
+                    ->prefix('₹'),
                 \Filament\Forms\Components\Select::make('status')
                     ->options([
                         'active' => 'Active',

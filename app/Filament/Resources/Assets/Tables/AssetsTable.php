@@ -26,7 +26,7 @@ class AssetsTable
                     ->date()
                     ->sortable(),
                 TextColumn::make('purchase_cost')
-                    ->money()
+                    ->money('INR')
                     ->sortable(),
                 TextColumn::make('status')
                     ->searchable(),
