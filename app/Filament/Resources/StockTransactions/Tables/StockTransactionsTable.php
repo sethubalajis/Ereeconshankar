@@ -27,6 +27,7 @@ class StockTransactionsTable
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('reference_type')
+                    ->formatStateUsing(fn (?string $state): string => $state ? class_basename($state) : '')
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()
