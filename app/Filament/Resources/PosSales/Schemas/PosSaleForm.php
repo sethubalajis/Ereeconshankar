@@ -99,18 +99,22 @@ class PosSaleForm
                 TextInput::make('total_amount')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
                 TextInput::make('tax_amount')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
                 TextInput::make('discount_amount')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
                 TextInput::make('net_amount')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
                 \Filament\Forms\Components\Repeater::make('posSaleItems')
                     ->relationship('posSaleItems')
@@ -197,6 +201,7 @@ class PosSaleForm
                             }),
                         TextInput::make('unit_price')
                             ->numeric()
+                            ->prefix('₹')
                             ->default(0)
                             ->required()
                             ->live()
@@ -208,6 +213,7 @@ class PosSaleForm
                             }),
                         TextInput::make('discount')
                             ->numeric()
+                            ->prefix('₹')
                             ->default(0)
                             ->live()
                             ->afterStateUpdated(function ($state, $set, $get) use ($updateParentTotals) {
@@ -216,7 +222,7 @@ class PosSaleForm
                                 $set('total_price', ($unitPrice * $qty) - (float) $state);
                                 $updateParentTotals($set, $get);
                             }),
-                        TextInput::make('total_price')->numeric()->default(0)->required(),
+                        TextInput::make('total_price')->numeric()->prefix('₹')->default(0)->required(),
                     ])
                     ->live()
                     ->afterStateUpdated(function ($state, $set, $get) {
@@ -270,12 +276,14 @@ class PosSaleForm
                 TextInput::make('redeem_points_amount')
                     ->label('Points Value (Amount)')
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0)
                     ->readOnly(),
 
                 TextInput::make('use_wallet_balance')
                     ->label('Use Wallet Balance (Amount)')
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0)
                     ->live()
                     ->afterStateUpdated(function ($state, $set, $get) {
@@ -318,6 +326,7 @@ class PosSaleForm
                 TextInput::make('gift_voucher_amount')
                     ->label('Gift Voucher Amount Applied')
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0)
                     ->readOnly(),
                 \Filament\Forms\Components\Repeater::make('payments')
@@ -328,6 +337,7 @@ class PosSaleForm
                             ->label('Payment Mode'),
                         TextInput::make('amount')
                             ->numeric()
+                            ->prefix('₹')
                             ->required()
                             ->default(0.0),
                     ])
