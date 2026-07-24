@@ -45,14 +45,12 @@ it('validates required fields when creating a service request', function (): voi
     Livewire::test(CreateServiceRequest::class)
         ->fillForm([
             'customer_id' => null,
-            'request_number' => '',
             'request_date' => null,
             'status' => null,
         ])
         ->call('create')
         ->assertHasFormErrors([
             'customer_id' => 'required',
-            'request_number' => 'required',
             'request_date' => 'required',
             'status' => 'required',
         ]);
@@ -65,7 +63,6 @@ it('performs service request crud operations', function (): void {
     Livewire::test(CreateServiceRequest::class)
         ->fillForm([
             'customer_id' => $customer->getKey(),
-            'request_number' => 'SR-0001',
             'request_date' => '2026-07-21',
             'issue_description' => 'Power issue in device',
             'status' => 'open',
@@ -77,7 +74,7 @@ it('performs service request crud operations', function (): void {
 
     Livewire::test(ListServiceRequests::class)
         ->assertSuccessful()
-        ->assertSee('SR-0001');
+        ->assertSee($record->request_number);
 
     Livewire::test(EditServiceRequest::class, ['record' => $record->getKey()])
         ->fillForm([

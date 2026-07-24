@@ -40,9 +40,9 @@ it('redirects guests away from create complaint ticket page', function (): void 
 it('validates required fields when creating a complaint ticket', function (): void {
     actingAs(makeComplaintTicketsAdminUser());
     Livewire::test(CreateComplaintTicket::class)
-        ->fillForm(['customer_id' => null, 'complaint_category_id' => null, 'ticket_number' => '', 'description' => '', 'status' => null])
+    ->fillForm(['customer_id' => null, 'complaint_category_id' => null, 'description' => '', 'status' => null])
         ->call('create')
-        ->assertHasFormErrors(['customer_id' => 'required', 'complaint_category_id' => 'required', 'ticket_number' => 'required', 'status' => 'required']);
+    ->assertHasFormErrors(['customer_id' => 'required', 'complaint_category_id' => 'required', 'status' => 'required']);
 });
 
 it('performs complaint ticket crud operations', function (): void {
@@ -51,12 +51,12 @@ it('performs complaint ticket crud operations', function (): void {
     $category = createComplaintTicketCategory();
 
     Livewire::test(CreateComplaintTicket::class)
-        ->fillForm(['customer_id' => $customer->getKey(), 'complaint_category_id' => $category->getKey(), 'ticket_number' => 'TCK-001', 'description' => 'Late delivery', 'status' => 'open'])
+        ->fillForm(['customer_id' => $customer->getKey(), 'complaint_category_id' => $category->getKey(), 'description' => 'Late delivery', 'status' => 'open'])
         ->call('create')
         ->assertHasNoFormErrors();
 
     $record = ComplaintTicket::query()->firstOrFail();
-    Livewire::test(ListComplaintTickets::class)->assertSuccessful()->assertSee('TCK-001');
+    Livewire::test(ListComplaintTickets::class)->assertSuccessful()->assertSee($record->ticket_number);
 
     Livewire::test(EditComplaintTicket::class, ['record' => $record->getKey()])
         ->fillForm(['customer_id' => $customer->getKey(), 'complaint_category_id' => $category->getKey(), 'ticket_number' => 'TCK-002', 'description' => 'Broken seal', 'status' => 'resolved'])
