@@ -48,6 +48,7 @@ it('validates required fields when creating a stock transfer', function (): void
             'from_branch_id' => null,
             'to_branch_id' => null,
             'transfer_date' => null,
+            'vehicle_number' => null,
             'status' => null,
         ])
         ->call('create')
@@ -55,6 +56,7 @@ it('validates required fields when creating a stock transfer', function (): void
             'from_branch_id' => 'required',
             'to_branch_id' => 'required',
             'transfer_date' => 'required',
+            'vehicle_number' => 'required',
             'status' => 'required',
         ]);
 });
