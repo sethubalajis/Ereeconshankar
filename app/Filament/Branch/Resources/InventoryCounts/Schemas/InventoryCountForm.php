@@ -15,6 +15,10 @@ class InventoryCountForm
                 \Filament\Forms\Components\Select::make('branch_id')->relationship('branch', 'name')
                     ->required(),
                 \Filament\Forms\Components\Select::make('warehouse_id')->relationship('warehouse', 'name'),
+                TextInput::make('count_code')
+                    ->required()
+                    ->default(fn () => 'IC-' . now()->format('Ymd') . '-' . str_pad((string) ((\App\Models\InventoryCount::max('id') ?? 0) + 1), 4, '0', STR_PAD_LEFT))
+                    ->unique(ignoreRecord: true),
                 DatePicker::make('count_date')
                     ->required()
                     ->default(now()->timezone('Asia/Kolkata')),

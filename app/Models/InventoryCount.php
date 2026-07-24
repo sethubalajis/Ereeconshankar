@@ -19,7 +19,14 @@ class InventoryCount extends Model
         });
 
         static::saved(function ($model) {
-            if ($model->isDirty('status') && $model->status === 'approved') {
+            $isActivated = ($model->wasRecentlyCreated && $model->status === 'active')
+                || ($model->wasChanged('status') && $model->status === 'active');
+
+            if ($isActivated) {
+                $model->generateReconciliationsFromStock();
+            }
+
+            if ($model->wasChanged('status') && $model->status === 'completed') {
                 $inventoryService = new \App\Services\InventoryService();
                 
                 foreach ($model->inventoryReconciliations as $reconciliation) {
@@ -42,6 +49,41 @@ class InventoryCount extends Model
                 }
             }
         });
+    }
+
+    protected function generateReconciliationsFromStock(): void
+    {
+        if (empty($this->branch_id)) {
+            return;
+        }
+
+        $stocksQuery = Stock::query()
+            ->selectRaw('product_id, product_variant_id, SUM(quantity) as system_qty')
+            ->where('branch_id', $this->branch_id)
+            ->groupBy('product_id', 'product_variant_id');
+
+        if ($this->warehouse_id) {
+            $stocksQuery->where('warehouse_id', $this->warehouse_id);
+        } else {
+            $stocksQuery->whereNull('warehouse_id');
+        }
+
+        $stocks = $stocksQuery->get();
+
+        foreach ($stocks as $stock) {
+            InventoryReconciliation::query()->firstOrCreate(
+                [
+                    'inventory_count_id' => $this->id,
+                    'product_id' => $stock->product_id,
+                    'product_variant_id' => $stock->product_variant_id,
+                ],
+                [
+                    'system_qty' => (float) $stock->system_qty,
+                    'physical_qty' => (float) $stock->system_qty,
+                    'variance' => 0,
+                ]
+            );
+        }
     }
 
     public function inventoryReconciliations() {

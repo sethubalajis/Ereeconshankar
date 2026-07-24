@@ -16,9 +16,13 @@ class ShiftForm
                 TextInput::make('name')
                     ->required(),
                 TimePicker::make('start_time')
-                    ->required(),
+                    ->required()
+                    ->seconds(false)
+                    ->native(false),
                 TimePicker::make('end_time')
-                    ->required(),
+                    ->required()
+                    ->seconds(false)
+                    ->native(false),
                 TextInput::make('break_time')
                     ->label('Break Time (HH:MM)')
                     ->placeholder('00:30')

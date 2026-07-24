@@ -315,6 +315,89 @@ Sale -> Sales Status Tracking</div>
       </ul>
       <div class="note">Tip: Open this file in Chrome/Edge and press Ctrl+P, then choose Save as PDF.</div>
     </div>
+
+    <div class="section">
+      <h2>Inventory Count to Reconciliation Flow</h2>
+      <div class="diagram flow">
+        <div class="flow-row">
+          <div class="flow-card"><strong>1. Create Inventory Count</strong>User selects branch, warehouse, count code, date, and status.</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-card"><strong>2. Draft or Active</strong>Draft saves only count. Active continues to auto-generation.</div>
+        </div>
+
+        <div class="flow-row">
+          <div class="flow-card"><strong>3. Draft to Active Trigger</strong>On status change, fetch stock for selected branch and warehouse.</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-card"><strong>4. Reconciliation Rows Created</strong>Generate line per product and variant with system quantity.</div>
+        </div>
+
+        <div class="flow-row">
+          <div class="flow-card"><strong>5. User Counts Physical</strong>User edits physical quantity in each reconciliation line.</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-card"><strong>6. Variance Auto-Calculated</strong>variance = physical_qty - system_qty on each save.</div>
+        </div>
+
+        <div class="flow-card"><strong>Important Rule</strong>Generation must be idempotent. Repeated saves must not create duplicate reconciliation rows for the same inventory count.</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Inventory Count/Reconciliation Test Checkpoints</h2>
+      <ul>
+        <li>Create in Draft and verify no reconciliation rows are created.</li>
+        <li>Change same count to Active and verify reconciliation rows are generated.</li>
+        <li>Verify rows include product and variant combinations for selected branch and warehouse.</li>
+        <li>Verify system quantity is auto-populated from stock.</li>
+        <li>Edit physical quantity and verify variance recalculates automatically.</li>
+        <li>Save repeatedly and verify duplicate rows are not created.</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>Inventory Count/Reconciliation Negative Paths</h2>
+      <div class="diagram flow">
+        <div class="flow-row">
+          <div class="flow-card"><strong>1. Draft to Active Decision</strong>If count remains draft, no reconciliation rows are generated.</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-card"><strong>2. Stock Availability Check</strong>System checks stock for selected branch and warehouse.</div>
+        </div>
+
+        <div class="branch-grid">
+          <div class="branch no">
+            <div class="tag">No Stock</div>
+            <strong>Active with Empty Rows</strong>
+            <ul class="mini-list">
+              <li>Count can become active</li>
+              <li>Message shown: No stock found</li>
+            </ul>
+          </div>
+          <div class="branch yes">
+            <div class="tag">Stock Found</div>
+            <strong>Generate Reconciliation Rows</strong>
+            <ul class="mini-list">
+              <li>Create product/variant lines</li>
+              <li>Avoid duplicate generation</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="flow-row">
+          <div class="flow-card"><strong>3. Physical Qty Validation</strong>User enters physical quantity values line by line.</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-card"><strong>4. Recalculate and Save</strong>Variance recalculates automatically; invalid values are blocked.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Inventory Count/Reconciliation Exception Checkpoints</h2>
+      <ul>
+        <li>Activate a count with no stock and verify active status is saved with zero reconciliation rows.</li>
+        <li>Save active count again and verify duplicate rows are not created.</li>
+        <li>Enter invalid physical quantity and verify save is blocked.</li>
+        <li>Enter valid physical quantity and verify variance is recalculated and saved.</li>
+      </ul>
+    </div>
   </div>
 
 </body>

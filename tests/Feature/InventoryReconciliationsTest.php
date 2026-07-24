@@ -67,3 +67,26 @@ it('performs inventory reconciliation crud operations', function (): void {
 
     Livewire::test(EditInventoryReconciliation::class, ['record' => $record->getKey()])->callAction('delete');
 });
+
+it('auto calculates variance from physical and system qty', function (): void {
+    actingAs(makeInventoryReconciliationsAdminUser());
+    ['inventoryCount' => $inventoryCount, 'product' => $product] = createInventoryReconciliationSetup();
+
+    Livewire::test(CreateInventoryReconciliation::class)
+        ->fillForm([
+            'inventory_count_id' => $inventoryCount->getKey(),
+            'product_id' => $product->getKey(),
+            'product_variant_id' => null,
+            'system_qty' => 75,
+            'physical_qty' => 70,
+            'variance' => 999,
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $record = InventoryReconciliation::query()->latest('id')->firstOrFail();
+
+    expect((float) $record->system_qty)->toBe(75.0);
+    expect((float) $record->physical_qty)->toBe(70.0);
+    expect((float) $record->variance)->toBe(-5.0);
+});
