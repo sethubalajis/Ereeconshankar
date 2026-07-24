@@ -19,6 +19,7 @@ class TaxGroupForm
                 TextInput::make('total_tax_percentage')
                     ->required()
                     ->numeric()
+                    ->suffix('%')
                     ->default(0.0),
             ]);
     }

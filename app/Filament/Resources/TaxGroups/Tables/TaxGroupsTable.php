@@ -18,6 +18,7 @@ class TaxGroupsTable
                     ->searchable(),
                 TextColumn::make('total_tax_percentage')
                     ->numeric()
+                    ->suffix('%')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
