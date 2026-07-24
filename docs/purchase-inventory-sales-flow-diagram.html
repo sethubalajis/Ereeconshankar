@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Purchase Inventory Sales Flow Diagram</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --text: #111827;
+      --muted: #5b6472;
+      --border: #d6dee8;
+      --accent: #1f4e79;
+      --accent-soft: #eef5fb;
+      --good: #f2fbf5;
+      --bad: #fff7f7;
+      --warn: #fffdf5;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 28px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.45;
+    }
+
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1, h2 {
+      color: var(--accent);
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 6px;
+    }
+
+    h2 {
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-bottom: 22px;
+    }
+
+    .section {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fafcff;
+      padding: 18px;
+      margin-bottom: 18px;
+      page-break-inside: avoid;
+    }
+
+    .flow {
+      display: grid;
+      gap: 12px;
+    }
+
+    .flow-line {
+      display: grid;
+      grid-template-columns: 1fr 44px 1fr 44px 1fr 44px 1fr;
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .flow-line.bottom {
+      grid-template-columns: 1fr 44px 1fr 44px 1fr 44px 1fr 44px 1fr;
+    }
+
+    .box {
+      border: 1px solid #bfd1e5;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+      padding: 14px 12px;
+      min-height: 82px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      box-shadow: 0 1px 0 rgba(17, 24, 39, 0.03);
+    }
+
+    .box strong {
+      display: block;
+      color: var(--accent);
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+
+    .arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #7b8794;
+      font-size: 24px;
+      font-weight: 700;
+      user-select: none;
+    }
+
+    .branch-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .branch {
+      border: 1px dashed #cfd8e3;
+      border-radius: 12px;
+      padding: 12px 14px;
+      background: #fff;
+    }
+
+    .branch.no { background: var(--bad); }
+    .branch.yes { background: var(--good); }
+
+    .tag {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 999px;
+      background: #edf2ff;
+      color: #3730a3;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .branch h3 {
+      margin: 0 0 6px;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    li { margin-bottom: 6px; }
+
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .legend .box {
+      min-height: auto;
+      background: #fff;
+      padding: 12px;
+    }
+
+    .test-list li { margin-bottom: 8px; }
+
+    .note {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    @media print {
+      body { padding: 0; }
+      .section { break-inside: avoid; page-break-inside: avoid; }
+      .box, .branch { break-inside: avoid; page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1>Purchase Inventory Sales Flow Diagram</h1>
+    <div class="subtitle">Visual HTML version for testing team and PDF export</div>
+
+    <div class="section">
+      <h2>End-to-End Flow</h2>
+      <div class="flow">
+        <div class="flow-line">
+          <div class="box"><strong>Purchase Requisition</strong>Demand is raised for stock.</div>
+          <div class="arrow">→</div>
+          <div class="box"><strong>RFQ / Vendor Quote</strong>Collect vendor pricing and terms.</div>
+          <div class="arrow">→</div>
+          <div class="box"><strong>Purchase Order</strong>Official order sent to vendor.</div>
+          <div class="arrow">→</div>
+          <div class="box"><strong>Goods Receipt Note (GRN)</strong>Goods are received and posted.</div>
+        </div>
+
+        <div class="flow-line bottom">
+          <div class="box"><strong>Quality Check</strong>Validate goods on arrival.</div>
+          <div class="arrow">→</div>
+          <div class="box"><strong>Putaway</strong>Move stock to warehouse/bin.</div>
+          <div class="arrow">→</div>
+          <div class="box"><strong>Inventory Increased</strong>Stock becomes available.</div>
+          <div class="arrow">→</div>
+          <div class="box"><strong>Sales Order / POS</strong>Customer demand is captured.</div>
+          <div class="arrow">→</div>
+          <div class="box"><strong>Dispatch / Invoice</strong>Pick, pack and invoice.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Negative / Exception Paths</h2>
+      <div class="flow">
+        <div class="flow-line">
+          <div class="box"><strong>1. Purchase Order Created</strong>Start of the exception flow.</div>
+          <div class="arrow">↓</div>
+          <div class="box"><strong>2. Vendor Delivers?</strong>Decision point before receipt.</div>
+        </div>
+
+        <div class="branch-grid">
+          <div class="branch no">
+            <div class="tag">No</div>
+            <h3>PO Delayed / Follow-up</h3>
+            <ul>
+              <li>No stock increase</li>
+              <li>PO remains open</li>
+            </ul>
+          </div>
+          <div class="branch yes">
+            <div class="tag">Yes</div>
+            <h3>GRN Entry</h3>
+            <ul>
+              <li>Receipt is posted</li>
+              <li>Qty compared with PO</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="flow-line">
+          <div class="box"><strong>3. Qty Matches PO?</strong>Check full, partial or excess receipt.</div>
+          <div class="arrow">↓</div>
+          <div class="box"><strong>4. QC Pass?</strong>Inspect goods before putaway.</div>
+        </div>
+
+        <div class="branch-grid">
+          <div class="branch no">
+            <div class="tag">Partial / Excess</div>
+            <h3>Partial GRN / Reject Extra Qty</h3>
+            <ul>
+              <li>Backorder open if partial</li>
+              <li>Extra qty rejected</li>
+            </ul>
+          </div>
+          <div class="branch yes">
+            <div class="tag">Pass</div>
+            <h3>Putaway to Bin</h3>
+            <ul>
+              <li>Inventory on-hand increased</li>
+              <li>Ledger updated</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="flow-line">
+          <div class="box"><strong>5. Sales Request / POS</strong>Sale is initiated.</div>
+          <div class="arrow">↓</div>
+          <div class="box"><strong>6. Stock Available?</strong>Checks available inventory.</div>
+        </div>
+
+        <div class="branch-grid">
+          <div class="branch no">
+            <div class="tag">No</div>
+            <h3>Block Sale / Allow Backorder</h3>
+            <ul>
+              <li>No dispatch possible</li>
+              <li>Pending demand recorded</li>
+            </ul>
+          </div>
+          <div class="branch yes">
+            <div class="tag">Yes</div>
+            <h3>Pick + Pack + Dispatch</h3>
+            <ul>
+              <li>Invoice generated</li>
+              <li>Inventory decreases</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="flow-line">
+          <div class="box"><strong>7. Payment Received?</strong>Close sale when payment arrives.</div>
+          <div class="arrow">↓</div>
+          <div class="box"><strong>8. Customer Return?</strong>Handle after sales return.</div>
+        </div>
+
+        <div class="branch-grid">
+          <div class="branch no">
+            <div class="tag">Partial / No</div>
+            <h3>Open Receivable / Credit Follow-up</h3>
+            <ul>
+              <li>Sale remains open</li>
+              <li>Collection follow-up required</li>
+            </ul>
+          </div>
+          <div class="branch yes">
+            <div class="tag">Yes</div>
+            <h3>Sales Return</h3>
+            <ul>
+              <li>Restock or scrap</li>
+              <li>Final exception handling</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="box"><strong>Final Checks</strong>Inventory ledger check and accounting entry check at the end of the flow.</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Functional Test Checkpoints</h2>
+      <ul class="test-list">
+        <li>Purchase side: requisition, PO approval, GRN posting, and inventory increase.</li>
+        <li>Inventory side: putaway location updates, available quantity, and status transitions.</li>
+        <li>Sales side: sale creation, pick/pack/dispatch, inventory deduction, invoice/payment.</li>
+        <li>Side effects: inventory ledger rows and accounting entries at each branch.</li>
+        <li>Negative flows: partial GRN, rejected QC, insufficient stock, partial/no payment, sales return.</li>
+      </ul>
+      <div class="note">Tip: Open this HTML in the browser and press Ctrl+P to save as PDF.</div>
+    </div>
+  </div>
+</body>
+</html>
