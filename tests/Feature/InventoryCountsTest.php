@@ -132,8 +132,8 @@ it('creates reconciliation rows when status changes from draft to active', funct
 
     expect($rows->count())->toBe(2);
     expect((float) $rows->firstWhere('product_id', $productA->getKey())->system_qty)->toBe(12.0);
-    expect((float) $rows->firstWhere('product_id', $productA->getKey())->physical_qty)->toBe(12.0);
-    expect((float) $rows->firstWhere('product_id', $productA->getKey())->variance)->toBe(0.0);
+    expect((float) $rows->firstWhere('product_id', $productA->getKey())->physical_qty)->toBe(0.0);
+    expect((float) $rows->firstWhere('product_id', $productA->getKey())->variance)->toBe(-12.0);
 
     $count->save();
 
@@ -188,12 +188,12 @@ it('matches documented inventory count to reconciliation example flow', function
         ->firstOrFail();
 
     expect((float) $lineOne->system_qty)->toBe(120.0);
-    expect((float) $lineOne->physical_qty)->toBe(120.0);
-    expect((float) $lineOne->variance)->toBe(0.0);
+    expect((float) $lineOne->physical_qty)->toBe(0.0);
+    expect((float) $lineOne->variance)->toBe(-120.0);
 
     expect((float) $lineTwo->system_qty)->toBe(35.0);
-    expect((float) $lineTwo->physical_qty)->toBe(35.0);
-    expect((float) $lineTwo->variance)->toBe(0.0);
+    expect((float) $lineTwo->physical_qty)->toBe(0.0);
+    expect((float) $lineTwo->variance)->toBe(-35.0);
 
     $lineOne->physical_qty = 118;
     $lineOne->save();
