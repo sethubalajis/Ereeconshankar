@@ -24,7 +24,8 @@ class StockTransferForm
                 DatePicker::make('transfer_date')
                     ->required()
                     ->default(now()->timezone('Asia/Kolkata')),
-                TextInput::make('vehicle_number'),
+                TextInput::make('vehicle_number')
+                    ->required(),
                 TextInput::make('driver_name'),
                 \Filament\Forms\Components\Select::make('status')
                     ->options([
