@@ -16,6 +16,25 @@ class PurchaseRequisitionForm
                 \Filament\Forms\Components\Select::make('branch_id')->relationship('branch', 'name')
                     ->required(),
                 \Filament\Forms\Components\Select::make('department_id')->relationship('department', 'name'),
+                TextInput::make('requisition_number')
+                    ->required()
+                    ->default(function (): string {
+                        $year = now()->format('Y');
+                        $prefix = "PR-{$year}-";
+                        $latest = \App\Models\PurchaseRequisition::query()
+                            ->where('requisition_number', 'like', $prefix . '%')
+                            ->orderByDesc('id')
+                            ->value('requisition_number');
+
+                        $next = 1;
+
+                        if ($latest) {
+                            $next = ((int) substr($latest, strlen($prefix))) + 1;
+                        }
+
+                        return $prefix . str_pad((string) $next, 4, '0', STR_PAD_LEFT);
+                    })
+                    ->readOnly(),
                 \Filament\Forms\Components\Select::make('subject')
                     ->options(function () {
                         $defaults = [

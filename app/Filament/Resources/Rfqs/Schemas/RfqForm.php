@@ -13,8 +13,8 @@ class RfqForm
         return $schema
             ->components([
                 \Filament\Forms\Components\Select::make('purchase_requisition_id')
-                    ->relationship('purchaseRequisition', 'subject')
-                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->subject ?? "Requisition #{$record->id}"),
+                    ->relationship('purchaseRequisition', 'requisition_number')
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->requisition_number ?? ($record->subject ?? "Requisition #{$record->id}")),
                 TextInput::make('rfq_number')
                     ->default('Auto-generated')
                     ->disabled()

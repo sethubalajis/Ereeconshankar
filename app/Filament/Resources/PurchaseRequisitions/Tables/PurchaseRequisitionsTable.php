@@ -14,6 +14,9 @@ class PurchaseRequisitionsTable
     {
         return $table
             ->columns([
+                TextColumn::make('requisition_number')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('branch.name')
                     ->sortable(),
                 TextColumn::make('department.name')
