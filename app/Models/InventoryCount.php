@@ -79,7 +79,7 @@ class InventoryCount extends Model
                 ],
                 [
                     'system_qty' => (float) $stock->system_qty,
-                    'physical_qty' => (float) $stock->system_qty,
+                    'physical_qty' => 0,
                     'variance' => 0,
                 ]
             );

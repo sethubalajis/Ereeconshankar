@@ -8,7 +8,10 @@ use App\Models\Company;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Role;
+use App\Models\Stock;
 use App\Models\StockAdjustment;
+use App\Models\StockLedger;
+use App\Models\StockTransaction;
 use App\Models\User;
 use Livewire\Livewire;
 use function Pest\Laravel\actingAs;
@@ -101,4 +104,54 @@ it('performs stock adjustment crud operations', function (): void {
 
     Livewire::test(EditStockAdjustment::class, ['record' => $record->getKey()])->callAction('delete');
     expect(StockAdjustment::query()->whereKey($record->getKey())->exists())->toBeFalse();
+});
+
+it('reflects approved stock adjustment in stocks transactions and ledgers', function (): void {
+    actingAs(makeStockAdjustmentsAdminUser());
+    ['branch' => $branch, 'product' => $product, 'variant' => $variant] = createStockAdjustmentsSetup();
+
+    Livewire::test(CreateStockAdjustment::class)
+        ->fillForm([
+            'branch_id' => $branch->getKey(),
+            'warehouse_id' => null,
+            'product_id' => $product->getKey(),
+            'product_variant_id' => $variant->getKey(),
+            'quantity' => 5,
+            'reason' => 'Approved correction',
+            'status' => 'approved',
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $stock = Stock::query()->where([
+        'product_id' => $product->getKey(),
+        'product_variant_id' => $variant->getKey(),
+        'branch_id' => $branch->getKey(),
+        'warehouse_id' => null,
+    ])->first();
+
+    expect($stock)->not->toBeNull();
+    expect((float) $stock->quantity)->toBe(5.0);
+
+    $transaction = StockTransaction::query()
+        ->where('stock_id', $stock->getKey())
+        ->where('reference_type', 'App\\Models\\StockAdjustment')
+        ->latest('id')
+        ->first();
+
+    expect($transaction)->not->toBeNull();
+    expect($transaction->transaction_type)->toBe('in');
+    expect((float) $transaction->quantity)->toBe(5.0);
+
+    $ledger = StockLedger::query()
+        ->where('product_id', $product->getKey())
+        ->where('product_variant_id', $variant->getKey())
+        ->where('branch_id', $branch->getKey())
+        ->whereNull('warehouse_id')
+        ->latest('id')
+        ->first();
+
+    expect($ledger)->not->toBeNull();
+    expect((float) $ledger->inward_qty)->toBe(5.0);
+    expect((float) $ledger->closing_qty)->toBe(5.0);
 });

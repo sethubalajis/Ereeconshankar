@@ -11,7 +11,21 @@ class StockAdjustment extends Model
     protected static function booted()
     {
         static::saved(function ($model) {
-            if ($model->isDirty('status') && $model->status === 'approved') {
+            $approvedNow = ($model->wasRecentlyCreated && $model->status === 'approved')
+                || ($model->wasChanged('status') && $model->status === 'approved');
+
+            if ($approvedNow) {
+                $reference = 'ADJ-' . $model->id;
+
+                $alreadyApplied = StockTransaction::query()
+                    ->where('reference', $reference)
+                    ->where('reference_type', 'App\\Models\\StockAdjustment')
+                    ->exists();
+
+                if ($alreadyApplied) {
+                    return;
+                }
+
                 $inventoryService = new \App\Services\InventoryService();
                 $type = $model->quantity >= 0 ? 'in' : 'out';
                 $absQuantity = abs($model->quantity);
@@ -24,7 +38,7 @@ class StockAdjustment extends Model
                     $type,
                     $absQuantity,
                     0, // cost adjustment might require more complex logic, leave 0 for now
-                    'ADJ-' . $model->id,
+                    $reference,
                     'App\\Models\\StockAdjustment'
                 );
             }

@@ -22,7 +22,12 @@ class StockReservationForm
                     ->default(0.0),
                 \Filament\Forms\Components\TextInput::make('reference_id')->numeric()
                     ,
-                TextInput::make('status')
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'active' => 'Active',
+                        'released' => 'Released',
+                        'cancelled' => 'Cancelled',
+                    ])
                     ->required()
                     ->default('active'),
             ]);
