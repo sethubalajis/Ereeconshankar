@@ -14,7 +14,8 @@ class InventoryReconciliationsTable
     {
         return $table
             ->columns([
-                TextColumn::make('inventoryCount.status')
+                TextColumn::make('inventoryCount.count_code')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('product.name')
                     ->sortable(),

@@ -14,6 +14,9 @@ class InventoryCountsTable
     {
         return $table
             ->columns([
+                TextColumn::make('count_code')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('branch.name')
                     ->sortable(),
                 TextColumn::make('warehouse.name')

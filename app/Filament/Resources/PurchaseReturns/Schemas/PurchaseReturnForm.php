@@ -24,6 +24,7 @@ class PurchaseReturnForm
                             if ($po) {
                                 $set('vendor_id', $po->vendor_id);
                                 $set('branch_id', $po->branch_id);
+                                $set('total_amount', (float) $po->total_amount);
                                 
                                 $items = $po->toArray()['items'] ?? [];
                                 $formattedItems = [];
@@ -32,6 +33,8 @@ class PurchaseReturnForm
                                 }
                                 $set('returned_items', $formattedItems);
                             }
+                        } else {
+                            $set('total_amount', 0.0);
                         }
                     }),
                 \Filament\Forms\Components\Select::make('grn_id')
@@ -49,6 +52,13 @@ class PurchaseReturnForm
                                 $set('vendor_id', $grn->vendor_id);
                                 $set('branch_id', $grn->branch_id);
                                 $set('purchase_order_id', $grn->purchase_order_id);
+
+                                if ($grn->purchase_order_id) {
+                                    $po = \App\Models\PurchaseOrder::find($grn->purchase_order_id);
+                                    if ($po) {
+                                        $set('total_amount', (float) $po->total_amount);
+                                    }
+                                }
                                 
                                 $items = $grn->received_items ?? [];
                                 $formattedItems = [];
