@@ -18,10 +18,12 @@ class MerchandisePlanningForm
                 TextInput::make('target_sales')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
                 TextInput::make('planned_budget')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
             ]);
     }

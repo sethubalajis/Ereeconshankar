@@ -20,7 +20,7 @@ class BranchExpensesTable
                     ->date()
                     ->sortable(),
                 TextColumn::make('amount')
-                    ->numeric()
+                    ->money('INR')
                     ->sortable(),
                 TextColumn::make('status')
                     ->searchable(),
