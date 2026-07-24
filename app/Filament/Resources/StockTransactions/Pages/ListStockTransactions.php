@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\StockTransactions\Pages;
 
 use App\Filament\Resources\StockTransactions\StockTransactionResource;
-use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
 class ListStockTransactions extends ListRecords
@@ -12,8 +11,6 @@ class ListStockTransactions extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [
-            CreateAction::make(),
-        ];
+        return [];
     }
 }

@@ -37,7 +37,6 @@ class ColorForm
                 TextInput::make('code')
                     ->required()
                     ->default(fn () => 'COL-' . str_pad((string)(\App\Models\Color::max('id') + 1), 4, '0', STR_PAD_LEFT))
-                    ->disabled()
                     ->dehydrated()
                     ->unique(ignoreRecord: true),
                 ColorPicker::make('hex_code'),
