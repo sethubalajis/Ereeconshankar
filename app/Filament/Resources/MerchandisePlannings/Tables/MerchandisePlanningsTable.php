@@ -19,10 +19,10 @@ class MerchandisePlanningsTable
                 TextColumn::make('season.name')
                     ->sortable(),
                 TextColumn::make('target_sales')
-                    ->numeric()
+                    ->money('INR')
                     ->sortable(),
                 TextColumn::make('planned_budget')
-                    ->numeric()
+                    ->money('INR')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

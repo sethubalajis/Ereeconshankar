@@ -20,10 +20,12 @@ class BranchTargetForm
                 TextInput::make('target_amount')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
                 TextInput::make('achieved_amount')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
             ]);
     }

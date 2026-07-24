@@ -20,10 +20,10 @@ class BranchTargetsTable
                     ->date()
                     ->sortable(),
                 TextColumn::make('target_amount')
-                    ->numeric()
+                    ->money('INR')
                     ->sortable(),
                 TextColumn::make('achieved_amount')
-                    ->numeric()
+                    ->money('INR')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
