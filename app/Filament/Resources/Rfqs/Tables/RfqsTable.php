@@ -14,7 +14,8 @@ class RfqsTable
     {
         return $table
             ->columns([
-                TextColumn::make('purchaseRequisition.subject')
+                TextColumn::make('purchaseRequisition.requisition_number')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('rfq_number')
                     ->searchable()

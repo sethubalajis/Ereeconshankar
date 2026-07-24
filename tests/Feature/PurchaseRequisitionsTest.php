@@ -63,9 +63,11 @@ it('performs purchase requisition crud operations', function (): void {
         ->assertHasNoFormErrors();
 
     $record = PurchaseRequisition::query()->firstOrFail();
+    expect($record->requisition_number)->toMatch('/^PR-\d{4}-\d{4}$/');
 
     Livewire::test(ListPurchaseRequisitions::class)
         ->assertSuccessful()
+        ->assertSee($record->requisition_number)
         ->assertSee('pending');
 
     Livewire::test(EditPurchaseRequisition::class, ['record' => $record->getKey()])
