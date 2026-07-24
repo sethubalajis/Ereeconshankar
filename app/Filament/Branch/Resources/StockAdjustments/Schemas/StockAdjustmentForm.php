@@ -22,7 +22,12 @@ class StockAdjustmentForm
                     ->numeric()
                     ->default(0.0),
                 TextInput::make('reason'),
-                TextInput::make('status')
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'approved' => 'Approved',
+                        'rejected' => 'Rejected',
+                    ])
                     ->required()
                     ->default('pending'),
             ]);
