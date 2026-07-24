@@ -11,7 +11,7 @@ class InventoryReconciliationForm
     {
         return $schema
             ->components([
-                \Filament\Forms\Components\Select::make('inventory_count_id')->relationship('inventoryCount', 'status')
+                \Filament\Forms\Components\Select::make('inventory_count_id')->relationship('inventoryCount', 'count_code')
                     ->required(),
                 \Filament\Forms\Components\Select::make('product_id')->relationship('product', 'name')
                     ->required(),
