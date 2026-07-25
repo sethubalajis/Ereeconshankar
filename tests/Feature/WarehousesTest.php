@@ -56,6 +56,7 @@ it('performs warehouse crud operations', function (): void {
             'code' => 'MWH1',
             'address' => 'Central Road',
             'capacity' => 1000,
+            'is_default' => true,
             'status' => true,
         ])
         ->call('create')
@@ -71,6 +72,7 @@ it('performs warehouse crud operations', function (): void {
             'code' => 'SWH1',
             'address' => 'North Road',
             'capacity' => 1200,
+            'is_default' => false,
             'status' => false,
         ])
         ->call('save')
@@ -78,7 +80,34 @@ it('performs warehouse crud operations', function (): void {
 
     $record->refresh();
     expect($record->code)->toBe('SWH1');
+    expect($record->is_default)->toBeFalse();
 
     Livewire::test(EditWarehouse::class, ['record' => $record->getKey()])->callAction('delete');
     expect(Warehouse::query()->whereKey($record->getKey())->exists())->toBeFalse();
+});
+
+it('keeps only one default warehouse per branch', function (): void {
+    $branch = createWarehouseBranch();
+
+    $first = Warehouse::query()->create([
+        'branch_id' => $branch->getKey(),
+        'name' => 'First Default Warehouse',
+        'code' => 'FDW1',
+        'is_default' => true,
+        'status' => true,
+    ]);
+
+    $second = Warehouse::query()->create([
+        'branch_id' => $branch->getKey(),
+        'name' => 'Second Default Warehouse',
+        'code' => 'SDW1',
+        'is_default' => true,
+        'status' => true,
+    ]);
+
+    $first->refresh();
+    $second->refresh();
+
+    expect($first->is_default)->toBeFalse();
+    expect($second->is_default)->toBeTrue();
 });

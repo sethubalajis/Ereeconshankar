@@ -21,16 +21,46 @@ class InventoryService
      * @param float $unitPrice
      * @param string $reference
      * @param string $referenceType
-     * @return \App\Models\Stock
+     * @param bool $preventNewStockOnOut When true and transaction is out, do not insert a new stock row.
+     * @return \App\Models\Stock|null
      */
-    public function updateStock($productId, $variantId, $branchId, $warehouseId, $transactionType, $quantity, $unitPrice, $reference, $referenceType)
+    public function updateStock($productId, $variantId, $branchId, $warehouseId, $transactionType, $quantity, $unitPrice, $reference, $referenceType, $preventNewStockOnOut = false)
     {
-        $stock = Stock::firstOrNew([
+        $stock = Stock::query()->where([
             'product_id' => $productId,
             'product_variant_id' => $variantId,
             'branch_id' => $branchId,
             'warehouse_id' => $warehouseId,
-        ]);
+        ])->first();
+
+        if (! $stock) {
+            if ($transactionType === 'out' && $preventNewStockOnOut) {
+                // Reuse an existing branch-level stock row instead of creating a new one.
+                $stock = Stock::query()
+                    ->where('product_id', $productId)
+                    ->where('product_variant_id', $variantId)
+                    ->where('branch_id', $branchId)
+                    ->orderByRaw('warehouse_id IS NULL DESC')
+                    ->orderByDesc('quantity')
+                    ->first();
+
+                if (! $stock) {
+                    return null;
+                }
+
+                if ($warehouseId && $stock->warehouse_id !== $warehouseId) {
+                    $stock->warehouse_id = $warehouseId;
+                    $stock->save();
+                }
+            } else {
+                $stock = new Stock([
+                    'product_id' => $productId,
+                    'product_variant_id' => $variantId,
+                    'branch_id' => $branchId,
+                    'warehouse_id' => $warehouseId,
+                ]);
+            }
+        }
 
         $openingQty = $stock->exists ? $stock->quantity : 0;
         
@@ -65,7 +95,7 @@ class InventoryService
             'product_id' => $productId,
             'product_variant_id' => $variantId,
             'branch_id' => $branchId,
-            'warehouse_id' => $warehouseId,
+            'warehouse_id' => $stock->warehouse_id,
             'transaction_date' => $date,
             'opening_qty' => $openingQty,
             'inward_qty' => $transactionType === 'in' ? $quantity : 0,
