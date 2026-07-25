@@ -23,6 +23,9 @@ class WarehouseForm
                     ->columnSpanFull(),
                 TextInput::make('capacity')
                     ->numeric(),
+                Toggle::make('is_default')
+                    ->label('Is Default')
+                    ->default(false),
                 Toggle::make('status')
                     ->required(),
             ]);

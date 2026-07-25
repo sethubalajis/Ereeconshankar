@@ -12,18 +12,26 @@ class PosSaleItem extends Model
     {
         static::created(function ($item) {
             if ($item->posSale) {
+                $warehouseId = data_get($item->posSale, 'warehouse_id');
+                $usedDefaultWarehouse = false;
+
+                if (! $warehouseId && $item->posSale->branch_id) {
+                    $warehouseId = Warehouse::defaultIdForBranch((int) $item->posSale->branch_id);
+                    $usedDefaultWarehouse = (bool) $warehouseId;
+                }
+
                 $inventoryService = new \App\Services\InventoryService();
                 $inventoryService->updateStock(
                     $item->product_id,
                     $item->product_variant_id,
                     $item->posSale->branch_id,
-                    // If PosSale doesn't have a warehouse_id, we can check if it exists or use default. PosSales might not be bound to warehouse, wait... I should check if posSale has warehouse_id. If not, null.
-                    $item->posSale->warehouse_id ?? null,
+                    $warehouseId,
                     'out',
                     $item->quantity,
                     $item->unit_price,
                     $item->posSale->invoice_number ?? 'POS-' . $item->posSale->id,
-                    'App\\Models\\PosSale'
+                    'App\\Models\\PosSale',
+                    $usedDefaultWarehouse
                 );
             }
         });

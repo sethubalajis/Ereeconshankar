@@ -24,6 +24,9 @@ class WarehousesTable
                 TextColumn::make('capacity')
                     ->numeric()
                     ->sortable(),
+                IconColumn::make('is_default')
+                    ->label('Default')
+                    ->boolean(),
                 IconColumn::make('status')
                     ->boolean(),
                 TextColumn::make('created_at')

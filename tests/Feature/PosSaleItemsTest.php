@@ -11,7 +11,9 @@ use App\Models\PosTerminal;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Role;
+use App\Models\Stock;
 use App\Models\User;
+use App\Models\Warehouse;
 use Livewire\Livewire;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -83,4 +85,47 @@ it('performs pos sale item crud operations', function (): void {
 
     Livewire::test(EditPosSaleItem::class, ['record' => $record->getKey()])->callAction('delete');
     expect(PosSaleItem::query()->whereKey($record->getKey())->exists())->toBeFalse();
+});
+
+it('uses branch default warehouse for stock movement when pos sale has no warehouse', function (): void {
+    ['sale' => $sale, 'product' => $product] = createPosSaleItemSetup();
+
+    $defaultWarehouse = Warehouse::query()->create([
+        'branch_id' => $sale->branch_id,
+        'name' => 'POS Default Warehouse',
+        'code' => 'PDW1',
+        'is_default' => true,
+        'status' => true,
+    ]);
+
+    $existingStock = Stock::query()->create([
+        'product_id' => $product->getKey(),
+        'product_variant_id' => null,
+        'branch_id' => $sale->branch_id,
+        'warehouse_id' => null,
+        'quantity' => 10,
+        'avg_cost' => 100,
+    ]);
+
+    PosSaleItem::query()->create([
+        'pos_sale_id' => $sale->getKey(),
+        'product_id' => $product->getKey(),
+        'quantity' => 2,
+        'unit_price' => 250,
+        'discount' => 0,
+        'total_price' => 500,
+    ]);
+
+    $stockRows = Stock::query()
+        ->where('product_id', $product->getKey())
+        ->where('product_variant_id', null)
+        ->where('branch_id', $sale->branch_id)
+        ->get();
+
+    $stock = $stockRows->firstWhere('warehouse_id', $defaultWarehouse->getKey());
+
+    expect($stock)->not->toBeNull();
+    expect($stockRows)->toHaveCount(1);
+    expect($stock->getKey())->toBe($existingStock->getKey());
+    expect((float) $stock->quantity)->toBe(8.0);
 });
