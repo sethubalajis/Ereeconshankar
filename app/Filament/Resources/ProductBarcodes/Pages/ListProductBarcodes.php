@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ProductBarcodes\Pages;
 
 use App\Filament\Resources\ProductBarcodes\ProductBarcodeResource;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
 class ListProductBarcodes extends ListRecords
@@ -11,6 +12,8 @@ class ListProductBarcodes extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [];
+        return [
+            CreateAction::make(),
+        ];
     }
 }

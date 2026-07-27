@@ -13,37 +13,88 @@ class SalesReportForm
 {
     public static function configure(Schema $schema): Schema
     {
+        $updateTotalSales = function ($get, $set) {
+            $fromDate = $get('from_date');
+            $toDate = $get('to_date');
+            $date = $get('report_date');
+            $branchId = $get('branch_id');
+
+            if ($branchId) {
+                $query = \App\Models\PosSale::where('branch_id', $branchId);
+
+                if ($fromDate && $toDate) {
+                    $query->whereBetween('sale_date', [$fromDate, $toDate]);
+                } elseif ($fromDate) {
+                    $query->whereDate('sale_date', '>=', $fromDate);
+                } elseif ($toDate) {
+                    $query->whereDate('sale_date', '<=', $toDate);
+                } elseif ($date) {
+                    $query->whereDate('sale_date', $date);
+                } else {
+                    return;
+                }
+
+                $totalSales = $query->sum('net_amount');
+                $set('total_sales', (float) $totalSales);
+            }
+        };
+
         return $schema
             ->components([
                 Select::make('branch_id')
                     ->relationship('branch', 'name')
                     ->required()
-                    ->live(),
-                DatePicker::make('report_date')
+                    ->live()
+                    ->afterStateUpdated($updateTotalSales),
+                DatePicker::make('from_date')
                     ->default(now()->timezone('Asia/Kolkata'))
                     ->required()
-                    ->live(),
+                    ->live()
+                    ->afterStateUpdated($updateTotalSales),
+                DatePicker::make('to_date')
+                    ->default(now()->timezone('Asia/Kolkata'))
+                    ->required()
+                    ->live()
+                    ->afterStateUpdated($updateTotalSales),
+                DatePicker::make('report_date')
+                    ->label('Report Date')
+                    ->default(now()->timezone('Asia/Kolkata'))
+                    ->nullable()
+                    ->live()
+                    ->afterStateUpdated($updateTotalSales),
                 TextInput::make('total_sales')
                     ->required()
                     ->numeric()
                     ->prefix('₹')
                     ->default(0.0),
                 Placeholder::make('sales_reports_list')
-                    ->label('Sales Reports for Selected Date')
+                    ->label('Sales Reports for Selected Date Range')
                     ->content(function ($get) {
+                        $fromDate = $get('from_date');
+                        $toDate = $get('to_date');
                         $date = $get('report_date');
                         $branchId = $get('branch_id');
 
-                        if (!$date || !$branchId) {
-                            return new HtmlString('<p class="text-gray-500">Please select a branch and report date to view sales.</p>');
+                        if (!$branchId || (!$fromDate && !$toDate && !$date)) {
+                            return new HtmlString('<p class="text-gray-500">Please select a branch and date range to view sales.</p>');
                         }
 
-                        $sales = \App\Models\PosSale::whereDate('sale_date', $date)
-                            ->where('branch_id', $branchId)
-                            ->get();
+                        $query = \App\Models\PosSale::where('branch_id', $branchId);
+
+                        if ($fromDate && $toDate) {
+                            $query->whereBetween('sale_date', [$fromDate, $toDate]);
+                        } elseif ($fromDate) {
+                            $query->whereDate('sale_date', '>=', $fromDate);
+                        } elseif ($toDate) {
+                            $query->whereDate('sale_date', '<=', $toDate);
+                        } elseif ($date) {
+                            $query->whereDate('sale_date', $date);
+                        }
+
+                        $sales = $query->get();
 
                         if ($sales->isEmpty()) {
-                            return new HtmlString('<p class="text-gray-500">No sales found for the selected date and branch.</p>');
+                            return new HtmlString('<p class="text-gray-500">No sales found for the selected date range and branch.</p>');
                         }
 
                         $html = '<div class="overflow-x-auto"><table class="w-full text-sm text-left border-collapse">';

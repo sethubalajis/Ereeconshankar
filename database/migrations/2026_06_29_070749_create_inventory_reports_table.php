@@ -14,7 +14,9 @@ return new class extends Migration
         Schema::create('inventory_reports', function (Blueprint $table) {
             $table->id();
             $table->foreignId('branch_id')->constrained('branches');
-            $table->date('report_date');
+            $table->date('from_date')->nullable();
+            $table->date('to_date')->nullable();
+            $table->date('report_date')->nullable();
             $table->decimal('total_inventory_value', 15, 2)->default(0);
             $table->timestamps();
         });

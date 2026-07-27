@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\ProductBarcodes;
 
+use App\Filament\Resources\ProductBarcodes\Pages\CreateProductBarcode;
+use App\Filament\Resources\ProductBarcodes\Pages\EditProductBarcode;
 use App\Filament\Resources\ProductBarcodes\Pages\ListProductBarcodes;
 use App\Filament\Resources\ProductBarcodes\Schemas\ProductBarcodeForm;
 use App\Filament\Resources\ProductBarcodes\Tables\ProductBarcodesTable;
@@ -41,26 +43,8 @@ class ProductBarcodeResource extends Resource
     {
         return [
             'index' => ListProductBarcodes::route('/'),
+            'create' => CreateProductBarcode::route('/create'),
+            'edit' => EditProductBarcode::route('/{record}/edit'),
         ];
-    }
-
-    public static function canCreate(): bool
-    {
-        return false;
-    }
-
-    public static function canEdit($record): bool
-    {
-        return false;
-    }
-
-    public static function canDelete($record): bool
-    {
-        return false;
-    }
-
-    public static function canDeleteAny(): bool
-    {
-        return false;
     }
 }

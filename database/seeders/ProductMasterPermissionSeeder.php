@@ -64,6 +64,7 @@ class ProductMasterPermissionSeeder extends Seeder
 
             $permissionIds[] = DB::table('permissions')->insertGetId([
                 'name' => $name,
+                'guard_name' => 'web',
                 'module' => 'product-master',
                 'description' => 'Product Master policy permission',
                 'created_at' => now(),

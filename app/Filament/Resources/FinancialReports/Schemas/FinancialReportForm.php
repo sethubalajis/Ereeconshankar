@@ -26,9 +26,18 @@ class FinancialReportForm
                     ])
                     ->required()
                     ->live(),
-                DatePicker::make('as_of_date')
+                DatePicker::make('from_date')
                     ->default(now()->timezone('Asia/Kolkata'))
                     ->required()
+                    ->live(),
+                DatePicker::make('to_date')
+                    ->default(now()->timezone('Asia/Kolkata'))
+                    ->required()
+                    ->live(),
+                DatePicker::make('as_of_date')
+                    ->label('As Of Date')
+                    ->default(now()->timezone('Asia/Kolkata'))
+                    ->nullable()
                     ->live(),
                 Textarea::make('data')
                     ->columnSpanFull(),
@@ -36,6 +45,8 @@ class FinancialReportForm
                 Placeholder::make('report_details')
                     ->label('Report Details')
                     ->content(function ($get) {
+                        $fromDate = $get('from_date');
+                        $toDate = $get('to_date');
                         $date = $get('as_of_date');
                         
                         // Handle branch_id safely
@@ -46,19 +57,24 @@ class FinancialReportForm
                             $branchId = null;
                         }
                         
-                        if (!$date) return new HtmlString('<p class="text-gray-500">Please select a date to view details.</p>');
+                        if (!$fromDate && !$toDate && !$date) return new HtmlString('<p class="text-gray-500">Please select a date range or as of date to view details.</p>');
                         
-                        // Parse date properly if needed (sometimes it comes as Y-m)
-                        if (strlen($date) === 7) { // Y-m
-                            $query = \App\Models\JournalEntry::whereHas('journal', function ($journalQuery) use ($date) {
-                                $journalQuery->whereYear('journal_date', substr($date, 0, 4))
-                                    ->whereMonth('journal_date', substr($date, 5, 2));
-                            });
-                        } else {
-                            $query = \App\Models\JournalEntry::whereHas('journal', function ($journalQuery) use ($date) {
-                                $journalQuery->whereDate('journal_date', $date);
-                            });
-                        }
+                        $query = \App\Models\JournalEntry::whereHas('journal', function ($journalQuery) use ($fromDate, $toDate, $date) {
+                            if ($fromDate && $toDate) {
+                                $journalQuery->whereBetween('journal_date', [$fromDate, $toDate]);
+                            } elseif ($fromDate) {
+                                $journalQuery->whereDate('journal_date', '>=', $fromDate);
+                            } elseif ($toDate) {
+                                $journalQuery->whereDate('journal_date', '<=', $toDate);
+                            } elseif ($date) {
+                                if (strlen($date) === 7) {
+                                    $journalQuery->whereYear('journal_date', substr($date, 0, 4))
+                                        ->whereMonth('journal_date', substr($date, 5, 2));
+                                } else {
+                                    $journalQuery->whereDate('journal_date', $date);
+                                }
+                            }
+                        });
                         
                         if ($branchId) {
                             // Check if branch_id exists on the model

@@ -13,10 +13,13 @@ class PurchaseReportSeeder extends Seeder
         $faker = Faker::create();
         
         for ($i = 0; $i < 5; $i++) {
+            $date = now()->subDays(rand(1, 30));
             DB::table('purchase_reports')->insert([
                 'branch_id' => DB::table('branches')->inRandomOrder()->value('id') ?? 1,
-                'report_date' => now()->subDays(rand(1, 30)),
-                'total_purchases' => rand(1, 9),
+                'from_date' => $date->format('Y-m-d'),
+                'to_date' => $date->format('Y-m-d'),
+                'report_date' => $date->format('Y-m-d'),
+                'total_purchases' => rand(1000, 9000),
             ]);
         }
     }

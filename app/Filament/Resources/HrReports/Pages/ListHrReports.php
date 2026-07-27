@@ -14,6 +14,23 @@ class ListHrReports extends ListRecords
     {
         return [
             CreateAction::make(),
+            \Filament\Actions\Action::make('export_pdf')
+                ->label('Export PDF Report')
+                ->icon('heroicon-o-document-arrow-down')
+                ->color('success')
+                ->action(function () {
+                    $records = \App\Models\HrReport::all();
+                    return \App\Helpers\ReportPdfHelper::downloadListPdf(
+                        'HR Reports Summary',
+                        $records,
+                        [
+                            'report_month' => 'Report Month',
+                            'total_employees' => 'Total Employees',
+                            'new_hires' => 'New Hires',
+                            'exits' => 'Exits',
+                        ]
+                    );
+                }),
         ];
     }
 }

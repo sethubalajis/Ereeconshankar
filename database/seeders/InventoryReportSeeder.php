@@ -9,8 +9,15 @@ class InventoryReportSeeder extends Seeder {
         
         $branchId = DB::table('branches')->first()->id ?? 1;
 
+        $date = now()->subDays(1)->format('Y-m-d');
         $reports = [
-            ['branch_id' => $branchId, 'report_date' => now()->subDays(1)->format('Y-m-d'), 'total_inventory_value' => 2500000.00],
+            [
+                'branch_id' => $branchId,
+                'from_date' => $date,
+                'to_date' => $date,
+                'report_date' => $date,
+                'total_inventory_value' => 2500000.00
+            ],
         ];
         
         foreach($reports as $r) {

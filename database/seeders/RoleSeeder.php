@@ -9,6 +9,7 @@ class RoleSeeder extends Seeder {
         foreach($roles as $r) {
             DB::table('roles')->insert([
                 'name' => $r,
+                'guard_name' => 'web',
                 'status' => true,
             ]);
         }

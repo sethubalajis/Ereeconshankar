@@ -45,6 +45,7 @@ class CompanyPermissionSeeder extends Seeder
 
             $permissionIds[] = DB::table('permissions')->insertGetId([
                 'name' => $name,
+                'guard_name' => 'web',
                 'module' => 'companies',
                 'description' => 'Companies access permission',
                 'created_at' => now(),

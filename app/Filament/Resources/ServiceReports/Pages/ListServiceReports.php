@@ -14,6 +14,21 @@ class ListServiceReports extends ListRecords
     {
         return [
             CreateAction::make(),
+            \Filament\Actions\Action::make('export_pdf')
+                ->label('Export PDF Report')
+                ->icon('heroicon-o-document-arrow-down')
+                ->color('success')
+                ->action(function () {
+                    $records = \App\Models\ServiceReport::with('serviceRequest')->get();
+                    return \App\Helpers\ReportPdfHelper::downloadListPdf(
+                        'Service Reports Summary',
+                        $records,
+                        [
+                            'serviceRequest.request_number' => 'Service Request No.',
+                            'report_date' => 'Report Date',
+                        ]
+                    );
+                }),
         ];
     }
 }

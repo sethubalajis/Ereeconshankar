@@ -36,6 +36,21 @@ class BranchPerformanceReportsTable
             ])
             ->recordActions([
                 EditAction::make(),
+                \Filament\Actions\Action::make('download_pdf')
+                    ->label('PDF')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('success')
+                    ->action(function ($record) {
+                        return \App\Helpers\ReportPdfHelper::downloadSinglePdf(
+                            'Branch Performance Report #' . $record->id,
+                            $record,
+                            [
+                                'branch.name' => 'Branch',
+                                'report_month' => 'Report Month',
+                                'score' => 'Performance Score',
+                            ]
+                        );
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

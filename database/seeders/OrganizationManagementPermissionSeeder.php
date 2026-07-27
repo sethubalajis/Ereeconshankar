@@ -60,6 +60,7 @@ class OrganizationManagementPermissionSeeder extends Seeder
 
             $permissionIds[] = DB::table('permissions')->insertGetId([
                 'name' => $name,
+                'guard_name' => 'web',
                 'module' => 'organization-management',
                 'description' => 'Organization Management policy permission',
                 'created_at' => now(),

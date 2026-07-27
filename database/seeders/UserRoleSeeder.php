@@ -16,6 +16,7 @@ class UserRoleSeeder extends Seeder
             DB::table('user_roles')->insert([
                 'user_id' => DB::table('users')->inRandomOrder()->value('id') ?? 1,
                 'role_id' => DB::table('roles')->inRandomOrder()->value('id') ?? 1,
+                'model_type' => 'App\Models\User',
             ]);
         }
     }
