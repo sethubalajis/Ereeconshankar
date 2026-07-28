@@ -23,9 +23,11 @@ class CashRegistersTable
                     ->sortable(),
                 TextColumn::make('opening_balance')
                     ->numeric()
+                    ->prefix('₹')
                     ->sortable(),
                 TextColumn::make('closing_balance')
                     ->numeric()
+                    ->prefix('₹')
                     ->sortable(),
                 TextColumn::make('status')
                     ->searchable(),

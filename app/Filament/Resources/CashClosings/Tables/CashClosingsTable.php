@@ -21,9 +21,11 @@ class CashClosingsTable
                     ->sortable(),
                 TextColumn::make('closing_amount')
                     ->numeric()
+                    ->prefix('₹')
                     ->sortable(),
                 TextColumn::make('variance')
                     ->numeric()
+                    ->prefix('₹')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

@@ -11,11 +11,14 @@ class TdsRecordForm
     {
         return $schema
             ->components([
-                \Filament\Forms\Components\Select::make('payroll_processing_id')
-                    ->relationship('payrollProcessing', 'id')
-                    ->getOptionLabelFromRecordUsing(fn (\App\Models\PayrollProcessing $record) => $record->payrollCycle ? $record->payrollCycle->name : 'Process #'.$record->id)
+                \Filament\Forms\Components\Select::make('payroll_cycle_id')
+                    ->label('Payroll Cycle')
+                    ->options(fn () => \App\Models\PayrollCycle::query()->orderByDesc('start_date')->pluck('name', 'id')->all())
+                    ->searchable()
+                    ->dehydrated(false)
                     ->live()
                     ->afterStateUpdated(fn ($set, $get) => self::updateCalculations($set, $get)),
+                \Filament\Forms\Components\Hidden::make('payroll_processing_id'),
                 \Filament\Forms\Components\Select::make('employee_id')
                     ->relationship('employee', 'first_name')
                     ->live()
@@ -68,16 +71,46 @@ class TdsRecordForm
 
     protected static function updateCalculations($set, $get)
     {
+        $payrollCycleId = $get('payroll_cycle_id');
         $payrollProcessingId = $get('payroll_processing_id');
         $employeeId = $get('employee_id');
         $financialYearId = $get('financial_year_id');
         
+        if ($payrollCycleId && ! $financialYearId) {
+            $cycle = \App\Models\PayrollCycle::find($payrollCycleId);
+
+            if ($cycle) {
+                $financialYear = \App\Models\FinancialYear::where('start_date', '<=', $cycle->start_date)
+                    ->where('end_date', '>=', $cycle->start_date)
+                    ->first();
+
+                if ($financialYear) {
+                    $financialYearId = $financialYear->id;
+                    $set('financial_year_id', $financialYearId);
+                }
+            }
+        }
+
         if (!$employeeId && $payrollProcessingId) {
             $payroll = \App\Models\PayrollProcessing::find($payrollProcessingId);
             if ($payroll) {
                 $employeeId = $payroll->employee_id;
                 $set('employee_id', $employeeId);
+
+                if (! $payrollCycleId) {
+                    $payrollCycleId = $payroll->payroll_cycle_id;
+                    $set('payroll_cycle_id', $payrollCycleId);
+                }
             }
+        }
+
+        if ($payrollCycleId && $employeeId) {
+            $payroll = \App\Models\PayrollProcessing::where('payroll_cycle_id', $payrollCycleId)
+                ->where('employee_id', $employeeId)
+                ->latest('id')
+                ->first();
+
+            $set('payroll_processing_id', $payroll?->id);
         }
 
         if (!$employeeId) return;

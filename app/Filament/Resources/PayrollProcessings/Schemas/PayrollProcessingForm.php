@@ -26,6 +26,30 @@ class PayrollProcessingForm
                     ->afterStateUpdated(function ($set, $get, $state) {
                         self::updateCalculations($set, $state, $get('payroll_cycle_id'));
                     }),
+                TextInput::make('total_working_days')
+                    ->label('Total Working Days')
+                    ->numeric()
+                    ->default(0)
+                    ->disabled()
+                    ->dehydrated(false),
+                TextInput::make('effective_present_days')
+                    ->label('Effective Present Days')
+                    ->numeric()
+                    ->default(0)
+                    ->disabled()
+                    ->dehydrated(false),
+                TextInput::make('missing_attendance_days')
+                    ->label('Missing Attendance Days')
+                    ->numeric()
+                    ->default(0)
+                    ->disabled()
+                    ->dehydrated(false),
+                TextInput::make('absent_leave_days')
+                    ->label('Absent / Leave Days')
+                    ->numeric()
+                    ->default(0)
+                    ->disabled()
+                    ->dehydrated(false),
                 TextInput::make('basic_pay')->numeric()->prefix('₹')->default(0.0)->readonly(),
                 TextInput::make('hra')->numeric()->prefix('₹')->default(0.0)->readonly(),
                 TextInput::make('special_allowance')->numeric()->prefix('₹')->default(0.0)->readonly(),
@@ -76,9 +100,25 @@ class PayrollProcessingForm
             ]);
     }
 
+    private static function isCasualLeaveType($leaveType): bool
+    {
+        if (! $leaveType) {
+            return false;
+        }
+
+        $name = strtolower((string) ($leaveType->name ?? ''));
+        $code = strtolower((string) ($leaveType->code ?? ''));
+
+        return str_contains($name, 'casual') || $code === 'cl';
+    }
+
     public static function updateCalculations($set, $employeeId, $payrollCycleId)
     {
         if (!$employeeId) {
+            $set('total_working_days', 0);
+            $set('effective_present_days', 0);
+            $set('missing_attendance_days', 0);
+            $set('absent_leave_days', 0);
             $set('gross_pay', 0.0);
             $set('total_deductions', 0.0);
             $set('net_pay', 0.0);
@@ -128,18 +168,43 @@ class PayrollProcessingForm
                 ->whereBetween('date', [$cycle->start_date, $cycle->end_date])
                 ->whereIn('status', ['half_day', 'Half Day'])
                 ->count();
-            
-            $absentDates = \App\Models\Attendance::where('employee_id', $employeeId)
-                ->whereBetween('date', [$cycle->start_date, $cycle->end_date])
-                ->whereIn('status', ['absent', 'Absent'])
-                ->pluck('date');
+
+            $paidHolidayDays = \App\Models\Holiday::whereBetween('date', [$cycle->start_date, $cycle->end_date])
+                ->where(function ($query) {
+                    $query->whereNull('is_restricted')
+                        ->orWhere('is_restricted', false);
+                })
+                ->count();
 
             $paidLeaveDays = 0;
+            $missingAttendanceDays = 0;
             $lopDays = 0;
+            $presentDaysEquivalent = 0;
             $year = \Carbon\Carbon::parse($cycle->start_date)->year;
             $month = \Carbon\Carbon::parse($cycle->start_date)->month;
 
-            foreach ($absentDates as $date) {
+            foreach (\Carbon\CarbonPeriod::create($cycle->start_date, $cycle->end_date) as $day) {
+                $date = $day->toDateString();
+
+                $attendanceStatus = \App\Models\Attendance::where('employee_id', $employeeId)
+                    ->where('date', $date)
+                    ->value('status');
+
+                if (in_array($attendanceStatus, ['present', 'Present', 'half_day', 'Half Day'], true)) {
+                    continue;
+                }
+
+                $holiday = \App\Models\Holiday::whereDate('date', $date)
+                    ->where(function ($query) {
+                        $query->whereNull('is_restricted')
+                            ->orWhere('is_restricted', false);
+                    })
+                    ->exists();
+
+                if ($holiday) {
+                    continue;
+                }
+
                 $leave = \App\Models\EmployeeLeave::where('employee_id', $employeeId)
                     ->where('status', 'approved')
                     ->where('start_date', '<=', $date)
@@ -148,7 +213,7 @@ class PayrollProcessingForm
 
                 if ($leave) {
                     $leaveType = $leave->leaveType;
-                    if ($leaveType && $leaveType->days_allowed > 0) {
+                    if (self::isCasualLeaveType($leaveType) && $leaveType->days_allowed > 0) {
                         $totalTakenInYear = \DB::table('employee_leaves')
                             ->where('employee_id', $employeeId)
                             ->where('status', 'approved')
@@ -168,9 +233,12 @@ class PayrollProcessingForm
                         $lopDays++;
                     }
                 } else {
+                    $missingAttendanceDays++;
                     $lopDays++;
                 }
             }
+
+            $presentDaysEquivalent = $presentDays + ($halfDays * 0.5) + $paidLeaveDays + $paidHolidayDays;
             
             if ($totalDays > 0) {
                 $lossOfPay = ($grossSalary / $totalDays) * $lopDays;
@@ -210,37 +278,16 @@ class PayrollProcessingForm
                 ->where('end_date', '>=', $cycle->start_date)
                 ->first();
 
-            $taxRegime = 'old';
-            $approvedDeductions = 0;
+            $tdsRecordQuery = \App\Models\TdsRecord::where('employee_id', $employeeId)
+                ->whereYear('created_at', $year)
+                ->whereMonth('created_at', $month);
 
             if ($financialYear) {
-                $declaration = \App\Models\EmployeeTaxDeclaration::where('employee_id', $employeeId)
-                    ->where('financial_year_id', $financialYear->id)
-                    ->where('status', 'approved')
-                    ->first();
-                
-                if ($declaration) {
-                    $taxRegime = $declaration->tax_regime;
-                    $approvedDeductions = $declaration->items()->sum('approved_amount');
-                }
+                $tdsRecordQuery->where('financial_year_id', $financialYear->id);
             }
 
-            // Simple Tax Calculation
-            $annualGross = $grossSalary * 12;
-            $taxableIncome = max(0, $annualGross - $approvedDeductions);
-            
-            $annualTax = 0;
-            if ($taxableIncome > 250000) {
-                if ($taxableIncome <= 500000) {
-                    $annualTax = ($taxableIncome - 250000) * 0.05;
-                } elseif ($taxableIncome <= 1000000) {
-                    $annualTax = (250000 * 0.05) + (($taxableIncome - 500000) * 0.20);
-                } else {
-                    $annualTax = (250000 * 0.05) + (500000 * 0.20) + (($taxableIncome - 1000000) * 0.30);
-                }
-            }
-
-            $tdsRecords = round($annualTax / 12, 2);
+            $tdsRecord = $tdsRecordQuery->orderByDesc('id')->first();
+            $tdsRecords = (float) ($tdsRecord->monthly_tds ?? 0);
                 
             $totalDeductions += $professionalTaxes;
             $totalDeductions += $tdsRecords;
@@ -271,12 +318,19 @@ class PayrollProcessingForm
                     $pf = 0;
                 }
                 
-                if ($grossSalary <= 21000 && $employee && $employee->esi_opt_in) {
+                if ($employee && $employee->esi_opt_in) {
                     $esiContribution = \App\Models\EsiContribution::where('employee_id', $employeeId)
                         ->whereYear('month', $year)
                         ->whereMonth('month', $month)
                         ->first();
-                    $esi = $esiContribution ? $esiContribution->employee_share : 0;
+
+                    if ($esiContribution) {
+                        $esi = $esiContribution->employee_share;
+                    } elseif ($grossSalary <= 21000) {
+                        $esi = round($grossSalary * 0.0075, 2);
+                    } else {
+                        $esi = 0;
+                    }
                 } else {
                     $esi = 0;
                 }
@@ -290,6 +344,10 @@ class PayrollProcessingForm
             $set('special_allowance', round($specialAllowance, 2));
             $set('pf', round($pf, 2));
             $set('esi', round($esi, 2));
+            $set('total_working_days', round($totalDays, 2));
+            $set('effective_present_days', round($presentDaysEquivalent, 2));
+            $set('missing_attendance_days', round($missingAttendanceDays, 2));
+            $set('absent_leave_days', round($lopDays, 2));
             $set('loss_of_pay', round($lossOfPay ?? 0, 2));
             $set('extra_deductions', round($extraDeductions ?? 0, 2));
             $set('bonuses', round($bonuses ?? 0, 2));

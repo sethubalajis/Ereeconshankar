@@ -20,6 +20,7 @@ class CashOpeningsTable
                     ->sortable(),
                 TextColumn::make('opening_amount')
                     ->numeric()
+                    ->prefix('₹')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
