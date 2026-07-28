@@ -34,9 +34,9 @@ it('redirects guests away from create branch performance report page', function 
 it('validates required fields when creating a branch performance report', function (): void {
     actingAs(makeBranchPerformanceReportsAdminUser());
     Livewire::test(CreateBranchPerformanceReport::class)
-        ->fillForm(['branch_id' => null, 'report_month' => null, 'score' => null])
+        ->fillForm(['branch_id' => null, 'from_date' => null, 'to_date' => null, 'score' => null])
         ->call('create')
-        ->assertHasFormErrors(['branch_id' => 'required', 'report_month' => 'required', 'score' => 'required']);
+        ->assertHasFormErrors(['branch_id' => 'required', 'from_date' => 'required', 'to_date' => 'required', 'score' => 'required']);
 });
 
 it('performs branch performance report crud operations', function (): void {
@@ -44,21 +44,26 @@ it('performs branch performance report crud operations', function (): void {
     $branch = createBranchPerformanceReportBranch();
 
     Livewire::test(CreateBranchPerformanceReport::class)
-        ->fillForm(['branch_id' => $branch->getKey(), 'report_month' => '2026-07-01', 'score' => 85])
+        ->fillForm(['branch_id' => $branch->getKey(), 'from_date' => '2026-07-01', 'to_date' => '2026-07-31', 'report_month' => '2026-07-31', 'score' => 85])
         ->call('create')
         ->assertHasNoFormErrors();
 
     $record = BranchPerformanceReport::query()->firstOrFail();
+    expect($record->from_date->format('Y-m-d'))->toBe('2026-07-01');
+    expect($record->to_date->format('Y-m-d'))->toBe('2026-07-31');
+
     Livewire::test(ListBranchPerformanceReports::class)->assertSuccessful()->assertSee('85');
 
     Livewire::test(EditBranchPerformanceReport::class, ['record' => $record->getKey()])
-        ->fillForm(['branch_id' => $branch->getKey(), 'report_month' => '2026-08-01', 'score' => 90])
+        ->fillForm(['branch_id' => $branch->getKey(), 'from_date' => '2026-07-01', 'to_date' => '2026-08-31', 'report_month' => '2026-08-31', 'score' => 90])
         ->call('save')
         ->assertHasNoFormErrors();
 
     $record->refresh();
     expect((float) $record->score)->toBe(90.0);
+    expect($record->to_date->format('Y-m-d'))->toBe('2026-08-31');
 
     Livewire::test(EditBranchPerformanceReport::class, ['record' => $record->getKey()])->callAction('delete');
     expect(BranchPerformanceReport::query()->whereKey($record->getKey())->exists())->toBeFalse();
 });
+

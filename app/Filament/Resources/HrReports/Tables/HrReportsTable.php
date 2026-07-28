@@ -42,6 +42,7 @@ class HrReportsTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('id', 'desc')
             ->filters([
                 \Filament\Tables\Filters\Filter::make('date_range')
                     ->form([
@@ -69,18 +70,7 @@ class HrReportsTable
                     ->icon('heroicon-o-arrow-down-tray')
                     ->color('success')
                     ->action(function ($record) {
-                        return \App\Helpers\ReportPdfHelper::downloadSinglePdf(
-                            'HR Report #' . $record->id,
-                            $record,
-                            [
-                                'from_date' => 'From Date',
-                                'to_date' => 'To Date',
-                                'report_month' => 'Report Month',
-                                'total_employees' => 'Total Employees',
-                                'new_hires' => 'New Hires',
-                                'exits' => 'Exits',
-                            ]
-                        );
+                        return \App\Helpers\ReportPdfHelper::downloadHrReportPdf($record);
                     }),
             ])
             ->toolbarActions([

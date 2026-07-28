@@ -38,6 +38,7 @@ class PermissionsTable
 
         return $table
             ->columns($columns)
+            ->defaultSort('id', 'desc')
             ->filters([
                 //
             ])

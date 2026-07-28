@@ -56,3 +56,56 @@ it('performs hr report crud operations', function (): void {
     Livewire::test(EditHrReport::class, ['record' => $record->getKey()])->callAction('delete');
     expect(HrReport::query()->whereKey($record->getKey())->exists())->toBeFalse();
 });
+
+it('automatically updates total employees, new hires, and exits when date range is selected', function (): void {
+    actingAs(makeHrReportsAdminUser());
+
+    $emp1 = \App\Models\Employee::create([
+        'employee_code' => 'EMP-TEST-001',
+        'first_name' => 'John',
+        'last_name' => 'Doe',
+        'joining_date' => '2026-07-05',
+    ]);
+    
+    $emp2 = \App\Models\Employee::create([
+        'employee_code' => 'EMP-TEST-002',
+        'first_name' => 'Jane',
+        'last_name' => 'Smith',
+        'joining_date' => '2026-07-15',
+    ]);
+
+    \App\Models\EmployeeExit::create([
+        'employee_id' => $emp1->id,
+        'resignation_date' => '2026-07-20',
+        'last_working_day' => '2026-07-25',
+        'exit_type' => 'Resigned',
+        'reason' => 'Personal reasons',
+    ]);
+
+    Livewire::test(CreateHrReport::class)
+        ->set('data.from_date', '2026-07-01')
+        ->set('data.to_date', '2026-07-31')
+        ->assertFormSet([
+            'total_employees' => 2,
+            'new_hires' => 2,
+            'exits' => 1,
+        ]);
+});
+
+it('downloads detailed hr report pdf successfully', function (): void {
+    actingAs(makeHrReportsAdminUser());
+
+    $record = HrReport::create([
+        'from_date' => '2026-07-01',
+        'to_date' => '2026-07-31',
+        'total_employees' => 10,
+        'new_hires' => 2,
+        'exits' => 1,
+    ]);
+
+    Livewire::test(ListHrReports::class)
+        ->callTableAction('download_pdf', $record)
+        ->assertFileDownloaded('hr-report-' . $record->id . '.pdf');
+});
+
+

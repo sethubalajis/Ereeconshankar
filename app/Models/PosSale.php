@@ -16,6 +16,7 @@ class PosSale extends Model
 
     protected $casts = [
         'payments' => 'array',
+        'applied_offers' => 'array',
     ];
 
     //

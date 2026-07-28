@@ -38,6 +38,6 @@ class VendorCategoriesTable
                     DeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultSort('name', 'asc');
+            ->defaultSort('id', 'desc');
     }
 }
