@@ -364,6 +364,12 @@ class PayrollProcessing extends Model
             $this->gross_pay = round($grossSalary + $bonuses + $incentives + $reimbursement, 2);
             $this->total_deductions = round($totalDeductions, 2);
             $this->net_pay = round($this->gross_pay - $this->total_deductions, 2);
+
+            $annualGross = (float) ($tdsRecord->annual_gross_salary ?? ($grossSalary * 12));
+            $approvedDeductions = (float) ($tdsRecord->approved_tax_deductions ?? 0);
+            $taxableIncome = (float) ($tdsRecord->taxable_income ?? max(0, $annualGross - $approvedDeductions));
+            $annualTax = (float) ($tdsRecord->annual_income_tax ?? ($this->tds_records * 12));
+            $taxRegime = (string) ($tdsRecord->tax_regime ?? 'old');
             
             $this->tds_data_temp = [
                 'annualGross' => $annualGross,
