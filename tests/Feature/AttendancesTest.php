@@ -7,6 +7,8 @@ use App\Models\Attendance;
 use App\Models\Employee;
 use App\Models\Role;
 use App\Models\User;
+use App\Services\BiometricAttendanceImporter;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -41,6 +43,7 @@ it('validates required fields when creating attendance', function (): void {
 it('performs attendance crud operations', function (): void {
     actingAs(makeAttendancesAdminUser());
     $employee = Employee::query()->create([
+        'biometric_code' => '2364',
         'first_name' => 'Attendance Emp',
         'status' => 'active',
     ]);
@@ -75,4 +78,38 @@ it('performs attendance crud operations', function (): void {
 
     Livewire::test(EditAttendance::class, ['record' => $record->getKey()])->callAction('delete');
     expect(Attendance::query()->whereKey($record->getKey())->exists())->toBeFalse();
+});
+
+it('imports biometric file and updates attendance check in and check out', function (): void {
+    Storage::fake('local');
+
+    Employee::query()->create([
+        'first_name' => 'Biometric Emp',
+        'biometric_code' => '2364',
+        'status' => 'active',
+    ]);
+
+    $path = 'private/biometric/test.dat';
+
+    Storage::disk('local')->put(
+        $path,
+        implode(PHP_EOL, [
+            '05/02/2026,2364,21:30,I,001',
+            '05/02/2026,2364,05:30,O,001',
+            '05/02/2026,9999,09:00,I,001',
+        ])
+    );
+
+    $result = app(BiometricAttendanceImporter::class)->importFromStoredPath($path);
+
+    $attendance = Attendance::query()->firstOrFail();
+
+    expect($result['processed'])->toBe(3);
+    expect($result['created'])->toBe(1);
+    expect($result['updated'])->toBe(1);
+    expect($result['unmatched'])->toBe(1);
+    expect($attendance->date)->toBe('2026-05-02');
+    expect($attendance->check_in)->toBe('21:30:00');
+    expect($attendance->check_out)->toBe('05:30:00');
+    expect($attendance->status)->toBe('present');
 });

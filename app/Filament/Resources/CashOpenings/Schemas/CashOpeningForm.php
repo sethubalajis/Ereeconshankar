@@ -48,6 +48,7 @@ class CashOpeningForm
                 TextInput::make('opening_amount')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
             ]);
     }

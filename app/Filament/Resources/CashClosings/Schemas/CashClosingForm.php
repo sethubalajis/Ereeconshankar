@@ -38,10 +38,12 @@ class CashClosingForm
                 TextInput::make('closing_amount')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
                 TextInput::make('variance')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
             ]);
     }

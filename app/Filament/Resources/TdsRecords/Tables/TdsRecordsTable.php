@@ -14,9 +14,9 @@ class TdsRecordsTable
     {
         return $table
             ->columns([
-                TextColumn::make('payrollProcessing.payrollCycle.name')
-                    ->label('Payroll Processing')
-                    ->sortable(),
+                TextColumn::make('payroll_cycle_label')
+                    ->label('Payroll Cycle')
+                    ->searchable(),
                 TextColumn::make('employee.first_name')
                     ->sortable(),
                 TextColumn::make('financialYear.name')

@@ -51,9 +51,11 @@ class CashRegisterForm
                 TextInput::make('opening_balance')
                     ->required()
                     ->numeric()
+                    ->prefix('₹')
                     ->default(0.0),
                 TextInput::make('closing_balance')
-                    ->numeric(),
+                    ->numeric()
+                    ->prefix('₹'),
                 \Filament\Forms\Components\Select::make('status')
                     ->options([
                         'open' => 'Open',
