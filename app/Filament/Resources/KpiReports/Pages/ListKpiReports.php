@@ -14,6 +14,22 @@ class ListKpiReports extends ListRecords
     {
         return [
             CreateAction::make(),
+            \Filament\Actions\Action::make('export_pdf')
+                ->label('Export PDF Report')
+                ->icon('heroicon-o-document-arrow-down')
+                ->color('success')
+                ->action(function () {
+                    $records = \App\Models\KpiReport::all();
+                    return \App\Helpers\ReportPdfHelper::downloadListPdf(
+                        'KPI Reports Summary',
+                        $records,
+                        [
+                            'kpi_name' => 'KPI Name',
+                            'report_date' => 'Report Date',
+                            'value' => 'Value',
+                        ]
+                    );
+                }),
         ];
     }
 }

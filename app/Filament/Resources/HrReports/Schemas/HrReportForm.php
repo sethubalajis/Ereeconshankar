@@ -15,9 +15,18 @@ class HrReportForm
     {
         return $schema
             ->components([
-                DatePicker::make('report_month')
+                DatePicker::make('from_date')
                     ->default(now()->timezone('Asia/Kolkata'))
                     ->required()
+                    ->live(),
+                DatePicker::make('to_date')
+                    ->default(now()->timezone('Asia/Kolkata'))
+                    ->required()
+                    ->live(),
+                DatePicker::make('report_month')
+                    ->label('Report Month / Date')
+                    ->default(now()->timezone('Asia/Kolkata'))
+                    ->nullable()
                     ->live(),
                 TextInput::make('total_employees')
                     ->required()
@@ -35,6 +44,8 @@ class HrReportForm
                 Placeholder::make('report_details')
                     ->label('Report Details')
                     ->content(function ($get) {
+                        $fromDate = $get('from_date');
+                        $toDate = $get('to_date');
                         $date = $get('report_month');
                         
                         // Handle branch_id safely
@@ -45,14 +56,23 @@ class HrReportForm
                             $branchId = null;
                         }
                         
-                        if (!$date) return new HtmlString('<p class="text-gray-500">Please select a date to view details.</p>');
+                        if (!$fromDate && !$toDate && !$date) return new HtmlString('<p class="text-gray-500">Please select a date range to view details.</p>');
                         
-                        // Parse date properly if needed (sometimes it comes as Y-m)
-                        if (strlen($date) === 7) { // Y-m
-                            $query = \App\Models\Attendance::whereYear('date', substr($date, 0, 4))
-                                ->whereMonth('date', substr($date, 5, 2));
-                        } else {
-                            $query = \App\Models\Attendance::whereDate('date', $date);
+                        $query = \App\Models\Attendance::query();
+
+                        if ($fromDate && $toDate) {
+                            $query->whereBetween('date', [$fromDate, $toDate]);
+                        } elseif ($fromDate) {
+                            $query->whereDate('date', '>=', $fromDate);
+                        } elseif ($toDate) {
+                            $query->whereDate('date', '<=', $toDate);
+                        } elseif ($date) {
+                            if (strlen($date) === 7) {
+                                $query->whereYear('date', substr($date, 0, 4))
+                                    ->whereMonth('date', substr($date, 5, 2));
+                            } else {
+                                $query->whereDate('date', $date);
+                            }
                         }
                         
                         if ($branchId) {

@@ -19,9 +19,16 @@ class SalesReportsTable
             ->columns([
                 TextColumn::make('branch.name')
                     ->sortable(),
-                TextColumn::make('report_date')
+                TextColumn::make('from_date')
                     ->date()
                     ->sortable(),
+                TextColumn::make('to_date')
+                    ->date()
+                    ->sortable(),
+                TextColumn::make('report_date')
+                    ->date()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('total_sales')
                     ->numeric()
                     ->prefix('₹ ')
@@ -36,21 +43,34 @@ class SalesReportsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Filter::make('report_date')
+                Filter::make('date_range')
                     ->form([
-                        DatePicker::make('report_date')
-                            ->label('Filter by Report Date'),
+                        DatePicker::make('from_date')
+                            ->label('From Date'),
+                        DatePicker::make('to_date')
+                            ->label('To Date'),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
                             ->when(
-                                $data['report_date'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('report_date', '=', $date),
+                                $data['from_date'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('from_date', '>=', $date),
+                            )
+                            ->when(
+                                $data['to_date'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('to_date', '<=', $date),
                             );
                     })
             ])
             ->recordActions([
                 EditAction::make(),
+                \Filament\Actions\Action::make('download_pdf')
+                    ->label('PDF')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('success')
+                    ->action(function ($record) {
+                        return \App\Helpers\ReportPdfHelper::downloadSalesReportPdf($record);
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

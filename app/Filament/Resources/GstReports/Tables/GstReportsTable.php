@@ -36,6 +36,13 @@ class GstReportsTable
             ])
             ->recordActions([
                 EditAction::make(),
+                \Filament\Actions\Action::make('download_pdf')
+                    ->label('PDF')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('success')
+                    ->action(function ($record) {
+                        return \App\Helpers\ReportPdfHelper::downloadGstReportPdf($record);
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

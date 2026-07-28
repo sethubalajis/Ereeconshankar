@@ -49,3 +49,38 @@ it('performs gst report crud operations', function (): void {
 
     Livewire::test(EditGstReport::class, ['record' => $record->getKey()])->callAction('delete');
 });
+
+it('computes gst details and downloads pdf report with full breakdown', function (): void {
+    actingAs(makeGstReportsAdminUser());
+    
+    $company = \App\Models\Company::query()->create(['name' => 'GST Co', 'code' => 'GSTCO1', 'status' => true]);
+    $branch = \App\Models\Branch::query()->create(['company_id' => $company->id, 'name' => 'GST Branch', 'code' => 'GSTBR1', 'status' => true]);
+    $posTerminal = \App\Models\PosTerminal::query()->create(['branch_id' => $branch->id, 'terminal_name' => 'Term 1', 'terminal_code' => 'T1', 'status' => true]);
+
+    \App\Models\PosSale::query()->create([
+        'branch_id' => $branch->id,
+        'pos_terminal_id' => $posTerminal->id,
+        'invoice_number' => 'INV-GST-101',
+        'sale_date' => '2026-07-15',
+        'total_amount' => 11800.00,
+        'tax_amount' => 1800.00,
+        'discount_amount' => 0.00,
+        'net_amount' => 11800.00,
+        'status' => 'completed',
+    ]);
+
+    $data = \App\Helpers\ReportPdfHelper::getGstReportData('GSTR-1', '2026-07-01', '2026-07-31');
+    expect($data['summary']['invoice_count'])->toBe(1);
+    expect($data['summary']['tax_amount'])->toBe(1800.0);
+    expect($data['summary']['taxable_amount'])->toBe(10000.0);
+
+    $record = GstReport::query()->create([
+        'report_type' => 'GSTR-1',
+        'period_start' => '2026-07-01',
+        'period_end' => '2026-07-31',
+        'summary_data' => 'Test',
+    ]);
+
+    $pdfResponse = \App\Helpers\ReportPdfHelper::downloadGstReportPdf($record);
+    expect($pdfResponse)->toBeInstanceOf(\Symfony\Component\HttpFoundation\StreamedResponse::class);
+});

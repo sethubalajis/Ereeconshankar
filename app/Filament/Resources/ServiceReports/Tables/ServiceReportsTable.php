@@ -33,6 +33,20 @@ class ServiceReportsTable
             ])
             ->recordActions([
                 EditAction::make(),
+                \Filament\Actions\Action::make('download_pdf')
+                    ->label('PDF')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('success')
+                    ->action(function ($record) {
+                        return \App\Helpers\ReportPdfHelper::downloadSinglePdf(
+                            'Service Report #' . $record->id,
+                            $record,
+                            [
+                                'serviceRequest.request_number' => 'Service Request No.',
+                                'report_date' => 'Report Date',
+                            ]
+                        );
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

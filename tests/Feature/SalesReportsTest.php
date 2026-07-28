@@ -53,13 +53,15 @@ it('validates required fields when creating a sales report', function (): void {
     Livewire::test(CreateSalesReport::class)
         ->fillForm([
             'branch_id' => null,
-            'report_date' => null,
+            'from_date' => null,
+            'to_date' => null,
             'total_sales' => null,
         ])
         ->call('create')
         ->assertHasFormErrors([
             'branch_id' => 'required',
-            'report_date' => 'required',
+            'from_date' => 'required',
+            'to_date' => 'required',
             'total_sales' => 'required',
         ]);
 });
@@ -71,6 +73,8 @@ it('performs sales report crud operations', function (): void {
     Livewire::test(CreateSalesReport::class)
         ->fillForm([
             'branch_id' => $branch->getKey(),
+            'from_date' => '2026-07-01',
+            'to_date' => '2026-07-21',
             'report_date' => '2026-07-21',
             'total_sales' => 10000,
         ])
@@ -78,6 +82,8 @@ it('performs sales report crud operations', function (): void {
         ->assertHasNoFormErrors();
 
     $record = SalesReport::query()->firstOrFail();
+    expect($record->from_date->format('Y-m-d'))->toBe('2026-07-01');
+    expect($record->to_date->format('Y-m-d'))->toBe('2026-07-21');
 
     Livewire::test(ListSalesReports::class)
         ->assertSuccessful()
@@ -86,6 +92,8 @@ it('performs sales report crud operations', function (): void {
     Livewire::test(EditSalesReport::class, ['record' => $record->getKey()])
         ->fillForm([
             'branch_id' => $branch->getKey(),
+            'from_date' => '2026-07-01',
+            'to_date' => '2026-07-22',
             'report_date' => '2026-07-22',
             'total_sales' => 12000,
         ])
@@ -94,6 +102,7 @@ it('performs sales report crud operations', function (): void {
 
     $record->refresh();
     expect((float) $record->total_sales)->toBe(12000.0);
+    expect($record->to_date->format('Y-m-d'))->toBe('2026-07-22');
 
     Livewire::test(EditSalesReport::class, ['record' => $record->getKey()])->callAction('delete');
     expect(SalesReport::query()->whereKey($record->getKey())->exists())->toBeFalse();

@@ -10,9 +10,27 @@ class SalesReportSeeder extends Seeder {
         $branchId = DB::table('branches')->first()->id ?? 1;
 
         $reports = [
-            ['branch_id' => $branchId, 'report_date' => now()->subDays(2)->format('Y-m-d'), 'total_sales' => 125000.00],
-            ['branch_id' => $branchId, 'report_date' => now()->subDays(1)->format('Y-m-d'), 'total_sales' => 140000.00],
-            ['branch_id' => $branchId, 'report_date' => now()->format('Y-m-d'), 'total_sales' => 95000.00],
+            [
+                'branch_id' => $branchId,
+                'from_date' => now()->subDays(2)->format('Y-m-d'),
+                'to_date' => now()->subDays(2)->format('Y-m-d'),
+                'report_date' => now()->subDays(2)->format('Y-m-d'),
+                'total_sales' => 125000.00
+            ],
+            [
+                'branch_id' => $branchId,
+                'from_date' => now()->subDays(1)->format('Y-m-d'),
+                'to_date' => now()->subDays(1)->format('Y-m-d'),
+                'report_date' => now()->subDays(1)->format('Y-m-d'),
+                'total_sales' => 140000.00
+            ],
+            [
+                'branch_id' => $branchId,
+                'from_date' => now()->format('Y-m-d'),
+                'to_date' => now()->format('Y-m-d'),
+                'report_date' => now()->format('Y-m-d'),
+                'total_sales' => 95000.00
+            ],
         ];
         
         foreach($reports as $r) {

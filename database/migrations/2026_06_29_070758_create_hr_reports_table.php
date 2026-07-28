@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('hr_reports', function (Blueprint $table) {
             $table->id();
-            $table->date('report_month');
+            $table->date('from_date')->nullable();
+            $table->date('to_date')->nullable();
+            $table->date('report_month')->nullable();
             $table->integer('total_employees')->default(0);
             $table->integer('new_hires')->default(0);
             $table->integer('exits')->default(0);

@@ -14,7 +14,9 @@ return new class extends Migration
         Schema::create('financial_reports', function (Blueprint $table) {
             $table->id();
             $table->string('report_type'); // PnL, BalanceSheet
-            $table->date('as_of_date');
+            $table->date('from_date')->nullable();
+            $table->date('to_date')->nullable();
+            $table->date('as_of_date')->nullable();
             $table->text('data')->nullable();
             $table->timestamps();
         });

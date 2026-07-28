@@ -14,6 +14,21 @@ class ListFinancialReports extends ListRecords
     {
         return [
             CreateAction::make(),
+            \Filament\Actions\Action::make('export_pdf')
+                ->label('Export PDF Report')
+                ->icon('heroicon-o-document-arrow-down')
+                ->color('success')
+                ->action(function () {
+                    $records = \App\Models\FinancialReport::all();
+                    return \App\Helpers\ReportPdfHelper::downloadListPdf(
+                        'Financial Reports Summary',
+                        $records,
+                        [
+                            'report_type' => 'Report Type',
+                            'as_of_date' => 'As Of Date',
+                        ]
+                    );
+                }),
         ];
     }
 }

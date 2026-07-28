@@ -15,6 +15,7 @@ class PermissionSeeder extends Seeder
         for ($i = 0; $i < 5; $i++) {
             DB::table('permissions')->insert([
                 'name' => $faker->word . ' ' . $faker->word,
+                'guard_name' => 'web',
                 'module' => $faker->word . ' ' . $faker->word,
                 'description' => $faker->sentence,
             ]);
