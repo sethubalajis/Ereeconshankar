@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class ServiceReportSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('service_reports')->truncate();
         
         $srId = DB::table('service_requests')->where('status', 'resolved')->value('id') ?? 2;
@@ -16,6 +16,6 @@ class ServiceReportSeeder extends Seeder {
         foreach($reports as $r) {
             DB::table('service_reports')->insert($r);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

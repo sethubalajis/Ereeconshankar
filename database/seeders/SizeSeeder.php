@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class SizeSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('sizes')->truncate();
         $sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '28', '30', '32', '34'];
         foreach($sizes as $index => $s) {
@@ -12,6 +12,6 @@ class SizeSeeder extends Seeder {
                 'name' => $s, 'code' => $s, 'status' => true
             ]);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

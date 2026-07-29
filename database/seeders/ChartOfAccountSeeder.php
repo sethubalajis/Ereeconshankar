@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class ChartOfAccountSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('chart_of_accounts')->truncate();
         
         $cAstId = DB::table('account_groups')->where('code', 'C-AST')->value('id') ?? 1;
@@ -21,6 +21,6 @@ class ChartOfAccountSeeder extends Seeder {
         foreach($coas as $coa) {
             DB::table('chart_of_accounts')->insert($coa);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

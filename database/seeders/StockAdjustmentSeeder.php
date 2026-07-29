@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class StockAdjustmentSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('stock_adjustments')->truncate();
         
         $productId = DB::table('products')->first()->id ?? 1;
@@ -18,6 +18,6 @@ class StockAdjustmentSeeder extends Seeder {
         foreach($adjustments as $adj) {
             DB::table('stock_adjustments')->insert($adj);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

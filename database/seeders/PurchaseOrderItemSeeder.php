@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class PurchaseOrderItemSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('purchase_order_items')->truncate();
         
         $pos = DB::table('purchase_orders')->pluck('id')->toArray();
@@ -27,6 +27,6 @@ class PurchaseOrderItemSeeder extends Seeder {
         foreach($items as $item) {
             DB::table('purchase_order_items')->insert($item);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

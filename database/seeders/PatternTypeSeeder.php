@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class PatternTypeSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('pattern_types')->truncate();
         $patterns = ['Solid', 'Striped', 'Checked', 'Floral', 'Printed', 'Polka Dot', 'Geometric'];
         foreach($patterns as $p) {
@@ -12,6 +12,6 @@ class PatternTypeSeeder extends Seeder {
                 'name' => $p, 'code' => strtoupper(substr($p, 0, 3)), 'status' => true
             ]);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

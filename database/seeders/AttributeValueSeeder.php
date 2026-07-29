@@ -9,7 +9,7 @@ class AttributeValueSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         
         if (! DB::table('product_attributes')->exists()) {
             $this->call(ProductAttributeSeeder::class);
@@ -54,6 +54,6 @@ class AttributeValueSeeder extends Seeder
             DB::table('attribute_values')->insert($rows);
         }
 
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

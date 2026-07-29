@@ -59,6 +59,30 @@ class PosSalesTable
             ->defaultSort('created_at', 'desc')
             ->recordActions([
                 EditAction::make(),
+                \Filament\Actions\Action::make('download_receipt')
+                    ->label('Receipt')
+                    ->icon('heroicon-o-document-text')
+                    ->color('success')
+                    ->action(function ($record) {
+                        return \App\Helpers\ReportPdfHelper::downloadPosSaleReceiptPdf($record);
+                    }),
+            ])
+            ->headerActions([
+                \Filament\Actions\Action::make('download_overall_pdf')
+                    ->label('Overall PDF')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('primary')
+                    ->action(function ($livewire) {
+                        $records = $livewire->getFilteredTableQuery()->get();
+                        return \App\Helpers\ReportPdfHelper::downloadListPdf('Overall POS Sales', $records, [
+                            'Invoice No' => fn($r) => $r->invoice_number ?? '-',
+                            'Branch' => fn($r) => $r->branch?->name ?? '-',
+                            'Customer' => fn($r) => $r->customer?->name ?? 'Walk-in',
+                            'Date' => fn($r) => $r->sale_date ? \Carbon\Carbon::parse($r->sale_date)->format('Y-m-d') : '-',
+                            'Amount' => fn($r) => number_format($r->net_amount, 2),
+                            'Status' => fn($r) => ucfirst($r->status),
+                        ]);
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

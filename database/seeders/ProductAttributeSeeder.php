@@ -9,7 +9,7 @@ class ProductAttributeSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('attribute_values')->truncate();
         DB::table('product_attributes')->truncate();
 
@@ -26,6 +26,6 @@ class ProductAttributeSeeder extends Seeder
             ['name' => 'End Use', 'code' => 'TXT008', 'type' => 'select', 'created_at' => $now, 'updated_at' => $now],
         ]);
         
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

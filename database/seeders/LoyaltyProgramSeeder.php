@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class LoyaltyProgramSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('loyalty_programs')->truncate();
         
         $programs = [
@@ -15,6 +15,6 @@ class LoyaltyProgramSeeder extends Seeder {
         foreach($programs as $p) {
             DB::table('loyalty_programs')->insert($p);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

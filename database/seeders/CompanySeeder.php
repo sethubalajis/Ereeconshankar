@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class CompanySeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('companies')->truncate();
         DB::table('companies')->insert([
             'name' => 'The Chennai Silks', 'code' => 'TCS',
@@ -15,6 +15,6 @@ class CompanySeeder extends Seeder {
             'city_id' => 1, 'state_id' => 1, 'country_id' => 1,
             'pin_code' => '600017', 'status' => true,
         ]);
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

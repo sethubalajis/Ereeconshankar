@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class LeaveTypeSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('leave_types')->truncate();
         
         $leaves = [
@@ -16,6 +16,6 @@ class LeaveTypeSeeder extends Seeder {
         foreach($leaves as $l) {
             DB::table('leave_types')->insert($l);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

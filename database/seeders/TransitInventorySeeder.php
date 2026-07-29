@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class TransitInventorySeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('transit_inventories')->truncate();
         
         $transfers = DB::table('stock_transfers')->where('status', 'dispatched')->pluck('id')->toArray();
@@ -19,6 +19,6 @@ class TransitInventorySeeder extends Seeder {
         foreach($transit as $t) {
             DB::table('transit_inventories')->insert($t);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

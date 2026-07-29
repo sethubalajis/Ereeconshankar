@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class CouponSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('coupons')->truncate();
         
         $coupons = [
@@ -15,6 +15,6 @@ class CouponSeeder extends Seeder {
         foreach($coupons as $c) {
             DB::table('coupons')->insert($c);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

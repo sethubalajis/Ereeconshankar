@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class AccountGroupSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('account_groups')->truncate();
         
         $groups = [
@@ -26,6 +26,6 @@ class AccountGroupSeeder extends Seeder {
             ['name' => 'Fixed Assets', 'code' => 'F-AST', 'parent_id' => $astId, 'type' => 'asset'],
         ]);
         
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

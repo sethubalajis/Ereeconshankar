@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class CustomerFeedbackSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('customer_feedback')->truncate();
         
         $customerId = DB::table('customers')->first()->id ?? 1;
@@ -18,6 +18,6 @@ class CustomerFeedbackSeeder extends Seeder {
         foreach($feedback as $f) {
             DB::table('customer_feedback')->insert($f);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

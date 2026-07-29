@@ -8,7 +8,18 @@ class Stock extends Model
 {
     protected $guarded = [];
 
-    //
+    protected $appends = ['available_quantity'];
+
+    public function getAvailableQuantityAttribute()
+    {
+        return $this->quantity;
+    }
+
+    public function setAvailableQuantityAttribute($value)
+    {
+        $this->attributes['quantity'] = $value;
+    }
+
     public function product() {
         return $this->belongsTo(Product::class, 'product_id');
     }

@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class ProductSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('products')->truncate();
         
         $brandId = DB::table('brands')->first()->id ?? 1;
@@ -35,6 +35,6 @@ class ProductSeeder extends Seeder {
         foreach($products as $p) {
             DB::table('products')->insert($p);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class ComplaintTicketSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('complaint_tickets')->truncate();
         
         $customerId = DB::table('customers')->first()->id ?? 1;
@@ -17,6 +17,6 @@ class ComplaintTicketSeeder extends Seeder {
         foreach($tickets as $t) {
             DB::table('complaint_tickets')->insert($t);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

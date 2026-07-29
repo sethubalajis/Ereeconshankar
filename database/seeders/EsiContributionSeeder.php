@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class EsiContributionSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('esi_contributions')->truncate();
         
         $empId = DB::table('employees')->first()->id ?? 1;
@@ -16,6 +16,6 @@ class EsiContributionSeeder extends Seeder {
         foreach($esis as $e) {
             DB::table('esi_contributions')->insert($e);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

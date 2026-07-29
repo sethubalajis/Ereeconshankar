@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class ProductCategorySeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('product_categories')->truncate();
         
         // Insert Root Categories
@@ -33,6 +33,6 @@ class ProductCategorySeeder extends Seeder {
             DB::table('product_categories')->insert($s);
         }
 
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

@@ -10,7 +10,7 @@ class VendorPriceListSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('vendor_price_lists')->truncate();
         
         $vendors = DB::table('vendors')->pluck('id')->toArray();
@@ -28,6 +28,6 @@ class VendorPriceListSeeder extends Seeder
             DB::table('vendor_price_lists')->insert($price);
         }
         
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

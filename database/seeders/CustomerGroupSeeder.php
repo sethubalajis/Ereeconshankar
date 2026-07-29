@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class CustomerGroupSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('customer_groups')->truncate();
         
         $groups = [
@@ -16,6 +16,6 @@ class CustomerGroupSeeder extends Seeder {
         foreach($groups as $g) {
             DB::table('customer_groups')->insert($g);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

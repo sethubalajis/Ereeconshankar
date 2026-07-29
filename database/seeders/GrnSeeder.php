@@ -9,13 +9,13 @@ class GrnSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('grns')->truncate();
         
         // Truncate stock to rebuild based on GRNs
         DB::table('stocks')->truncate();
         
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
 
         $po = DB::table('purchase_orders')->first();
         $vendorId = DB::table('vendors')->first()->id ?? 1;

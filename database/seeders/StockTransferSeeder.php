@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class StockTransferSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('stock_transfers')->truncate();
         
         $reqs = DB::table('transfer_requests')->where('status', 'approved')->pluck('id')->toArray();
@@ -20,6 +20,6 @@ class StockTransferSeeder extends Seeder {
         foreach($transfers as $t) {
             DB::table('stock_transfers')->insert($t);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class LedgerSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('ledgers')->truncate();
         
         $cashAcc = DB::table('chart_of_accounts')->where('account_code', '1001')->value('id') ?? 1;
@@ -20,6 +20,6 @@ class LedgerSeeder extends Seeder {
         foreach($ledgers as $l) {
             DB::table('ledgers')->insert($l);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

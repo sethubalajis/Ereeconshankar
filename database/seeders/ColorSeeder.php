@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class ColorSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('colors')->truncate();
         $colors = [
             ['name' => 'Red', 'code' => 'RED', 'hex' => '#FF0000'],
@@ -23,6 +23,6 @@ class ColorSeeder extends Seeder {
                 'name' => $c['name'], 'code' => $c['code'], 'hex_code' => $c['hex'], 'status' => true
             ]);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class JournalEntrySeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('journal_entries')->truncate();
         
         $jv1 = DB::table('journals')->where('journal_number', 'JV-2026-001')->value('id') ?? 1;
@@ -26,6 +26,6 @@ class JournalEntrySeeder extends Seeder {
         foreach($entries as $e) {
             DB::table('journal_entries')->insert($e);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

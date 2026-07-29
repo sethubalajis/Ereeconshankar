@@ -120,7 +120,56 @@ class PosSaleObserver
      */
     public function updated(PosSale $posSale): void
     {
-        //
+        if ($posSale->wasChanged('status')) {
+            $newStatus = $posSale->status;
+            $oldStatus = $posSale->getOriginal('status');
+
+            if ($newStatus === 'completed' && $oldStatus !== 'completed') {
+                foreach ($posSale->posSaleItems as $item) {
+                    $item->processStockDeduction();
+                }
+            } elseif (in_array($newStatus, ['cancelled', 'refunded'], true) && $oldStatus === 'completed') {
+                foreach ($posSale->posSaleItems as $item) {
+                    $deductRef = 'POS-SALE-' . $posSale->id . '-' . $item->id;
+                    $restoreRef = 'POS-SALE-RESTORE-' . $posSale->id . '-' . $item->id;
+
+                    $previouslyDeducted = \App\Models\StockTransaction::query()
+                        ->where('reference', $deductRef)
+                        ->where('reference_type', 'App\\Models\\PosSale')
+                        ->exists();
+
+                    $alreadyRestored = \App\Models\StockTransaction::query()
+                        ->where('reference', $restoreRef)
+                        ->where('reference_type', 'App\\Models\\PosSale')
+                        ->exists();
+
+                    if ($previouslyDeducted && ! $alreadyRestored) {
+                        $warehouseId = data_get($posSale, 'warehouse_id');
+                        $usedDefaultWarehouse = false;
+
+                        if (! $warehouseId && $posSale->branch_id) {
+                            $warehouseId = \App\Models\Warehouse::defaultIdForBranch((int) $posSale->branch_id);
+                            $usedDefaultWarehouse = (bool) $warehouseId;
+                        }
+
+                        $inventoryService = new \App\Services\InventoryService();
+                        $inventoryService->updateStock(
+                            $item->product_id,
+                            $item->product_variant_id,
+                            $posSale->branch_id,
+                            $warehouseId,
+                            'in',
+                            $item->quantity,
+                            $item->unit_price,
+                            $restoreRef,
+                            'App\\Models\\PosSale',
+                            false, // preventNewStockOnOut
+                            true // reuseExistingStockRow
+                        );
+                    }
+                }
+            }
+        }
     }
 
     /**

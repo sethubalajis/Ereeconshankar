@@ -6,7 +6,7 @@ class ProductUnitSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('product_units')->truncate();
 
         $rows = [
@@ -24,6 +24,6 @@ class ProductUnitSeeder extends Seeder
                 'description' => $row['description'],
             ]);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

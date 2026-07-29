@@ -7,7 +7,7 @@ class VendorSeeder extends Seeder {
     {
         $faker = \Faker\Factory::create('en_IN');
 
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
 
         if (! DB::table('vendor_categories')->exists()) {
             $this->call(VendorCategorySeeder::class);
@@ -47,6 +47,6 @@ class VendorSeeder extends Seeder {
             ]);
         }
         
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

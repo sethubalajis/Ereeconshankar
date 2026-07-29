@@ -828,8 +828,11 @@ class ReportPdfHelper
             $filename
         );
     }
+    public static function downloadPosSaleReceiptPdf(object $record): StreamedResponse
+    {
+        $pdf = Pdf::loadView('reports.pos_sale_receipt_pdf', ['record' => $record]);
+        $filename = 'POS-Receipt-' . ($record->invoice_number ?? $record->id) . '-' . now()->format('YmdHis') . '.pdf';
+        return response()->streamDownload(fn () => print($pdf->output()), $filename);
+    }
 }
-
-
-
 

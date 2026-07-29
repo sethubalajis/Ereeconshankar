@@ -10,7 +10,7 @@ class MerchandisePlanningSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('merchandise_plannings')->truncate();
         
         $fyId = DB::table('financial_years')->inRandomOrder()->value('id');
@@ -44,6 +44,6 @@ class MerchandisePlanningSeeder extends Seeder
             ]);
         }
         
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

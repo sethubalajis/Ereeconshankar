@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class KpiReportSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('kpi_reports')->truncate();
         
         $kpis = [
@@ -16,6 +16,6 @@ class KpiReportSeeder extends Seeder {
         foreach($kpis as $k) {
             DB::table('kpi_reports')->insert($k);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class DiscountRuleSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('discount_rules')->truncate();
         
         $ptId = DB::table('promotion_types')->first()->id ?? 1;
@@ -17,6 +17,6 @@ class DiscountRuleSeeder extends Seeder {
         foreach($rules as $r) {
             DB::table('discount_rules')->insert($r);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }
