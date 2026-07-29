@@ -297,15 +297,17 @@ class PosSaleForm
                     ->prefix('₹')
                     ->default(0.0),
                 Repeater::make('payments')
+                    ->helperText('Optional. You can leave payment empty and collect payment later.')
+                    ->default([])
                     ->schema([
                         Select::make('payment_mode_id')
                             ->options(\App\Models\PaymentMode::pluck('name', 'id'))
-                            ->required()
+                            ->nullable()
                             ->label('Payment Mode'),
                         TextInput::make('amount')
                             ->numeric()
                             ->prefix('₹')
-                            ->required()
+                            ->nullable()
                             ->default(0.0),
                     ])
                     ->columns(2)

@@ -20,6 +20,9 @@ class EmployeeForm
                     ->disabled()
                     ->dehydrated(false)
                     ->placeholder('Auto-generated'),
+                TextInput::make('biometric_code')
+                    ->label('Biometric Code')
+                    ->unique(ignoreRecord: true),
                 TextInput::make('first_name')
                     ->required(),
                 TextInput::make('last_name'),

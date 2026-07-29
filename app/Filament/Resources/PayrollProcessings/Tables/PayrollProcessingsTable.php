@@ -18,6 +18,19 @@ class PayrollProcessingsTable
                     ->sortable(),
                 TextColumn::make('employee.first_name')
                     ->sortable(),
+                TextColumn::make('total_working_days')
+                    ->label('Working Days')
+                    ->numeric(),
+                TextColumn::make('effective_present_days')
+                    ->label('Effective Present Days')
+                    ->numeric(),
+                TextColumn::make('missing_attendance_days')
+                    ->label('Missing Attendance Days')
+                    ->numeric()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('absent_leave_days')
+                    ->label('Absent / Leave Days')
+                    ->numeric(),
                 TextColumn::make('basic_pay')->numeric()->prefix('₹ ')->sortable()->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('hra')->numeric()->prefix('₹ ')->sortable()->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('special_allowance')->numeric()->prefix('₹ ')->sortable()->toggleable(isToggledHiddenByDefault: true),

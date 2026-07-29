@@ -18,6 +18,155 @@ class PayrollProcessing extends Model
 
     public $tds_data_temp = null;
 
+    protected function attendanceSummary(): array
+    {
+        if (! $this->employee_id || ! $this->payroll_cycle_id) {
+            return [
+                'total_working_days' => 0,
+                'effective_present_days' => 0,
+                'missing_attendance_days' => 0,
+                'absent_leave_days' => 0,
+            ];
+        }
+
+        $cycle = $this->payrollCycle;
+
+        if (! $cycle) {
+            return [
+                'total_working_days' => 0,
+                'effective_present_days' => 0,
+                'missing_attendance_days' => 0,
+                'absent_leave_days' => 0,
+            ];
+        }
+
+        $startDate = \Carbon\Carbon::parse($cycle->start_date);
+        $endDate = \Carbon\Carbon::parse($cycle->end_date);
+        $totalDays = $startDate->diffInDays($endDate) + 1;
+
+        $presentDays = \App\Models\Attendance::where('employee_id', $this->employee_id)
+            ->whereBetween('date', [$cycle->start_date, $cycle->end_date])
+            ->whereIn('status', ['present', 'Present'])
+            ->count();
+
+        $halfDays = \App\Models\Attendance::where('employee_id', $this->employee_id)
+            ->whereBetween('date', [$cycle->start_date, $cycle->end_date])
+            ->whereIn('status', ['half_day', 'Half Day'])
+            ->count();
+
+        $paidHolidayDays = \App\Models\Holiday::whereBetween('date', [$cycle->start_date, $cycle->end_date])
+            ->where(function ($query) {
+                $query->whereNull('is_restricted')
+                    ->orWhere('is_restricted', false);
+            })
+            ->count();
+
+        $paidLeaveDays = 0;
+        $missingAttendanceDays = 0;
+        $lopDays = 0;
+        $year = \Carbon\Carbon::parse($cycle->start_date)->year;
+
+        foreach (\Carbon\CarbonPeriod::create($cycle->start_date, $cycle->end_date) as $day) {
+            $date = $day->toDateString();
+
+            $attendanceStatus = \App\Models\Attendance::where('employee_id', $this->employee_id)
+                ->where('date', $date)
+                ->value('status');
+
+            if (in_array($attendanceStatus, ['present', 'Present', 'half_day', 'Half Day'], true)) {
+                continue;
+            }
+
+            $holiday = \App\Models\Holiday::whereDate('date', $date)
+                ->where(function ($query) {
+                    $query->whereNull('is_restricted')
+                        ->orWhere('is_restricted', false);
+                })
+                ->exists();
+
+            if ($holiday) {
+                continue;
+            }
+
+            $leave = \App\Models\EmployeeLeave::where('employee_id', $this->employee_id)
+                ->where('status', 'approved')
+                ->where('start_date', '<=', $date)
+                ->where('end_date', '>=', $date)
+                ->first();
+
+            if ($leave) {
+                $leaveType = $leave->leaveType;
+
+                if ($this->isCasualLeaveType($leaveType) && $leaveType->days_allowed > 0) {
+                    $totalTakenInYear = \DB::table('employee_leaves')
+                        ->where('employee_id', $this->employee_id)
+                        ->where('status', 'approved')
+                        ->where('leave_type_id', $leaveType->id)
+                        ->whereYear('start_date', $year)
+                        ->get()
+                        ->sum(function ($l) {
+                            return \Carbon\Carbon::parse($l->start_date)->diffInDays(\Carbon\Carbon::parse($l->end_date)) + 1;
+                        });
+
+                    if ($totalTakenInYear <= $leaveType->days_allowed) {
+                        $paidLeaveDays++;
+                    } else {
+                        $lopDays++;
+                    }
+                } else {
+                    $lopDays++;
+                }
+            } else {
+                $missingAttendanceDays++;
+                $lopDays++;
+            }
+        }
+
+        return [
+            'total_working_days' => $totalDays,
+            'effective_present_days' => $presentDays + ($halfDays * 0.5) + $paidLeaveDays + $paidHolidayDays,
+            'missing_attendance_days' => $missingAttendanceDays,
+            'absent_leave_days' => $lopDays,
+        ];
+    }
+
+    public function getTotalWorkingDaysAttribute(): float
+    {
+        return (float) ($this->attendanceSummary()['total_working_days'] ?? 0);
+    }
+
+    public function getEffectivePresentDaysAttribute(): float
+    {
+        return (float) ($this->attendanceSummary()['effective_present_days'] ?? 0);
+    }
+
+    public function getPresentDaysAttribute(): float
+    {
+        return $this->effective_present_days;
+    }
+
+    public function getMissingAttendanceDaysAttribute(): float
+    {
+        return (float) ($this->attendanceSummary()['missing_attendance_days'] ?? 0);
+    }
+
+    public function getAbsentLeaveDaysAttribute(): float
+    {
+        return (float) ($this->attendanceSummary()['absent_leave_days'] ?? 0);
+    }
+
+    protected function isCasualLeaveType($leaveType): bool
+    {
+        if (! $leaveType) {
+            return false;
+        }
+
+        $name = strtolower((string) ($leaveType->name ?? ''));
+        $code = strtolower((string) ($leaveType->code ?? ''));
+
+        return str_contains($name, 'casual') || $code === 'cl';
+    }
+
     public function calculatePayroll()
     {
         if (!$this->employee_id || !$this->payroll_cycle_id) {
@@ -73,7 +222,7 @@ class PayrollProcessing extends Model
                     
                 if ($leave) {
                     $leaveType = $leave->leaveType;
-                    if ($leaveType && $leaveType->days_allowed > 0) {
+                    if ($this->isCasualLeaveType($leaveType) && $leaveType->days_allowed > 0) {
                         $totalTakenInYear = \DB::table('employee_leaves')
                             ->where('employee_id', $this->employee_id)
                             ->where('status', 'approved')
@@ -139,38 +288,16 @@ class PayrollProcessing extends Model
                 ->where('end_date', '>=', $cycle->start_date)
                 ->first();
 
-            $taxRegime = 'old';
-            $approvedDeductions = 0;
+            $tdsRecordQuery = \App\Models\TdsRecord::where('employee_id', $this->employee_id)
+                ->whereYear('created_at', $year)
+                ->whereMonth('created_at', $month);
 
             if ($financialYear) {
-                $declaration = \App\Models\EmployeeTaxDeclaration::where('employee_id', $this->employee_id)
-                    ->where('financial_year_id', $financialYear->id)
-                    ->where('status', 'approved')
-                    ->first();
-                
-                if ($declaration) {
-                    $taxRegime = $declaration->tax_regime;
-                    $approvedDeductions = $declaration->items()->sum('approved_amount');
-                }
+                $tdsRecordQuery->where('financial_year_id', $financialYear->id);
             }
 
-            // Simple Tax Calculation (Placeholders for actual slabs)
-            $annualGross = $grossSalary * 12;
-            $taxableIncome = max(0, $annualGross - $approvedDeductions);
-            
-            $annualTax = 0;
-            if ($taxableIncome > 250000) {
-                if ($taxableIncome <= 500000) {
-                    $annualTax = ($taxableIncome - 250000) * 0.05;
-                } elseif ($taxableIncome <= 1000000) {
-                    $annualTax = (250000 * 0.05) + (($taxableIncome - 500000) * 0.20);
-                } else {
-                    $annualTax = (250000 * 0.05) + (500000 * 0.20) + (($taxableIncome - 1000000) * 0.30);
-                }
-            }
-
-            $monthlyTds = round($annualTax / 12, 2);
-            $this->tds_records = $monthlyTds;
+            $tdsRecord = $tdsRecordQuery->orderByDesc('id')->first();
+            $this->tds_records = round((float) ($tdsRecord->monthly_tds ?? 0), 2);
             
             $totalDeductions += $professionalTaxes;
             $totalDeductions += $this->tds_records;
@@ -204,12 +331,19 @@ class PayrollProcessing extends Model
                     $this->pf = 0;
                 }
                 
-                if ($grossSalary <= 21000 && $employee && $employee->esi_opt_in) {
+                if ($employee && $employee->esi_opt_in) {
                     $esiContribution = \App\Models\EsiContribution::where('employee_id', $this->employee_id)
                         ->whereYear('month', $year)
                         ->whereMonth('month', $month)
                         ->first();
-                    $this->esi = $esiContribution ? round($esiContribution->employee_share, 2) : 0;
+
+                    if ($esiContribution) {
+                        $this->esi = round($esiContribution->employee_share, 2);
+                    } elseif ($grossSalary <= 21000) {
+                        $this->esi = round($grossSalary * 0.0075, 2);
+                    } else {
+                        $this->esi = 0;
+                    }
                 } else {
                     $this->esi = 0;
                 }
@@ -230,6 +364,12 @@ class PayrollProcessing extends Model
             $this->gross_pay = round($grossSalary + $bonuses + $incentives + $reimbursement, 2);
             $this->total_deductions = round($totalDeductions, 2);
             $this->net_pay = round($this->gross_pay - $this->total_deductions, 2);
+
+            $annualGross = (float) ($tdsRecord->annual_gross_salary ?? ($grossSalary * 12));
+            $approvedDeductions = (float) ($tdsRecord->approved_tax_deductions ?? 0);
+            $taxableIncome = (float) ($tdsRecord->taxable_income ?? max(0, $annualGross - $approvedDeductions));
+            $annualTax = (float) ($tdsRecord->annual_income_tax ?? ($this->tds_records * 12));
+            $taxRegime = (string) ($tdsRecord->tax_regime ?? 'old');
             
             $this->tds_data_temp = [
                 'annualGross' => $annualGross,

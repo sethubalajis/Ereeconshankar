@@ -21,10 +21,11 @@ class InventoryService
      * @param float $unitPrice
      * @param string $reference
      * @param string $referenceType
-     * @param bool $preventNewStockOnOut When true and transaction is out, do not insert a new stock row.
+    * @param bool $preventNewStockOnOut When true and transaction is out, do not insert a new stock row.
+    * @param bool $reuseExistingStockRow When true, reuse an existing branch stock row instead of creating a new one.
      * @return \App\Models\Stock|null
      */
-    public function updateStock($productId, $variantId, $branchId, $warehouseId, $transactionType, $quantity, $unitPrice, $reference, $referenceType, $preventNewStockOnOut = false)
+    public function updateStock($productId, $variantId, $branchId, $warehouseId, $transactionType, $quantity, $unitPrice, $reference, $referenceType, $preventNewStockOnOut = false, $reuseExistingStockRow = false)
     {
         $stock = Stock::query()->where([
             'product_id' => $productId,
@@ -34,7 +35,7 @@ class InventoryService
         ])->first();
 
         if (! $stock) {
-            if ($transactionType === 'out' && $preventNewStockOnOut) {
+            if (($transactionType === 'out' && $preventNewStockOnOut) || $reuseExistingStockRow) {
                 // Reuse an existing branch-level stock row instead of creating a new one.
                 $stock = Stock::query()
                     ->where('product_id', $productId)

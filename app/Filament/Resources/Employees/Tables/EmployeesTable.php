@@ -24,6 +24,8 @@ class EmployeesTable
                     ->sortable(),
                 TextColumn::make('employee_code')
                     ->searchable(),
+                TextColumn::make('biometric_code')
+                    ->searchable(),
                 TextColumn::make('first_name')
                     ->searchable(),
                 TextColumn::make('last_name')

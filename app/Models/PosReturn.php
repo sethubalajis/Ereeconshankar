@@ -8,6 +8,83 @@ class PosReturn extends Model
 {
     protected $guarded = [];
 
+    protected $casts = [
+        'return_items' => 'array',
+    ];
+
+    protected static function booted(): void
+    {
+        static::saved(function (self $model): void {
+            $shouldApplyStockNow = ($model->wasRecentlyCreated && in_array($model->status, ['completed', 'refunded'], true))
+                || ($model->wasChanged('status') && in_array($model->status, ['completed', 'refunded'], true));
+
+            if (! $shouldApplyStockNow) {
+                return;
+            }
+
+            $sale = $model->posSale;
+
+            if (! $sale || ! $sale->branch_id) {
+                return;
+            }
+
+            $warehouseId = data_get($sale, 'warehouse_id');
+            $usedDefaultWarehouse = false;
+
+            if (! $warehouseId) {
+                $warehouseId = Warehouse::defaultIdForBranch((int) $sale->branch_id);
+                $usedDefaultWarehouse = (bool) $warehouseId;
+            }
+
+            $inventoryService = new \App\Services\InventoryService();
+            $saleItems = $sale->posSaleItems()->orderBy('id')->get()->values();
+
+            foreach (($model->return_items ?? []) as $index => $item) {
+                $fallbackSaleItemId = (int) ($saleItems->get($index)?->id ?? 0);
+                $posSaleItemId = (int) ($item['pos_sale_item_id'] ?? $fallbackSaleItemId);
+                $returnQty = (float) ($item['return_quantity'] ?? 0);
+
+                if ($posSaleItemId <= 0 || $returnQty <= 0) {
+                    continue;
+                }
+
+                $reference = 'POS-RET-' . $model->id . '-' . $posSaleItemId;
+
+                $alreadyApplied = StockTransaction::query()
+                    ->where('reference', $reference)
+                    ->where('reference_type', 'App\\Models\\PosReturn')
+                    ->exists();
+
+                if ($alreadyApplied) {
+                    continue;
+                }
+
+                $saleItem = PosSaleItem::query()->find($posSaleItemId)
+                    ?? $saleItems->firstWhere('id', $posSaleItemId);
+
+                if (! $saleItem) {
+                    continue;
+                }
+
+                $unitPrice = (float) ($item['unit_price'] ?? $saleItem->unit_price ?? 0);
+
+                $inventoryService->updateStock(
+                    $saleItem->product_id,
+                    $saleItem->product_variant_id,
+                    $sale->branch_id,
+                    $warehouseId,
+                    'in',
+                    $returnQty,
+                    $unitPrice,
+                    $reference,
+                    'App\\Models\\PosReturn',
+                    false,
+                    $usedDefaultWarehouse
+                );
+            }
+        });
+    }
+
     //
     public function posSale() {
         return $this->belongsTo(PosSale::class, 'pos_sale_id');
