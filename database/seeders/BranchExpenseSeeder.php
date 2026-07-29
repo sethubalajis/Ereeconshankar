@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class BranchExpenseSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('branch_expenses')->truncate();
         
         $expenses = [
@@ -16,6 +16,6 @@ class BranchExpenseSeeder extends Seeder {
         foreach($expenses as $e) {
             DB::table('branch_expenses')->insert($e);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

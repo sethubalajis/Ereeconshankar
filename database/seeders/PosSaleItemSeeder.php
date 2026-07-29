@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class PosSaleItemSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('pos_sale_items')->truncate();
         
         $sales = DB::table('pos_sales')->pluck('id')->toArray();
@@ -19,6 +19,6 @@ class PosSaleItemSeeder extends Seeder {
         foreach($items as $i) {
             DB::table('pos_sale_items')->insert($i);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

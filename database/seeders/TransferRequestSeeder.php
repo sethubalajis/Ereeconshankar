@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class TransferRequestSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('transfer_requests')->truncate();
         
         $branch1 = DB::table('branches')->first()->id ?? 1;
@@ -23,6 +23,6 @@ class TransferRequestSeeder extends Seeder {
         foreach($requests as $r) {
             DB::table('transfer_requests')->insert($r);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

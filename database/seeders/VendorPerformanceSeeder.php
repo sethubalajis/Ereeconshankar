@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class VendorPerformanceSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('vendor_performances')->truncate();
         
         $vendors = DB::table('vendors')->pluck('id')->toArray();
@@ -19,6 +19,6 @@ class VendorPerformanceSeeder extends Seeder {
         foreach($performances as $p) {
             DB::table('vendor_performances')->insert($p);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

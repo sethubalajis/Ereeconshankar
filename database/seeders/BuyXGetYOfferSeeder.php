@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class BuyXGetYOfferSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('buy_x_get_y_offers')->truncate();
         
         $p1 = DB::table('products')->first()->id ?? 1;
@@ -18,6 +18,6 @@ class BuyXGetYOfferSeeder extends Seeder {
         foreach($offers as $o) {
             DB::table('buy_x_get_y_offers')->insert($o);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

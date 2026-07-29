@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class WarehouseSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('warehouses')->truncate();
         
         $warehouses = [
@@ -15,6 +15,6 @@ class WarehouseSeeder extends Seeder {
         foreach($warehouses as $wh) {
             DB::table('warehouses')->insert($wh);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class AssetSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('assets')->truncate();
         
         $branchId = DB::table('branches')->first()->id ?? 1;
@@ -20,6 +20,6 @@ class AssetSeeder extends Seeder {
         foreach($assets as $a) {
             DB::table('assets')->insert($a);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class BrandSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('brands')->truncate();
         $brands = [
             ['name' => 'Levis', 'code' => 'LEV', 'desc' => 'Premium denim and casual wear.'],
@@ -18,6 +18,6 @@ class BrandSeeder extends Seeder {
                 'name' => $b['name'], 'code' => $b['code'], 'description' => $b['desc'], 'status' => true
             ]);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

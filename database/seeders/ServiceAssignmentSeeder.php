@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class ServiceAssignmentSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('service_assignments')->truncate();
         
         $srId = DB::table('service_requests')->where('request_number', 'SR-2026-001')->value('id') ?? 1;
@@ -17,6 +17,6 @@ class ServiceAssignmentSeeder extends Seeder {
         foreach($assignments as $a) {
             DB::table('service_assignments')->insert($a);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

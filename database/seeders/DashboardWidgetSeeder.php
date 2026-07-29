@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class DashboardWidgetSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('dashboard_widgets')->truncate();
         
         $widgets = [
@@ -16,6 +16,6 @@ class DashboardWidgetSeeder extends Seeder {
         foreach($widgets as $w) {
             DB::table('dashboard_widgets')->insert($w);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

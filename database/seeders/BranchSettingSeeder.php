@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class BranchSettingSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('branch_settings')->truncate();
         
         $settings = [
@@ -18,6 +18,6 @@ class BranchSettingSeeder extends Seeder {
         foreach($settings as $s) {
             DB::table('branch_settings')->insert($s);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

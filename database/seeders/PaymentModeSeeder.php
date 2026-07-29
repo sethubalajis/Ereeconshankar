@@ -6,7 +6,7 @@ class PaymentModeSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('payment_modes')->truncate();
 
         $now = now();
@@ -21,6 +21,6 @@ class PaymentModeSeeder extends Seeder
             ['name' => 'UPI', 'code' => 'PM007', 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
         ]);
         
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

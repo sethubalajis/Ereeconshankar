@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class BankAccountSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('bank_accounts')->truncate();
         
         $banks = [
@@ -15,6 +15,6 @@ class BankAccountSeeder extends Seeder {
         foreach($banks as $b) {
             DB::table('bank_accounts')->insert($b);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

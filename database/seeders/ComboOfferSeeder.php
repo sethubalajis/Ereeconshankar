@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class ComboOfferSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('combo_offers')->truncate();
         
         $offers = [
@@ -15,6 +15,6 @@ class ComboOfferSeeder extends Seeder {
         foreach($offers as $o) {
             DB::table('combo_offers')->insert($o);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

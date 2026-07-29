@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class DesignationSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('designations')->truncate();
         
         $desigs = [
@@ -16,6 +16,6 @@ class DesignationSeeder extends Seeder {
         foreach($desigs as $d) {
             DB::table('designations')->insert($d);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class HsnCodeSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('hsn_codes')->truncate();
         
         $hsn = [
@@ -16,6 +16,6 @@ class HsnCodeSeeder extends Seeder {
         foreach($hsn as $h) {
             DB::table('hsn_codes')->insert($h);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

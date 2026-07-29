@@ -38,6 +38,12 @@ class DatabaseSeeder extends Seeder
         $this->call(CountrySeeder::class);
         $this->call(RoleSeeder::class);
         $this->call(PermissionSeeder::class);
+        
+        $role = \App\Models\Role::firstOrCreate(['name' => 'Super Admin', 'guard_name' => 'web']);
+        $adminUser = \App\Models\User::where('email', 'admin@example.com')->first();
+        if ($adminUser) {
+            $adminUser->assignRole($role);
+        }
         $this->call(BrandSeeder::class);
         $this->call(ProductAttributeSeeder::class);
         $this->call(ProductUnitSeeder::class);
@@ -52,6 +58,13 @@ class DatabaseSeeder extends Seeder
         $this->call(SizeSeeder::class);
         $this->call(FabricTypeSeeder::class);
         $this->call(PatternTypeSeeder::class);
+        $this->call(ProductCategorySeeder::class);
+        $this->call(ProductSubCategorySeeder::class);
+        $this->call(ProductSeeder::class);
+        $this->call(ProductVariantSeeder::class);
+        $this->call(ProductVariantAttributeValueSeeder::class);
+        $this->call(ProductImageSeeder::class);
+        $this->call(ProductBarcodeSeeder::class);
         $this->call(VendorCategorySeeder::class);
         $this->call(VendorSeeder::class);
         $this->call(GiftVoucherSeeder::class);
@@ -155,13 +168,6 @@ class DatabaseSeeder extends Seeder
         $this->call(UserRoleSeeder::class);
         $this->call(UserBranchAccessSeeder::class);
         $this->call(LoginHistorySeeder::class);
-        $this->call(ProductCategorySeeder::class);
-        $this->call(ProductSubCategorySeeder::class);
-        $this->call(ProductSeeder::class);
-        $this->call(ProductVariantSeeder::class);
-        $this->call(ProductVariantAttributeValueSeeder::class);
-        $this->call(ProductImageSeeder::class);
-        $this->call(ProductBarcodeSeeder::class);
         $this->call(PurchaseOrderItemSeeder::class);
         $this->call(VendorPriceListSeeder::class);
         $this->call(StockSeeder::class);

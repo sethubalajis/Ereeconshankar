@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class AssetMaintenanceSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('asset_maintenances')->truncate();
         
         $assetId = DB::table('assets')->where('asset_code', 'AST-IT-001')->value('id') ?? 1;
@@ -16,6 +16,6 @@ class AssetMaintenanceSeeder extends Seeder {
         foreach($maint as $m) {
             DB::table('asset_maintenances')->insert($m);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

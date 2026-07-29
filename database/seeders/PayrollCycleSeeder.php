@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class PayrollCycleSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('payroll_cycles')->truncate();
         
         $cycles = [
@@ -15,6 +15,6 @@ class PayrollCycleSeeder extends Seeder {
         foreach($cycles as $c) {
             DB::table('payroll_cycles')->insert($c);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class PfContributionSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('pf_contributions')->truncate();
         
         $empId = DB::table('employees')->first()->id ?? 1;
@@ -16,6 +16,6 @@ class PfContributionSeeder extends Seeder {
         foreach($pfs as $p) {
             DB::table('pf_contributions')->insert($p);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

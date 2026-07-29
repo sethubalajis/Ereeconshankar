@@ -10,7 +10,7 @@ class CollectionSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('collections')->truncate();
         
         $collections = [
@@ -55,6 +55,6 @@ class CollectionSeeder extends Seeder
             DB::table('collections')->insert(array_merge($collection, ['status' => true]));
         }
         
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

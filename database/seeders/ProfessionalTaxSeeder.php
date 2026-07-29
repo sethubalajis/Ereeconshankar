@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class ProfessionalTaxSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('professional_taxes')->truncate();
         
         $empId = DB::table('employees')->first()->id ?? 1;
@@ -23,6 +23,6 @@ class ProfessionalTaxSeeder extends Seeder {
         foreach($pts as $p) {
             DB::table('professional_taxes')->insert($p);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

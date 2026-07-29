@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class PosReturnSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('pos_returns')->truncate();
         
         $sales = DB::table('pos_sales')->pluck('id')->toArray();
@@ -17,6 +17,6 @@ class PosReturnSeeder extends Seeder {
         foreach($returns as $r) {
             DB::table('pos_returns')->insert($r);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

@@ -10,7 +10,7 @@ class ProductLineSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('product_lines')->truncate();
         
         $productLines = [
@@ -31,6 +31,6 @@ class ProductLineSeeder extends Seeder
             ]);
         }
         
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

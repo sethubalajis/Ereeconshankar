@@ -24,6 +24,6 @@ class ProductSubCategorySeeder extends Seeder
                 'status' => true,
             ]);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

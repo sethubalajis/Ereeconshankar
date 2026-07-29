@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class TransferReceiptSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('transfer_receipts')->truncate();
         
         // Simulating that it's still in transit, so no completed receipts yet, or we can add one
@@ -23,6 +23,6 @@ class TransferReceiptSeeder extends Seeder {
         // Also update the stock transfer status to received
         DB::table('stock_transfers')->where('id', $transfers[0] ?? 1)->update(['status' => 'received']);
         
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class TaxInvoiceSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('tax_invoices')->truncate();
         
         $salesId = DB::table('pos_sales')->first()->id ?? 1;
@@ -16,6 +16,6 @@ class TaxInvoiceSeeder extends Seeder {
         foreach($invoices as $i) {
             DB::table('tax_invoices')->insert($i);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }

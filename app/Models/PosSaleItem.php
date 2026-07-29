@@ -10,31 +10,50 @@ class PosSaleItem extends Model
 
     protected static function booted()
     {
-        static::created(function ($item) {
-            if ($item->posSale) {
-                $warehouseId = data_get($item->posSale, 'warehouse_id');
-                $usedDefaultWarehouse = false;
-
-                if (! $warehouseId && $item->posSale->branch_id) {
-                    $warehouseId = Warehouse::defaultIdForBranch((int) $item->posSale->branch_id);
-                    $usedDefaultWarehouse = (bool) $warehouseId;
-                }
-
-                $inventoryService = new \App\Services\InventoryService();
-                $inventoryService->updateStock(
-                    $item->product_id,
-                    $item->product_variant_id,
-                    $item->posSale->branch_id,
-                    $warehouseId,
-                    'out',
-                    $item->quantity,
-                    $item->unit_price,
-                    $item->posSale->invoice_number ?? 'POS-' . $item->posSale->id,
-                    'App\\Models\\PosSale',
-                    $usedDefaultWarehouse
-                );
-            }
+        static::saved(function ($item) {
+            $item->processStockDeduction();
         });
+    }
+
+    public function processStockDeduction(): void
+    {
+        if (! $this->posSale || $this->posSale->status !== 'completed') {
+            return;
+        }
+
+        $reference = 'POS-SALE-' . $this->pos_sale_id . '-' . $this->id;
+
+        $alreadyApplied = StockTransaction::query()
+            ->where('reference', $reference)
+            ->where('reference_type', 'App\\Models\\PosSale')
+            ->exists();
+
+        if ($alreadyApplied) {
+            return;
+        }
+
+        $warehouseId = data_get($this->posSale, 'warehouse_id');
+        $usedDefaultWarehouse = false;
+
+        if (! $warehouseId && $this->posSale->branch_id) {
+            $warehouseId = Warehouse::defaultIdForBranch((int) $this->posSale->branch_id);
+            $usedDefaultWarehouse = (bool) $warehouseId;
+        }
+
+        $inventoryService = new \App\Services\InventoryService();
+        $inventoryService->updateStock(
+            $this->product_id,
+            $this->product_variant_id,
+            $this->posSale->branch_id,
+            $warehouseId,
+            'out',
+            $this->quantity,
+            $this->unit_price,
+            $reference,
+            'App\\Models\\PosSale',
+            true, // preventNewStockOnOut
+            true  // reuseExistingStockRow
+        );
     }
 
     //

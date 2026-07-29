@@ -10,13 +10,20 @@ class UserBranchAccessSeeder extends Seeder
 {
     public function run(): void
     {
-        $faker = Faker::create();
+        $branches = DB::table('branches')->get();
+        foreach ($branches as $index => $b) {
+            DB::table('user_branch_accesses')->insertOrIgnore([
+                'user_id' => 1,
+                'branch_id' => $b->id,
+                'is_default' => $index === 0,
+            ]);
+        }
         
         for ($i = 0; $i < 5; $i++) {
-            DB::table('user_branch_accesses')->insert([
+            DB::table('user_branch_accesses')->insertOrIgnore([
                 'user_id' => DB::table('users')->inRandomOrder()->value('id') ?? 1,
                 'branch_id' => DB::table('branches')->inRandomOrder()->value('id') ?? 1,
-                'is_default' => true,
+                'is_default' => false,
             ]);
         }
     }

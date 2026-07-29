@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class TdsRecordSeeder extends Seeder {
     public function run(): void {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Schema::disableForeignKeyConstraints();
         DB::table('tds_records')->truncate();
         
         $employeeId = DB::table('employees')->first()->id ?? 1;
@@ -30,6 +30,6 @@ class TdsRecordSeeder extends Seeder {
         foreach($tds as $t) {
             DB::table('tds_records')->insert($t);
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        \Schema::enableForeignKeyConstraints();
     }
 }
