@@ -24,7 +24,8 @@ class MembershipPlanForm
                 TextInput::make('fee')
                     ->required()
                     ->numeric()
-                    ->default(0.0),
+                    ->default(0.0)
+                    ->prefix('₹'),
                 TextInput::make('duration_months')
                     ->required()
                     ->numeric()
@@ -32,6 +33,7 @@ class MembershipPlanForm
                 TextInput::make('upgrade_threshold')
                     ->label('Upgrade Threshold (Lifetime Purchases)')
                     ->numeric()
+                    ->prefix('₹')
                     ->nullable(),
                 Textarea::make('benefits_description')
                     ->columnSpanFull(),

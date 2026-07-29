@@ -28,7 +28,8 @@ class LoyaltyProgramForm
                 TextInput::make('amount_per_point')
                     ->required()
                     ->numeric()
-                    ->default(100.0),
+                    ->default(100.0)
+                    ->prefix('₹'),
                 TextInput::make('minimum_points_to_redeem')
                     ->required()
                     ->numeric()
@@ -36,7 +37,8 @@ class LoyaltyProgramForm
                 TextInput::make('value_per_point')
                     ->required()
                     ->numeric()
-                    ->default(1.0),
+                    ->default(1.0)
+                    ->prefix('₹'),
                 TextInput::make('max_redemption_percentage')
                     ->numeric()
                     ->nullable()

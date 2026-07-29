@@ -26,7 +26,7 @@ class LoyaltyProgramsTable
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('value_per_point')
-                    ->numeric()
+                    ->money('INR')
                     ->sortable(),
                 IconColumn::make('status')
                     ->boolean(),

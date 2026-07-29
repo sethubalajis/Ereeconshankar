@@ -36,7 +36,7 @@ class CustomersTable
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('wallet_balance')
-                    ->numeric()
+                    ->money('INR')
                     ->sortable(),
                 IconColumn::make('status')
                     ->boolean(),
