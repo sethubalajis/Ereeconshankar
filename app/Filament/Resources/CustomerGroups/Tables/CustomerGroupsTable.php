@@ -21,6 +21,7 @@ class CustomerGroupsTable
                     ->searchable(),
                 TextColumn::make('discount_percentage')
                     ->numeric()
+                    ->suffix('%')
                     ->sortable(),
                 IconColumn::make('status')
                     ->boolean(),

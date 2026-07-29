@@ -18,7 +18,8 @@ class GiftVoucherForm
                 TextInput::make('amount')
                     ->required()
                     ->numeric()
-                    ->default(0.0),
+                    ->default(0.0)
+                    ->prefix('₹'),
                 DatePicker::make('expiry_date')
                     ->default(now()->timezone('Asia/Kolkata')),
                 Toggle::make('is_redeemed')

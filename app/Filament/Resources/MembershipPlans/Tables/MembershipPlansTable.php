@@ -20,7 +20,7 @@ class MembershipPlansTable
                 TextColumn::make('code')
                     ->searchable(),
                 TextColumn::make('fee')
-                    ->numeric()
+                    ->money('INR')
                     ->sortable(),
                 TextColumn::make('duration_months')
                     ->numeric()

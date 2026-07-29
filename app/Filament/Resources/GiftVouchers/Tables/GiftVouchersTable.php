@@ -18,7 +18,7 @@ class GiftVouchersTable
                 TextColumn::make('voucher_code')
                     ->searchable(),
                 TextColumn::make('amount')
-                    ->numeric()
+                    ->money('INR')
                     ->sortable(),
                 TextColumn::make('expiry_date')
                     ->date()

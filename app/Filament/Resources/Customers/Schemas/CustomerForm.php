@@ -37,7 +37,8 @@ class CustomerForm
                 TextInput::make('wallet_balance')
                     ->required()
                     ->numeric()
-                    ->default(0.0),
+                    ->default(0.0)
+                    ->prefix('₹'),
                 Toggle::make('status')
                     ->required(),
             ]);

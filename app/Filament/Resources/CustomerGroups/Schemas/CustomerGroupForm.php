@@ -23,7 +23,8 @@ class CustomerGroupForm
                 TextInput::make('discount_percentage')
                     ->required()
                     ->numeric()
-                    ->default(0.0),
+                    ->default(0.0)
+                    ->suffix('%'),
                 Toggle::make('status')
                     ->required(),
             ]);
