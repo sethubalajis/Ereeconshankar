@@ -69,3 +69,28 @@ it('performs financial report crud operations with date range', function (): voi
     expect(FinancialReport::query()->whereKey($record->getKey())->exists())->toBeFalse();
 });
 
+it('calculates financial report data for all report types', function (): void {
+    $types = ['Profit & Loss', 'Balance Sheet', 'Cash Flow', 'Trial Balance'];
+    foreach ($types as $type) {
+        $data = \App\Helpers\ReportPdfHelper::getFinancialReportData($type, '2026-07-01', '2026-07-31');
+        expect($data)->toHaveKey('summary')
+            ->toHaveKey('items')
+            ->and($data['report_type'])->toBe($type);
+    }
+});
+
+it('downloads detailed financial report pdf', function (): void {
+    actingAs(makeFinancialReportsAdminUser());
+    $record = FinancialReport::query()->create([
+        'report_type' => 'Profit & Loss',
+        'from_date' => '2026-07-01',
+        'to_date' => '2026-07-31',
+        'as_of_date' => '2026-07-31',
+        'data' => 'Test Financial Data',
+    ]);
+
+    $response = \App\Helpers\ReportPdfHelper::downloadFinancialReportPdf($record);
+    expect($response)->toBeInstanceOf(\Symfony\Component\HttpFoundation\StreamedResponse::class);
+});
+
+

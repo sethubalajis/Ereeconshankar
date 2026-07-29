@@ -38,6 +38,7 @@ class RolesTable
 
         return $table
             ->columns($columns)
+            ->defaultSort('id', 'desc')
             ->filters([
                 //
             ])

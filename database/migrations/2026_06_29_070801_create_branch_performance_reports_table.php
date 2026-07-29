@@ -14,7 +14,9 @@ return new class extends Migration
         Schema::create('branch_performance_reports', function (Blueprint $table) {
             $table->id();
             $table->foreignId('branch_id')->constrained('branches');
-            $table->date('report_month');
+            $table->date('from_date')->nullable();
+            $table->date('to_date')->nullable();
+            $table->date('report_month')->nullable();
             $table->decimal('score', 5, 2)->default(0);
             $table->timestamps();
         });

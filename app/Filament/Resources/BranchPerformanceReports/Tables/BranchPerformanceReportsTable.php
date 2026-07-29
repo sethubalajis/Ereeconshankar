@@ -16,9 +16,16 @@ class BranchPerformanceReportsTable
             ->columns([
                 TextColumn::make('branch.name')
                     ->sortable(),
-                TextColumn::make('report_month')
+                TextColumn::make('from_date')
                     ->date()
                     ->sortable(),
+                TextColumn::make('to_date')
+                    ->date()
+                    ->sortable(),
+                TextColumn::make('report_month')
+                    ->date()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('score')
                     ->numeric()
                     ->sortable(),
@@ -31,8 +38,26 @@ class BranchPerformanceReportsTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('id', 'desc')
             ->filters([
-                //
+                \Filament\Tables\Filters\Filter::make('date_range')
+                    ->form([
+                        \Filament\Forms\Components\DatePicker::make('from_date')
+                            ->label('From Date'),
+                        \Filament\Forms\Components\DatePicker::make('to_date')
+                            ->label('To Date'),
+                    ])
+                    ->query(function (\Illuminate\Database\Eloquent\Builder $query, array $data): \Illuminate\Database\Eloquent\Builder {
+                        return $query
+                            ->when(
+                                $data['from_date'],
+                                fn (\Illuminate\Database\Eloquent\Builder $query, $date): \Illuminate\Database\Eloquent\Builder => $query->whereDate('from_date', '>=', $date),
+                            )
+                            ->when(
+                                $data['to_date'],
+                                fn (\Illuminate\Database\Eloquent\Builder $query, $date): \Illuminate\Database\Eloquent\Builder => $query->whereDate('to_date', '<=', $date),
+                            );
+                    })
             ])
             ->recordActions([
                 EditAction::make(),
@@ -41,15 +66,7 @@ class BranchPerformanceReportsTable
                     ->icon('heroicon-o-arrow-down-tray')
                     ->color('success')
                     ->action(function ($record) {
-                        return \App\Helpers\ReportPdfHelper::downloadSinglePdf(
-                            'Branch Performance Report #' . $record->id,
-                            $record,
-                            [
-                                'branch.name' => 'Branch',
-                                'report_month' => 'Report Month',
-                                'score' => 'Performance Score',
-                            ]
-                        );
+                        return \App\Helpers\ReportPdfHelper::downloadBranchPerformanceReportPdf($record);
                     }),
             ])
             ->toolbarActions([

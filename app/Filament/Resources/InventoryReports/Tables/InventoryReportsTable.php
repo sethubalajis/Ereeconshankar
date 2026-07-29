@@ -43,6 +43,7 @@ class InventoryReportsTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('id', 'desc')
             ->filters([
                 Filter::make('date_range')
                     ->form([

@@ -8,7 +8,13 @@ class BranchPerformanceReport extends Model
 {
     protected $guarded = [];
 
-    //
+    protected $casts = [
+        'from_date' => 'date',
+        'to_date' => 'date',
+        'report_month' => 'date',
+        'score' => 'float',
+    ];
+
     public function branch() {
         return $this->belongsTo(Branch::class, 'branch_id');
     }

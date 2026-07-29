@@ -35,6 +35,7 @@ class FinancialReportsTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('id', 'desc')
             ->filters([
                 \Filament\Tables\Filters\Filter::make('date_range')
                     ->form([
@@ -62,16 +63,7 @@ class FinancialReportsTable
                     ->icon('heroicon-o-arrow-down-tray')
                     ->color('success')
                     ->action(function ($record) {
-                        return \App\Helpers\ReportPdfHelper::downloadSinglePdf(
-                            'Financial Report #' . $record->id,
-                            $record,
-                            [
-                                'report_type' => 'Report Type',
-                                'from_date' => 'From Date',
-                                'to_date' => 'To Date',
-                                'as_of_date' => 'As Of Date',
-                            ]
-                        );
+                        return \App\Helpers\ReportPdfHelper::downloadFinancialReportPdf($record);
                     }),
             ])
             ->toolbarActions([
