@@ -8,9 +8,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('employees', function (Blueprint $table) {
-            $table->string('biometric_code')->nullable()->unique()->after('employee_code');
-        });
+        if (!Schema::hasColumn('employees', 'biometric_code')) {
+            Schema::table('employees', function (Blueprint $table) {
+                $table->string('biometric_code')->nullable()->unique()->after('employee_code');
+            });
+        }
     }
 
     public function down(): void

@@ -12,9 +12,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('transfer_requests', function (Blueprint $table) {
-            $table->string('transfer_request_code')->nullable()->unique()->after('id');
-        });
+        if (!Schema::hasColumn('transfer_requests', 'transfer_request_code')) {
+            Schema::table('transfer_requests', function (Blueprint $table) {
+                $table->string('transfer_request_code')->nullable()->unique()->after('id');
+            });
+        }
 
         DB::table('transfer_requests')
             ->select(['id', 'request_date'])

@@ -11,20 +11,24 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('pos_sales', function (Blueprint $table) {
-            $table->decimal('taxable_amount', 15, 2)->default(0)->after('total_amount');
-            $table->decimal('cgst_amount', 15, 2)->default(0)->after('tax_amount');
-            $table->decimal('sgst_amount', 15, 2)->default(0)->after('cgst_amount');
-            $table->decimal('igst_amount', 15, 2)->default(0)->after('sgst_amount');
-        });
-
-        Schema::table('pos_sale_items', function (Blueprint $table) {
-            $table->decimal('tax_percentage', 5, 2)->default(0)->after('total_price');
-            $table->decimal('taxable_amount', 15, 2)->default(0)->after('tax_percentage');
-            $table->decimal('cgst_amount', 15, 2)->default(0)->after('taxable_amount');
-            $table->decimal('sgst_amount', 15, 2)->default(0)->after('cgst_amount');
-            $table->decimal('igst_amount', 15, 2)->default(0)->after('sgst_amount');
-        });
+        if (!Schema::hasColumn('pos_sales', 'taxable_amount')) {
+            Schema::table('pos_sales', function (Blueprint $table) {
+                $table->decimal('taxable_amount', 15, 2)->default(0)->after('total_amount');
+                $table->decimal('cgst_amount', 15, 2)->default(0)->after('tax_amount');
+                $table->decimal('sgst_amount', 15, 2)->default(0)->after('cgst_amount');
+                $table->decimal('igst_amount', 15, 2)->default(0)->after('sgst_amount');
+            });
+        }
+        
+        if (!Schema::hasColumn('pos_sale_items', 'tax_percentage')) {
+            Schema::table('pos_sale_items', function (Blueprint $table) {
+                $table->decimal('tax_percentage', 5, 2)->default(0)->after('total_price');
+                $table->decimal('taxable_amount', 15, 2)->default(0)->after('tax_percentage');
+                $table->decimal('cgst_amount', 15, 2)->default(0)->after('taxable_amount');
+                $table->decimal('sgst_amount', 15, 2)->default(0)->after('cgst_amount');
+                $table->decimal('igst_amount', 15, 2)->default(0)->after('sgst_amount');
+            });
+        }
     }
 
     /**

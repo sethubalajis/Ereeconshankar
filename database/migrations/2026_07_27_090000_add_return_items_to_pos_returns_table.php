@@ -8,9 +8,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('pos_returns', function (Blueprint $table) {
-            $table->json('return_items')->nullable()->after('return_amount');
-        });
+        if (!Schema::hasColumn('pos_returns', 'return_items')) {
+            Schema::table('pos_returns', function (Blueprint $table) {
+                $table->json('return_items')->nullable()->after('return_amount');
+            });
+        }
     }
 
     public function down(): void
