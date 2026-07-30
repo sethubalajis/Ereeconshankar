@@ -15,6 +15,9 @@ class Customer extends Model
     public function membershipPlan() {
         return $this->belongsTo(MembershipPlan::class, 'membership_plan_id');
     }
+    public function state() {
+        return $this->belongsTo(State::class, 'state_id');
+    }
     public function loyaltyCards() {
         return $this->hasMany(LoyaltyCard::class, 'customer_id');
     }

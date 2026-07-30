@@ -29,7 +29,28 @@ class PosSalesTable
                     ->numeric()
                     ->prefix('₹ ')
                     ->sortable(),
+                TextColumn::make('taxable_amount')
+                    ->numeric()
+                    ->prefix('₹ ')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('cgst_amount')
+                    ->numeric()
+                    ->prefix('₹ ')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('sgst_amount')
+                    ->numeric()
+                    ->prefix('₹ ')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('igst_amount')
+                    ->numeric()
+                    ->prefix('₹ ')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('tax_amount')
+                    ->label('Total Tax')
                     ->numeric()
                     ->prefix('₹ ')
                     ->sortable(),
