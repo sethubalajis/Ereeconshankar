@@ -81,8 +81,46 @@
 </head>
 <body>
     <div class="header">
-        <div class="company">{{ $record->branch->name ?? 'eReckon POS' }}</div>
-        <div class="subtitle">Tax Invoice / Receipt</div>
+        @php
+            $company = $record->branch->company ?? null;
+            $branch = $record->branch ?? null;
+        @endphp
+        
+        <div class="company">{{ $company->name ?? ($branch->name ?? 'eReckon POS') }}</div>
+        
+        @if($company)
+            @if($company->address)
+                <div style="font-size: 11px; color: #475569; margin-top: 3px;">
+                    {{ $company->address }}
+                    @if($company->city)
+                        , {{ $company->city->name ?? '' }}
+                    @endif
+                    @if($company->pin_code)
+                        - {{ $company->pin_code }}
+                    @endif
+                </div>
+            @endif
+            @if($company->phone || $company->email)
+                <div style="font-size: 11px; color: #475569;">
+                    @if($company->phone) Ph: {{ $company->phone }} @endif
+                    @if($company->phone && $company->email) | @endif
+                    @if($company->email) Email: {{ $company->email }} @endif
+                </div>
+            @endif
+            @if($company->gst_number)
+                <div style="font-size: 11px; color: #475569;">GSTIN: {{ $company->gst_number }}</div>
+            @endif
+        @elseif($branch)
+            {{-- Fallback to branch details if company doesn't exist --}}
+            @if($branch->address)
+                <div style="font-size: 11px; color: #475569; margin-top: 3px;">{{ $branch->address }}</div>
+            @endif
+            @if($branch->phone)
+                <div style="font-size: 11px; color: #475569;">Ph: {{ $branch->phone }}</div>
+            @endif
+        @endif
+
+        <div class="subtitle" style="margin-top: 8px; font-weight: bold;">Tax Invoice / Receipt</div>
     </div>
 
     <table class="info-table">

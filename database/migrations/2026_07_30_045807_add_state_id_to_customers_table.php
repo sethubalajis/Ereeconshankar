@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('customers', function (Blueprint $table) {
-            $table->foreignId('state_id')->nullable()->constrained('states');
-        });
+        if (!Schema::hasColumn('customers', 'state_id')) {
+            Schema::table('customers', function (Blueprint $table) {
+                $table->foreignId('state_id')->nullable()->constrained('states');
+            });
+        }
     }
 
     /**
