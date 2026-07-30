@@ -16,12 +16,24 @@ class PosSaleForm
     public static function configure(Schema $schema): Schema
     {
         $recalculateAll = function ($set, $get) {
+            $branchId = $get('branch_id') ?? $get('../../branch_id');
             $customerId = $get('customer_id') ?? $get('../../customer_id');
             $items = $get('posSaleItems') ?? $get('../../posSaleItems') ?? [];
+
+            // Determine if intra-state or inter-state
+            $isInterState = false;
+            if ($branchId && $customerId) {
+                $branchState = \App\Models\Branch::find($branchId)?->state_id;
+                $customerState = \App\Models\Customer::find($customerId)?->state_id;
+                if ($branchState && $customerState && $branchState !== $customerState) {
+                    $isInterState = true;
+                }
+            }
 
             $grossTotal = 0;
             $manualDiscountsSum = 0;
 
+            // First pass to get total gross for proportional discount distribution
             foreach ($items as $item) {
                 $qty = (float) ($item['quantity'] ?? 1);
                 $uPrice = (float) ($item['unit_price'] ?? 0);
@@ -46,16 +58,74 @@ class PosSaleForm
             $appliedDetails = $calcResult['applied_details'];
 
             $totalDiscountAmount = $manualDiscountsSum + $promoDiscountAmount;
-            $taxableAmount = max(0, $grossTotal - $totalDiscountAmount);
-            $taxAmount = round($taxableAmount * 0.10, 2);
+            
+            // Calculate tax per item, apportioning promo discount proportionally
+            $totalTaxableAmount = 0;
+            $totalCgst = 0;
+            $totalSgst = 0;
+            $totalIgst = 0;
+            $totalTaxAmount = 0;
+
+            foreach ($items as $index => $item) {
+                $qty = (float) ($item['quantity'] ?? 1);
+                $uPrice = (float) ($item['unit_price'] ?? 0);
+                $itemDisc = (float) ($item['discount'] ?? 0);
+                $itemGross = ($qty * $uPrice);
+                
+                // Proportion of this item's gross out of total gross
+                $proportion = $grossTotal > 0 ? ($itemGross / $grossTotal) : 0;
+                $itemPromoDisc = $promoDiscountAmount * $proportion;
+                
+                $itemTaxableAmount = max(0, $itemGross - $itemDisc - $itemPromoDisc);
+                $totalTaxableAmount += $itemTaxableAmount;
+                
+                // Get tax rate for product
+                $taxPercentage = 0;
+                if (!empty($item['product_id'])) {
+                    $product = \App\Models\Product::with('taxGroup')->find($item['product_id']);
+                    if ($product && $product->taxGroup) {
+                        $taxPercentage = (float) $product->taxGroup->total_tax_percentage;
+                    }
+                }
+                
+                $itemTax = round($itemTaxableAmount * ($taxPercentage / 100), 2);
+                $totalTaxAmount += $itemTax;
+                
+                $itemCgst = 0;
+                $itemSgst = 0;
+                $itemIgst = 0;
+                
+                if ($isInterState) {
+                    $itemIgst = $itemTax;
+                    $totalIgst += $itemIgst;
+                } else {
+                    $itemCgst = round($itemTax / 2, 2);
+                    $itemSgst = $itemTax - $itemCgst; // to avoid rounding mismatch
+                    $totalCgst += $itemCgst;
+                    $totalSgst += $itemSgst;
+                }
+                
+                // Set the tax info directly in the repeater item state
+                $pathPrefix = $get('../../posSaleItems') !== null ? '../../posSaleItems.' : 'posSaleItems.';
+                $set($pathPrefix . $index . '.tax_percentage', $taxPercentage);
+                $set($pathPrefix . $index . '.taxable_amount', $itemTaxableAmount);
+                $set($pathPrefix . $index . '.cgst_amount', $itemCgst);
+                $set($pathPrefix . $index . '.sgst_amount', $itemSgst);
+                $set($pathPrefix . $index . '.igst_amount', $itemIgst);
+            }
 
             $voucherAmount = (float) ($get('gift_voucher_amount') ?? $get('../../gift_voucher_amount') ?? 0);
-            $netAmount = max(0, round(($grossTotal + $taxAmount) - $totalDiscountAmount - $pointsRedeemAmount - $walletUseAmount - $voucherAmount, 2));
+            $netAmount = max(0, round(($grossTotal + $totalTaxAmount) - $totalDiscountAmount - $pointsRedeemAmount - $walletUseAmount - $voucherAmount, 2));
 
             // Set top-level fields
             $set('total_amount', $grossTotal);
             $set('discount_amount', $totalDiscountAmount);
-            $set('tax_amount', $taxAmount);
+            $set('taxable_amount', $totalTaxableAmount);
+            $set('tax_amount', $totalTaxAmount);
+            $set('cgst_amount', $totalCgst);
+            $set('sgst_amount', $totalSgst);
+            $set('igst_amount', $totalIgst);
+            
             $set('redeem_points', $pointsToRedeem);
             $set('redeem_points_amount', $pointsRedeemAmount);
             $set('use_wallet_balance', $walletUseAmount);
@@ -65,7 +135,12 @@ class PosSaleForm
             // Also try relative path setters when invoked from inside repeater
             $set('../../total_amount', $grossTotal);
             $set('../../discount_amount', $totalDiscountAmount);
-            $set('../../tax_amount', $taxAmount);
+            $set('../../taxable_amount', $totalTaxableAmount);
+            $set('../../tax_amount', $totalTaxAmount);
+            $set('../../cgst_amount', $totalCgst);
+            $set('../../sgst_amount', $totalSgst);
+            $set('../../igst_amount', $totalIgst);
+            
             $set('../../redeem_points', $pointsToRedeem);
             $set('../../redeem_points_amount', $pointsRedeemAmount);
             $set('../../use_wallet_balance', $walletUseAmount);
@@ -91,6 +166,7 @@ class PosSaleForm
                         TextInput::make('phone')->tel()->required()->unique('customers', 'phone')->maxLength(255),
                         TextInput::make('email')->email()->maxLength(255),
                         Select::make('customer_group_id')->relationship('customerGroup', 'name')->searchable()->preload(),
+                        Select::make('state_id')->relationship('state', 'name')->searchable()->preload()->label('State (for GST)'),
                     ])
                     ->live()
                     ->afterStateUpdated(function ($set, $get) use ($recalculateAll) {
@@ -199,6 +275,11 @@ class PosSaleForm
                                 $recalculateAll($set, $get);
                             }),
                         TextInput::make('total_price')->numeric()->prefix('₹')->default(0)->required(),
+                        \Filament\Forms\Components\Hidden::make('tax_percentage')->default(0),
+                        \Filament\Forms\Components\Hidden::make('taxable_amount')->default(0),
+                        \Filament\Forms\Components\Hidden::make('cgst_amount')->default(0),
+                        \Filament\Forms\Components\Hidden::make('sgst_amount')->default(0),
+                        \Filament\Forms\Components\Hidden::make('igst_amount')->default(0),
                     ])
                     ->live()
                     ->afterStateUpdated(function ($state, $set, $get) use ($recalculateAll) {
@@ -237,8 +318,29 @@ class PosSaleForm
                     ->numeric()
                     ->prefix('₹')
                     ->default(0.0),
+                TextInput::make('taxable_amount')
+                    ->readOnly()
+                    ->numeric()
+                    ->prefix('₹')
+                    ->default(0.0),
                 TextInput::make('tax_amount')
-                    ->required()
+                    ->label('Total Tax Amount')
+                    ->readOnly()
+                    ->numeric()
+                    ->prefix('₹')
+                    ->default(0.0),
+                TextInput::make('cgst_amount')
+                    ->readOnly()
+                    ->numeric()
+                    ->prefix('₹')
+                    ->default(0.0),
+                TextInput::make('sgst_amount')
+                    ->readOnly()
+                    ->numeric()
+                    ->prefix('₹')
+                    ->default(0.0),
+                TextInput::make('igst_amount')
+                    ->readOnly()
                     ->numeric()
                     ->prefix('₹')
                     ->default(0.0),

@@ -29,6 +29,10 @@ class CustomerForm
                     ->default(now()->timezone('Asia/Kolkata')),
                 DatePicker::make('anniversary')
                     ->default(now()->timezone('Asia/Kolkata')),
+                \Filament\Forms\Components\Select::make('state_id')
+                    ->relationship('state', 'name')
+                    ->searchable()
+                    ->preload(),
                 TextInput::make('gst_number'),
                 TextInput::make('total_points')
                     ->required()

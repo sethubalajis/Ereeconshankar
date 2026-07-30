@@ -117,8 +117,8 @@
                     <small style="color: #64748b;">{{ $item->productVariant->sku ?? '' }}</small>
                 </td>
                 <td class="text-right">{{ $item->quantity }}</td>
-                <td class="text-right">₹{{ number_format($item->unit_price, 2) }}</td>
-                <td class="text-right">₹{{ number_format($item->subtotal, 2) }}</td>
+                <td class="text-right">Rs.{{ number_format($item->unit_price, 2) }}</td>
+                <td class="text-right">Rs.{{ number_format($item->subtotal, 2) }}</td>
             </tr>
             @endforeach
         </tbody>
@@ -127,23 +127,41 @@
     <table class="totals-table">
         <tr>
             <td colspan="3" class="text-right">Subtotal:</td>
-            <td width="20%" class="text-right">₹{{ number_format($record->total_amount, 2) }}</td>
+            <td width="20%" class="text-right">Rs.{{ number_format($record->total_amount, 2) }}</td>
         </tr>
         @if($record->discount_amount > 0)
         <tr>
             <td colspan="3" class="text-right">Discount:</td>
-            <td class="text-right">-₹{{ number_format($record->discount_amount, 2) }}</td>
+            <td class="text-right">-Rs.{{ number_format($record->discount_amount, 2) }}</td>
         </tr>
         @endif
-        @if($record->tax_amount > 0)
+        @if($record->cgst_amount > 0)
+        <tr>
+            <td colspan="3" class="text-right">CGST:</td>
+            <td class="text-right">Rs.{{ number_format($record->cgst_amount, 2) }}</td>
+        </tr>
+        @endif
+        @if($record->sgst_amount > 0)
+        <tr>
+            <td colspan="3" class="text-right">SGST:</td>
+            <td class="text-right">Rs.{{ number_format($record->sgst_amount, 2) }}</td>
+        </tr>
+        @endif
+        @if($record->igst_amount > 0)
+        <tr>
+            <td colspan="3" class="text-right">IGST:</td>
+            <td class="text-right">Rs.{{ number_format($record->igst_amount, 2) }}</td>
+        </tr>
+        @endif
+        @if($record->tax_amount > 0 && $record->cgst_amount == 0 && $record->sgst_amount == 0 && $record->igst_amount == 0)
         <tr>
             <td colspan="3" class="text-right">Tax:</td>
-            <td class="text-right">₹{{ number_format($record->tax_amount, 2) }}</td>
+            <td class="text-right">Rs.{{ number_format($record->tax_amount, 2) }}</td>
         </tr>
         @endif
         <tr class="font-bold" style="font-size: 14px;">
             <td colspan="3" class="text-right">Net Payable:</td>
-            <td class="text-right">₹{{ number_format($record->net_amount, 2) }}</td>
+            <td class="text-right">Rs.{{ number_format($record->net_amount, 2) }}</td>
         </tr>
     </table>
 
