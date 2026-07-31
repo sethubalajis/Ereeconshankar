@@ -13,7 +13,7 @@ class PosSaleItemForm
             ->components([
                 \Filament\Forms\Components\Select::make('pos_sale_id')->relationship('posSale', 'invoice_number')
                     ->required(),
-                \Filament\Forms\Components\Select::make('product_id')->relationship('product', 'name')
+                \Filament\Forms\Components\Select::make('product_id')->relationship('product', 'name', fn ($query) => $query->whereIn('product_type', ['Sellable', 'Inventory']))
                     ->required(),
                 \Filament\Forms\Components\Select::make('product_variant_id')->relationship('productVariant', 'sku'),
                 TextInput::make('quantity')

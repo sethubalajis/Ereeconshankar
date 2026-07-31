@@ -14,11 +14,21 @@ class ProductCategoryForm
     {
         return $schema
             ->components([
-                \Filament\Forms\Components\Select::make('parent_id')->relationship('productCategory', 'name')->label('Product Category'),
+                \Filament\Forms\Components\Select::make('parent_id')
+                    ->relationship('productCategory', 'name')
+                    ->label('Product Category')
+                    ->createOptionForm([
+                        TextInput::make('name')
+                            ->required(),
+                        \Filament\Forms\Components\Toggle::make('status')
+                            ->default(true),
+                    ]),
                 TextInput::make('name')
                     ->required(),
                 TextInput::make('code')
-                    ->required(),
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->placeholder('Auto generated on creation'),
                 Textarea::make('description')
                     ->columnSpanFull(),
                 FileUpload::make('image')

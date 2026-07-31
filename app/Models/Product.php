@@ -8,6 +8,17 @@ class Product extends Model
 {
     protected $guarded = [];
 
+    protected static function booted(): void
+    {
+        static::creating(function (self $product): void {
+            if (empty($product->code)) {
+                $lastProduct = self::orderBy('id', 'desc')->first();
+                $nextId = $lastProduct ? $lastProduct->id + 1 : 1;
+                $product->code = 'PRD-' . str_pad($nextId, 4, '0', STR_PAD_LEFT);
+            }
+        });
+    }
+
     //
     public function brand() {
         return $this->belongsTo(Brand::class, 'brand_id');

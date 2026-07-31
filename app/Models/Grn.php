@@ -26,6 +26,8 @@ class Grn extends Model
             if (is_array($model->received_items) && count($model->received_items) > 0) {
                 $inventoryService = new \App\Services\InventoryService();
                 
+                \Log::info('GRN Created, processing items...', ['grn_id' => $model->id, 'items_count' => count($model->received_items)]);
+
                 foreach ($model->received_items as $item) {
                     $productId = $item['product_id'] ?? null;
                     if (!$productId) continue;
@@ -37,22 +39,25 @@ class Grn extends Model
                     $quantity = (float)($item['quantity'] ?? 0);
                     $unitPrice = (float)($item['unit_price'] ?? 0);
 
-                    if ($product->product_type === 'Asset') {
+                    \Log::info('Processing GRN item', ['product_id' => $productId, 'type' => $product->product_type, 'qty' => $quantity]);
+
+                    if (strtolower(trim($product->product_type)) === 'asset') {
                         $assetCategory = \App\Models\AssetCategory::firstOrCreate(
                             ['name' => 'Uncategorized Hardware'],
                             ['code' => 'UNCAT-HW']
                         );
 
                         for ($i = 0; $i < $quantity; $i++) {
-                            \App\Models\Asset::create([
+                            $asset = \App\Models\Asset::create([
                                 'asset_category_id' => $assetCategory->id,
                                 'branch_id' => $model->branch_id,
                                 'name' => $product->name,
-                                'asset_code' => 'AST-' . date('Ymd') . '-' . $product->id . '-' . uniqid(),
+                                'asset_code' => 'AST-' . date('Ymd') . '-' . $product->id . '-' . uniqid('', true),
                                 'purchase_date' => $model->created_at,
                                 'purchase_cost' => $unitPrice,
                                 'status' => 'active',
                             ]);
+                            \Log::info('Asset Created from GRN', ['asset_id' => $asset->id, 'asset_code' => $asset->asset_code]);
                         }
                     } else {
                         $inventoryService->updateStock(

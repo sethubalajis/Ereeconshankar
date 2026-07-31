@@ -213,7 +213,7 @@ class PosSaleForm
                     ->relationship('posSaleItems')
                     ->schema([
                         Select::make('product_id')
-                            ->relationship('product', 'name')
+                            ->relationship('product', 'name', fn ($query) => $query->whereIn('product_type', ['Sellable', 'Inventory']))
                             ->live()
                             ->afterStateUpdated(function ($set, $get) use ($recalculateAll) {
                                 $set('product_variant_id', null);
