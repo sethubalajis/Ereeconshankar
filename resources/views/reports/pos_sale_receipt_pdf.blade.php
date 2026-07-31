@@ -6,10 +6,10 @@
     <style>
         body {
             font-family: 'Helvetica Neue', Arial, sans-serif;
-            font-size: 12px;
+            font-size: 10px;
             color: #1e293b;
             margin: 0;
-            padding: 20px;
+            padding: 5px;
             line-height: 1.4;
         }
         .header {
@@ -19,13 +19,13 @@
             margin-bottom: 15px;
         }
         .company {
-            font-size: 20px;
+            font-size: 16px;
             font-weight: bold;
             color: #0f172a;
             text-transform: uppercase;
         }
         .subtitle {
-            font-size: 13px;
+            font-size: 11px;
             color: #475569;
             margin-top: 3px;
         }
@@ -35,7 +35,7 @@
         }
         .info-table td {
             padding: 2px 0;
-            font-size: 11px;
+            font-size: 9px;
         }
         .items-table {
             width: 100%;
@@ -45,15 +45,15 @@
         .items-table th {
             background: #f1f5f9;
             border-bottom: 1px solid #cbd5e1;
-            padding: 8px 4px;
+            padding: 4px 2px;
             text-align: left;
-            font-size: 11px;
+            font-size: 9px;
             text-transform: uppercase;
         }
         .items-table td {
             border-bottom: 1px dashed #e2e8f0;
-            padding: 8px 4px;
-            font-size: 11px;
+            padding: 4px 2px;
+            font-size: 10px;
         }
         .text-right {
             text-align: right;
@@ -66,8 +66,8 @@
             border-collapse: collapse;
         }
         .totals-table td {
-            padding: 4px;
-            font-size: 12px;
+            padding: 4px 2px;
+            font-size: 10px;
         }
         .footer {
             margin-top: 30px;
@@ -86,6 +86,20 @@
             $branch = $record->branch ?? null;
         @endphp
         
+        @if($company && $company->logo)
+            <div style="margin-bottom: 10px;">
+                @php
+                    $logoPath = public_path('storage/' . $company->logo);
+                    if (!file_exists($logoPath)) {
+                        $logoPath = storage_path('app/public/' . $company->logo);
+                    }
+                @endphp
+                @if(file_exists($logoPath))
+                    <img src="{{ $logoPath }}" alt="{{ $company->name }} Logo" style="max-height: 60px; max-width: 100%; object-fit: contain;">
+                @endif
+            </div>
+        @endif
+
         <div class="company">{{ $company->name ?? ($branch->name ?? 'eReckon POS') }}</div>
         
         @if($company)
@@ -126,7 +140,7 @@
     <table class="info-table">
         <tr>
             <td><strong>Invoice No:</strong> {{ $record->invoice_number }}</td>
-            <td class="text-right"><strong>Date:</strong> {{ \Carbon\Carbon::parse($record->sale_date)->format('d M Y h:i A') }}</td>
+            <td class="text-right"><strong>Date:</strong> {{ $record->created_at->timezone('Asia/Kolkata')->format('d M Y h:i A') }}</td>
         </tr>
         <tr>
             <td><strong>Terminal:</strong> {{ $record->posTerminal->terminal_name ?? 'N/A' }}</td>
@@ -205,7 +219,7 @@
 
     <div class="footer">
         Thank you for your business!<br>
-        Generated on {{ now()->format('d M Y h:i A') }}
+        Generated on {{ now()->timezone('Asia/Kolkata')->format('d M Y h:i A') }}
     </div>
 </body>
 </html>

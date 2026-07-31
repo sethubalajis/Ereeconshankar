@@ -830,7 +830,8 @@ class ReportPdfHelper
     }
     public static function downloadPosSaleReceiptPdf(object $record): StreamedResponse
     {
-        $pdf = Pdf::loadView('reports.pos_sale_receipt_pdf', ['record' => $record]);
+        $pdf = Pdf::loadView('reports.pos_sale_receipt_pdf', ['record' => $record])
+            ->setPaper(array(0, 0, 226.77, 841.89)); // 80mm width for thermal bill size
         $filename = 'POS-Receipt-' . ($record->invoice_number ?? $record->id) . '-' . now()->format('YmdHis') . '.pdf';
         return response()->streamDownload(fn () => print($pdf->output()), $filename);
     }
