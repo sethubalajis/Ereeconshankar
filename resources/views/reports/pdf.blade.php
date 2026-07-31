@@ -94,7 +94,7 @@
             <tr>
                 <th>#</th>
                 @foreach($columns as $key => $label)
-                    <th>{{ $label }}</th>
+                    <th>{{ is_callable($label) ? $key : $label }}</th>
                 @endforeach
             </tr>
         </thead>
@@ -105,7 +105,12 @@
                     @foreach($columns as $key => $label)
                         <td>
                             @php
-                                $val = data_get($row, $key);
+                                if (is_callable($label)) {
+                                    $val = $label($row);
+                                } else {
+                                    $val = data_get($row, $key);
+                                }
+                                
                                 if ($val instanceof \DateTimeInterface) {
                                     $val = $val->format('Y-m-d H:i');
                                 } elseif (is_array($val)) {
