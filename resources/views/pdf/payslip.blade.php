@@ -20,9 +20,62 @@
 </head>
 <body>
     <div class="header">
-        <div class="company-name">E-Reckon Technologies</div>
-        <p>123 Business Avenue, Tech District, City</p>
-        <h1>Payslip</h1>
+        @php
+            $branch = $record->employee->branch ?? null;
+            $company = $branch->company ?? null;
+        @endphp
+        
+        @if($company && $company->logo)
+            <div style="margin-bottom: 10px;">
+                @php
+                    $logoPath = public_path('storage/' . $company->logo);
+                    if (!file_exists($logoPath)) {
+                        $logoPath = storage_path('app/public/' . $company->logo);
+                    }
+                @endphp
+                @if(file_exists($logoPath))
+                    <img src="{{ $logoPath }}" alt="{{ $company->name }} Logo" style="max-height: 60px; max-width: 100%; object-fit: contain;">
+                @endif
+            </div>
+        @endif
+        
+        <div class="company-name">{{ $company->name ?? ($branch->name ?? 'E-Reckon Technologies') }}</div>
+        
+        @if($company)
+            @if($company->address)
+                <p>
+                    {{ $company->address }}
+                    @if($company->city)
+                        , {{ $company->city->name ?? '' }}
+                    @endif
+                    @if($company->pin_code)
+                        - {{ $company->pin_code }}
+                    @endif
+                </p>
+            @endif
+            @if($company->phone || $company->email)
+                <p style="margin-top: -5px;">
+                    @if($company->phone) Ph: {{ $company->phone }} @endif
+                    @if($company->phone && $company->email) | @endif
+                    @if($company->email) Email: {{ $company->email }} @endif
+                </p>
+            @endif
+        @elseif($branch)
+            @if($branch->address)
+                <p>{{ $branch->address }}</p>
+            @endif
+            @if($branch->phone || $branch->email)
+                <p style="margin-top: -5px;">
+                    @if($branch->phone) Ph: {{ $branch->phone }} @endif
+                    @if($branch->phone && $branch->email) | @endif
+                    @if($branch->email) Email: {{ $branch->email }} @endif
+                </p>
+            @endif
+        @else
+            <p>123 Business Avenue, Tech District, City</p>
+        @endif
+        
+        <h1 style="margin-top: 15px;">Payslip</h1>
         <p>For the period: {{ $record->payrollCycle->name ?? 'N/A' }}</p>
     </div>
 
