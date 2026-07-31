@@ -19,7 +19,13 @@ class WarehouseTransferForm
                 DatePicker::make('transfer_date')
                     ->required()
                     ->default(now()->timezone('Asia/Kolkata')),
-                TextInput::make('status')
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'in_transit' => 'In Transit',
+                        'completed' => 'Completed',
+                        'cancelled' => 'Cancelled',
+                    ])
                     ->required()
                     ->default('pending'),
             ]);

@@ -24,6 +24,13 @@ class ProductForm
                     ->required(),
                 TextInput::make('code')
                     ->required(),
+                \Filament\Forms\Components\Select::make('product_type')
+                    ->options([
+                        'Inventory' => 'Inventory',
+                        'Asset' => 'Asset'
+                    ])
+                    ->default('Inventory')
+                    ->required(),
                 Textarea::make('description')
                     ->columnSpanFull(),
                 TextInput::make('base_price')

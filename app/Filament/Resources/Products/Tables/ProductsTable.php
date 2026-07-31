@@ -31,6 +31,8 @@ class ProductsTable
                     ->searchable(),
                 TextColumn::make('code')
                     ->searchable(),
+                TextColumn::make('product_type')
+                    ->searchable(),
 
                 IconColumn::make('is_active')
                     ->boolean(),

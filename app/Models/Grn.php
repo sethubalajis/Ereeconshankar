@@ -29,22 +29,44 @@ class Grn extends Model
                 foreach ($model->received_items as $item) {
                     $productId = $item['product_id'] ?? null;
                     if (!$productId) continue;
+                    
+                    $product = \App\Models\Product::find($productId);
+                    if (!$product) continue;
 
                     $variantId = $item['product_variant_id'] ?? null;
                     $quantity = (float)($item['quantity'] ?? 0);
                     $unitPrice = (float)($item['unit_price'] ?? 0);
 
-                    $inventoryService->updateStock(
-                        $productId,
-                        $variantId,
-                        $model->branch_id,
-                        $model->warehouse_id,
-                        'in',
-                        $quantity,
-                        $unitPrice,
-                        $model->grn_number ?? 'GRN-' . $model->id,
-                        'App\\Models\\Grn'
-                    );
+                    if ($product->product_type === 'Asset') {
+                        $assetCategory = \App\Models\AssetCategory::firstOrCreate(
+                            ['name' => 'Uncategorized Hardware'],
+                            ['code' => 'UNCAT-HW']
+                        );
+
+                        for ($i = 0; $i < $quantity; $i++) {
+                            \App\Models\Asset::create([
+                                'asset_category_id' => $assetCategory->id,
+                                'branch_id' => $model->branch_id,
+                                'name' => $product->name,
+                                'asset_code' => 'AST-' . date('Ymd') . '-' . $product->id . '-' . uniqid(),
+                                'purchase_date' => $model->created_at,
+                                'purchase_cost' => $unitPrice,
+                                'status' => 'active',
+                            ]);
+                        }
+                    } else {
+                        $inventoryService->updateStock(
+                            $productId,
+                            $variantId,
+                            $model->branch_id,
+                            $model->warehouse_id,
+                            'in',
+                            $quantity,
+                            $unitPrice,
+                            $model->grn_number ?? 'GRN-' . $model->id,
+                            'App\\Models\\Grn'
+                        );
+                    }
                 }
             }
         });

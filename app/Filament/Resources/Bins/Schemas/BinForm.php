@@ -16,7 +16,9 @@ class BinForm
                 TextInput::make('name')
                     ->required(),
                 TextInput::make('code')
-                    ->required(),
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->placeholder('Auto generated on creation'),
                 TextInput::make('max_weight')
                     ->numeric(),
             ]);

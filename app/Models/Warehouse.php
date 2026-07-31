@@ -15,6 +15,14 @@ class Warehouse extends Model
 
     protected static function booted(): void
     {
+        static::creating(function (self $warehouse): void {
+            if (empty($warehouse->code)) {
+                $lastWarehouse = self::orderBy('id', 'desc')->first();
+                $nextId = $lastWarehouse ? $lastWarehouse->id + 1 : 1;
+                $warehouse->code = 'WH-' . str_pad($nextId, 4, '0', STR_PAD_LEFT);
+            }
+        });
+
         static::saved(function (self $warehouse): void {
             if (! $warehouse->is_default || ! $warehouse->branch_id) {
                 return;
