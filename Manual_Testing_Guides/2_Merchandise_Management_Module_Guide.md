@@ -1,108 +1,136 @@
-# Architecture & Model Relationships Guide: Merchandise Management Module
+# Merchandise Management Module Guide
 
-## 1. Executive Summary & Purpose of Merchandise Management
-In a Multi-Branch Textile & Retail ERP System, the **Merchandise Management (Merchandise Planning)** module serves as the strategic & financial forecasting layer for product inventory acquisition and revenue target tracking.
+## Purpose
 
-### Core Business Objectives:
-1. **Seasonal Budget Allocation:** Establishing planned procurement budgets (`planned_budget`) for specific retail seasons (e.g., *Diwali Festival*, *Summer Casuals*, *Pongal Special*, *Wedding Silk*) to prevent over-purchasing by procurement managers.
-2. **Sales Revenue Targeting:** Setting macro-level revenue targets (`target_sales`) per financial calendar year and season to evaluate store performance.
-3. **Inventory & Assortment Control:** Aligning product catalog taxonomies (Categories, Sub-Categories, Brands, Textile Attributes, and Price Lists) with seasonal consumer demand.
+In this codebase, the Merchandise Management navigation group is a mix of:
 
----
+1. Seasonal planning data used for budget and sales target entry.
+2. Lookup masters used by the product catalog and variant definitions.
 
-## 2. Model Relationship Architecture
+The important implementation detail is that this is not a single deeply connected subdomain yet. Only a small subset of the resources under this group are tied together by foreign keys.
 
-### 2.1 Direct Relationships in `MerchandisePlanning` Model
-The `MerchandisePlanning` model connects macro-level financial goals to specific time periods and retail seasons:
+## Resources Under `4. Merchandise Management`
 
-```
-[ FinancialYear ]  <--- (financial_year_id) ---  [ MerchandisePlanning ]  --- (season_id) --->  [ Season ]
-```
-
-1. **`MerchandisePlanning` -> `FinancialYear` (`belongsTo`):**
-   - **Foreign Key:** `financial_year_id`
-   - **Purpose:** Maps the merchandise plan to a specific active financial year (e.g., `FY 2026-2027`).
-2. **`MerchandisePlanning` -> `Season` (`belongsTo`):**
-   - **Foreign Key:** `season_id`
-   - **Purpose:** Associates the sales targets and procurement budgets with a specific retail season (e.g., *Diwali*, *Winter Collection*).
-
----
-
-### 2.2 Extended Product Information Management (PIM) Model Mapping
-The `MerchandisePlanning` module interacts with the broader Product Information Management (PIM) catalog ecosystem:
-
-```
-                  +-----------------------+
-                  |    FinancialYear      |
-                  +-----------------------+
-                              | 1
-                              |
-                              | *
-                  +-----------------------+
-                  |  MerchandisePlanning  |
-                  +-----------------------+
-                              | *
-                              |
-                              | 1
-                  +-----------------------+
-                  |        Season         |
-                  +-----------------------+
-                              | 1
-                              |
-                              | *
-+-----------------+   *     * |     *   +-----------------+
-| ProductCategory |<----------+-------->| ProductVariant  |
-+-----------------+                 +-----------------+
-        | 1                                  | *
-        |                                    |
-        | *                                  | 1
-+-----------------+   1             *   +-----------------+
-|ProductSubCategory|<-------------------|     Product     |
-+-----------------+                     +-----------------+
-                                             | *
-                                             |
-                                             | 1
-                                        +-----------------+
-                                        |      Brand      |
-                                        +-----------------+
-```
-
-#### Detailed Model Interconnections:
-- **`ProductCategory` & `ProductSubCategory`:** Organize items into hierarchical merchandise divisions (e.g., `Apparel` -> `Men's Wear` -> `Formal Shirts`).
-- **`Brand`:** Links master product records to vendor manufacturers (`Royal Silk Mills`).
-- **`Product`:** Base product master containing default units, HSN codes, and base prices.
-- **`ProductVariant`:** Connects `Season`, `Color`, `Size`, `FabricType`, `Design`, and `Style` to specific SKU items.
-- **`PriceList`:** Controls wholesale and retail pricing tiers for variants during planned seasonal dates.
-
----
-
-## 3. Database Schema Overview
-
-### Table: `merchandise_plannings`
-| Column Name | Data Type | Key Type | Description |
+| Resource | Model | Current Role | Actual Relationships in Code |
 | :--- | :--- | :--- | :--- |
-| `id` | BigInteger (Auto-Increment) | Primary Key | Unique record identifier |
-| `financial_year_id` | ForeignId | Foreign Key | References `id` on `financial_years` |
-| `season_id` | ForeignId | Foreign Key | References `id` on `seasons` |
-| `target_sales` | Decimal(15, 2) | Attribute | Targeted sales revenue in INR |
-| `planned_budget` | Decimal(15, 2) | Attribute | Allocated inventory purchase budget |
-| `created_at` | Timestamp | Standard | Record creation timestamp |
-| `updated_at` | Timestamp | Standard | Record last modification timestamp |
+| `Collections` | `Collection` | Standalone lookup/master | None backed by current schema |
+| `Colors` | `Color` | Variant option lookup | `hasMany(ProductVariant)` |
+| `Designs` | `Design` | Standalone lookup/master | None backed by current schema |
+| `Fabric Types` | `FabricType` | Standalone lookup/master | None backed by current schema |
+| `Merchandise Plannings` | `MerchandisePlanning` | Seasonal sales and budget planning | `belongsTo(FinancialYear)`, `belongsTo(Season)` |
+| `Pattern Types` | `PatternType` | Standalone lookup/master | None backed by current schema |
+| `Product Lines` | `ProductLine` | Standalone lookup/master | None backed by current schema |
+| `Seasons` | `Season` | Seasonal master | `hasMany(MerchandisePlanning)` |
+| `Sizes` | `Size` | Variant option lookup | `hasMany(ProductVariant)` |
+| `Styles` | `Style` | Standalone lookup/master | None backed by current schema |
 
----
+## Actual Relationship Graph
 
-## 4. Current Implementation vs Recommended Enhancements
+### 1. Planning Layer
 
-### Current Architecture State:
-The current `MerchandisePlanning` model functions as a **macro-level financial forecasting tool**. It tracks total target sales and overall planned budgets per season.
+```text
+FinancialYear (1) ----< MerchandisePlanning >---- (1) Season
+```
 
-### Recommended Architectural Enhancements:
-For enterprise ERP deployments requiring granular category-level or branch-level planning, the schema can be extended as follows:
+- `MerchandisePlanning.financial_year_id` references `financial_years.id`
+- `MerchandisePlanning.season_id` references `seasons.id`
 
-1. **Branch-Level Allocation (`branch_id`):**
-   - Add `foreignId('branch_id')->nullable()->constrained('branches')` to `merchandise_plannings`.
-   - **Benefit:** Allows branch managers to set distinct seasonal sales targets for `Coimbatore Branch` vs `Chennai Branch`.
+This means the `/admin/merchandise-plannings` screen is currently a high-level planning table for:
 
-2. **Category-Level Budgeting (`product_category_id`):**
-   - Add `foreignId('product_category_id')->nullable()->constrained('product_categories')`.
-   - **Benefit:** Allows merchandise planners to allocate specific procurement budgets per category (e.g., allocating ₹ 25,00,000 for *Silk Sarees* and ₹ 15,00,000 for *Men's Wear*).
+- target sales by season
+- planned budget by season
+- grouped within a financial year
+
+It is not currently linked to categories, brands, products, branches, or vendors.
+
+### 2. Product Catalog Layer Used By Merchandise Operations
+
+```text
+Brand (1) ----< Product >---- (1) ProductCategory
+                         \
+                          \--- (1) ProductSubCategory
+
+ProductCategory (1) ----< ProductSubCategory
+ProductCategory (1) ----< ProductCategory (child categories)
+
+Product (1) ----< ProductVariant >---- (1) Color
+                                 \
+                                  \--- (1) Size
+
+Product (1) ----< ProductImage
+Product (1) ----< ProductBarcode
+
+ProductVariant (1) ----< ProductImage
+ProductVariant (1) ----< ProductBarcode
+
+ProductAttribute (1) ----< AttributeValue >----< ProductVariant
+```
+
+These relationships are real in the schema and code, but they belong mostly to the product catalog, not directly to `MerchandisePlanning`.
+
+## What Is Connected And What Is Not
+
+### Directly connected to `MerchandisePlanning`
+
+- `FinancialYear`
+- `Season`
+
+### Connected to product and variant setup
+
+- `Color`
+- `Size`
+- `Brand`
+- `ProductCategory`
+- `ProductSubCategory`
+- `Product`
+- `ProductVariant`
+- `ProductAttribute`
+- `AttributeValue`
+- `ProductImage`
+- `ProductBarcode`
+
+### Present in the navigation group but currently standalone
+
+- `Collection`
+- `Design`
+- `FabricType`
+- `PatternType`
+- `ProductLine`
+- `Style`
+
+Those models exist as masters, but the current migrations do not attach them to `products`, `product_variants`, or `merchandise_plannings`.
+
+## Current Architecture Summary
+
+The module is best understood as two adjacent layers:
+
+1. `MerchandisePlanning` is the planning layer.
+2. The lookup resources are supporting catalog masters.
+
+Because the schema does not currently contain columns like `collection_id`, `design_id`, `fabric_type_id`, `pattern_type_id`, `product_line_id`, `style_id`, `branch_id`, or `product_category_id` on `merchandise_plannings`, the planning screen cannot yet drive assortment planning at category, style, or branch level.
+
+## Implemented In Code
+
+The codebase now defines the missing Eloquent relations that were already implied by existing foreign keys:
+
+- `FinancialYear -> merchandisePlannings()`
+- `Season -> merchandisePlannings()`
+- `Color -> productVariants()`
+- `Size -> productVariants()`
+- `Brand -> products()`
+- `ProductCategory -> childCategories(), productSubCategories(), products()`
+- `ProductSubCategory -> products()`
+- `Product -> productVariants(), productImages(), productBarcodes()`
+- `ProductVariant -> productImages(), productBarcodes(), attributeValues()`
+- `ProductAttribute -> attributeValues()`
+
+## If You Want A More Complete Merchandise Planning Engine
+
+The next schema step would be to add optional planning dimensions such as:
+
+- `branch_id` on `merchandise_plannings`
+- `product_category_id` on `merchandise_plannings`
+- `brand_id` on `merchandise_plannings`
+- a new detail table such as `merchandise_planning_lines` for category-wise or product-wise allocation
+
+That would turn the current planning screen from seasonal budgeting into actual assortment and allocation planning.
