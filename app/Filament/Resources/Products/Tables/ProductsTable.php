@@ -32,6 +32,12 @@ class ProductsTable
                 TextColumn::make('code')
                     ->searchable(),
                 TextColumn::make('product_type')
+                    ->formatStateUsing(fn ($state) => match ($state) {
+                        1 => 'Sellable',
+                        2 => 'Non-Sellable Inventory',
+                        3 => 'Asset',
+                        default => 'Sellable',
+                    })
                     ->searchable(),
 
                 IconColumn::make('is_active')

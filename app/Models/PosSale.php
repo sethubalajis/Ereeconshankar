@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToFinancialYear;
+
 use Illuminate\Database\Eloquent\Model;
 
 class PosSale extends Model
 {
+    use BelongsToFinancialYear;
     protected $guarded = [];
 
     protected static function boot()

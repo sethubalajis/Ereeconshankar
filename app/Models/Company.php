@@ -18,7 +18,9 @@ class Company extends Model
         return $this->hasMany(BusinessUnit::class);
     }
 
-    //
+    public function financialYears() {
+        return $this->hasMany(FinancialYear::class);
+    }
     public function city() {
         return $this->belongsTo(City::class, 'city_id');
     }

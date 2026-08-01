@@ -28,11 +28,11 @@ class ProductForm
                     ->placeholder('Auto generated on creation'),
                 \Filament\Forms\Components\Select::make('product_type')
                     ->options([
-                        'Sellable' => 'Sellable',
-                        'Non-Sellable Inventory' => 'Non-Sellable Inventory',
-                        'Asset' => 'Asset'
+                        1 => 'Sellable',
+                        2 => 'Non-Sellable Inventory',
+                        3 => 'Asset'
                     ])
-                    ->default('Sellable')
+                    ->default(1)
                     ->required(),
                 Textarea::make('description')
                     ->columnSpanFull(),
