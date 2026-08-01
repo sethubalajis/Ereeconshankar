@@ -23,6 +23,16 @@ class ProductForm
                     ->live(onBlur: true)
                     ->required(),
                 TextInput::make('code')
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->placeholder('Auto generated on creation'),
+                \Filament\Forms\Components\Select::make('product_type')
+                    ->options([
+                        1 => 'Sellable',
+                        2 => 'Non-Sellable Inventory',
+                        3 => 'Asset'
+                    ])
+                    ->default(1)
                     ->required(),
                 Textarea::make('description')
                     ->columnSpanFull(),

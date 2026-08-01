@@ -13,9 +13,15 @@ class PickingListForm
             ->components([
                 \Filament\Forms\Components\Select::make('warehouse_id')->relationship('warehouse', 'name')
                     ->required(),
-                \Filament\Forms\Components\TextInput::make('reference_id')->numeric()
-                    ,
-                TextInput::make('reference_type'),
+                \Filament\Forms\Components\TextInput::make('reference_name')
+                    ->required(),
+                \Filament\Forms\Components\Select::make('reference_type')
+                    ->options([
+                        'App\Models\SalesOrder' => 'Sales Order',
+                        'App\Models\WarehouseTransfer' => 'Warehouse Transfer',
+                        'App\Models\PosSale' => 'POS Sale',
+                    ])
+                    ->searchable(),
                 \Filament\Forms\Components\Select::make('status')
                     ->options([
                         'pending' => 'Pending',

@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToFinancialYear;
+
 use Illuminate\Database\Eloquent\Model;
 
 class AssetDepreciation extends Model
 {
+    use BelongsToFinancialYear;
     protected $guarded = [];
 
     //

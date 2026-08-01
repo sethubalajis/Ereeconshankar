@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToFinancialYear;
+
 use Illuminate\Database\Eloquent\Model;
 
 class PurchaseReturn extends Model
 {
+    use BelongsToFinancialYear;
     protected $guarded = [];
 
     protected $casts = [

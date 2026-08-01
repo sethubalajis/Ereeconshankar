@@ -16,8 +16,15 @@ class WarehouseZoneForm
                 TextInput::make('name')
                     ->required(),
                 TextInput::make('code')
-                    ->required(),
-                TextInput::make('type'),
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->placeholder('Auto generated on creation'),
+                \Filament\Forms\Components\Select::make('type')
+                    ->options([
+                        'Receiving' => 'Receiving',
+                        'Storage' => 'Storage',
+                        'Shipping' => 'Shipping',
+                    ]),
             ]);
     }
 }

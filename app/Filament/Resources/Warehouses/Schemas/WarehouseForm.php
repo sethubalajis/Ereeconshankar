@@ -18,7 +18,9 @@ class WarehouseForm
                 TextInput::make('name')
                     ->required(),
                 TextInput::make('code')
-                    ->required(),
+                    ->placeholder('Leave empty to auto-generate')
+                    ->unique(ignoreRecord: true)
+                    ->maxLength(255),
                 Textarea::make('address')
                     ->columnSpanFull(),
                 TextInput::make('capacity')

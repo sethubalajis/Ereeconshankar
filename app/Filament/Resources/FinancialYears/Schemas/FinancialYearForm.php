@@ -13,6 +13,9 @@ class FinancialYearForm
     {
         return $schema
             ->components([
+                \Filament\Forms\Components\Select::make('company_id')
+                    ->relationship('company', 'name')
+                    ->required(),
                 TextInput::make('name')
                     ->required(),
                 DatePicker::make('start_date')

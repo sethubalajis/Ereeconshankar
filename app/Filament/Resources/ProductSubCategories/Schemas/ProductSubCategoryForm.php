@@ -18,7 +18,9 @@ class ProductSubCategoryForm
                 TextInput::make('name')
                     ->required(),
                 TextInput::make('code')
-                    ->required(),
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->placeholder('Auto generated on creation'),
                 Textarea::make('description')
                     ->columnSpanFull(),
                 Toggle::make('status')

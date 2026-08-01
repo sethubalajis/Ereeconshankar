@@ -113,6 +113,21 @@ class PosSaleObserver
                 $voucher->save();
             }
         }
+        
+        // Trigger Email Notification if completed
+        if ($model->status === 'completed' && $model->customer_id) {
+            $customer = $model->customer;
+            if ($customer && $customer->email) {
+                try {
+                    \Illuminate\Support\Facades\Mail::to($customer->email)
+                        ->send(new \App\Mail\PosInvoiceMail($model));
+                    $model->updateQuietly(['email_status' => 'sent']);
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error("Failed to send POS sale email: " . $e->getMessage());
+                    $model->updateQuietly(['email_status' => 'failed']);
+                }
+            }
+        }
     }
 
     /**
@@ -127,6 +142,21 @@ class PosSaleObserver
             if ($newStatus === 'completed' && $oldStatus !== 'completed') {
                 foreach ($posSale->posSaleItems as $item) {
                     $item->processStockDeduction();
+                }
+                
+                // Trigger Email Notification
+                if ($posSale->customer_id) {
+                    $customer = $posSale->customer;
+                    if ($customer && $customer->email) {
+                        try {
+                            \Illuminate\Support\Facades\Mail::to($customer->email)
+                                ->send(new \App\Mail\PosInvoiceMail($posSale));
+                            $posSale->updateQuietly(['email_status' => 'sent']);
+                        } catch (\Exception $e) {
+                            \Illuminate\Support\Facades\Log::error("Failed to send POS sale email: " . $e->getMessage());
+                            $posSale->updateQuietly(['email_status' => 'failed']);
+                        }
+                    }
                 }
             } elseif (in_array($newStatus, ['cancelled', 'refunded'], true) && $oldStatus === 'completed') {
                 foreach ($posSale->posSaleItems as $item) {

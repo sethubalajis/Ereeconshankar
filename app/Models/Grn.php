@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToFinancialYear;
+
 use Illuminate\Database\Eloquent\Model;
 
 class Grn extends Model
 {
+    use BelongsToFinancialYear;
     protected $guarded = [];
 
     protected $casts = [
@@ -26,25 +29,52 @@ class Grn extends Model
             if (is_array($model->received_items) && count($model->received_items) > 0) {
                 $inventoryService = new \App\Services\InventoryService();
                 
+                \Log::info('GRN Created, processing items...', ['grn_id' => $model->id, 'items_count' => count($model->received_items)]);
+
                 foreach ($model->received_items as $item) {
                     $productId = $item['product_id'] ?? null;
                     if (!$productId) continue;
+                    
+                    $product = \App\Models\Product::find($productId);
+                    if (!$product) continue;
 
                     $variantId = $item['product_variant_id'] ?? null;
                     $quantity = (float)($item['quantity'] ?? 0);
                     $unitPrice = (float)($item['unit_price'] ?? 0);
 
-                    $inventoryService->updateStock(
-                        $productId,
-                        $variantId,
-                        $model->branch_id,
-                        $model->warehouse_id,
-                        'in',
-                        $quantity,
-                        $unitPrice,
-                        $model->grn_number ?? 'GRN-' . $model->id,
-                        'App\\Models\\Grn'
-                    );
+                    \Log::info('Processing GRN item', ['product_id' => $productId, 'type' => $product->product_type, 'qty' => $quantity]);
+
+                    if (strtolower(trim($product->product_type)) === 'asset') {
+                        $assetCategory = \App\Models\AssetCategory::firstOrCreate(
+                            ['name' => 'Uncategorized Hardware'],
+                            ['code' => 'UNCAT-HW']
+                        );
+
+                        for ($i = 0; $i < $quantity; $i++) {
+                            $asset = \App\Models\Asset::create([
+                                'asset_category_id' => $assetCategory->id,
+                                'branch_id' => $model->branch_id,
+                                'name' => $product->name,
+                                'asset_code' => 'AST-' . date('Ymd') . '-' . $product->id . '-' . uniqid('', true),
+                                'purchase_date' => $model->created_at,
+                                'purchase_cost' => $unitPrice,
+                                'status' => 'active',
+                            ]);
+                            \Log::info('Asset Created from GRN', ['asset_id' => $asset->id, 'asset_code' => $asset->asset_code]);
+                        }
+                    } else {
+                        $inventoryService->updateStock(
+                            $productId,
+                            $variantId,
+                            $model->branch_id,
+                            $model->warehouse_id,
+                            'in',
+                            $quantity,
+                            $unitPrice,
+                            $model->grn_number ?? 'GRN-' . $model->id,
+                            'App\\Models\\Grn'
+                        );
+                    }
                 }
             }
         });

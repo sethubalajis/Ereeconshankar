@@ -65,6 +65,15 @@ class PosSalesTable
 
                 TextColumn::make('status')
                     ->searchable(),
+                TextColumn::make('email_status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'pending' => 'warning',
+                        'sent', 'delivered' => 'success',
+                        'failed' => 'danger',
+                        default => 'gray',
+                    })
+                    ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -87,23 +96,32 @@ class PosSalesTable
                     ->action(function ($record) {
                         return \App\Helpers\ReportPdfHelper::downloadPosSaleReceiptPdf($record);
                     }),
+                \Filament\Actions\Action::make('resend_email')
+                    ->label('Resend Email')
+                    ->icon('heroicon-o-envelope')
+                    ->color('info')
+                    ->visible(fn ($record) => $record->status === 'completed' && $record->customer_id)
+                    ->action(function ($record) {
+                        try {
+                            \Illuminate\Support\Facades\Mail::to($record->customer->email)
+                                ->send(new \App\Mail\PosInvoiceMail($record));
+                            $record->update(['email_status' => 'sent']);
+                            \Filament\Notifications\Notification::make()
+                                ->title('Email sent successfully')
+                                ->success()
+                                ->send();
+                        } catch (\Exception $e) {
+                            $record->update(['email_status' => 'failed']);
+                            \Filament\Notifications\Notification::make()
+                                ->title('Failed to send email')
+                                ->body($e->getMessage())
+                                ->danger()
+                                ->send();
+                        }
+                    }),
             ])
             ->headerActions([
-                \Filament\Actions\Action::make('download_overall_pdf')
-                    ->label('Overall PDF')
-                    ->icon('heroicon-o-document-arrow-down')
-                    ->color('primary')
-                    ->action(function ($livewire) {
-                        $records = $livewire->getFilteredTableQuery()->get();
-                        return \App\Helpers\ReportPdfHelper::downloadListPdf('Overall POS Sales', $records, [
-                            'Invoice No' => fn($r) => $r->invoice_number ?? '-',
-                            'Branch' => fn($r) => $r->branch?->name ?? '-',
-                            'Customer' => fn($r) => $r->customer?->name ?? 'Walk-in',
-                            'Date' => fn($r) => $r->sale_date ? \Carbon\Carbon::parse($r->sale_date)->format('Y-m-d') : '-',
-                            'Amount' => fn($r) => number_format($r->net_amount, 2),
-                            'Status' => fn($r) => ucfirst($r->status),
-                        ]);
-                    }),
+                //
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

@@ -18,8 +18,9 @@ class BrandForm
                     ->required()
                     ->unique(ignoreRecord: true),
                 TextInput::make('code')
-                    ->required()
-                    ->unique(ignoreRecord: true),
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->placeholder('Auto generated on creation'),
                 FileUpload::make('logo')
                 ->disk("public")
                 
