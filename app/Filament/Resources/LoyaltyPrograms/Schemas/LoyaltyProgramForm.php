@@ -41,6 +41,7 @@ class LoyaltyProgramForm
                     ->prefix('₹'),
                 TextInput::make('max_redemption_percentage')
                     ->numeric()
+                    ->suffix('%')
                     ->nullable()
                     ->maxValue(100),
                 TextInput::make('points_expiry_months')

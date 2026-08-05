@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Textile Multi-Branch ERP - Business Flows</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 10px;
+        }
+        h3 {
+            color: #34495e;
+            margin-top: 25px;
+            border-bottom: 1px solid #ecf0f1;
+            padding-bottom: 5px;
+        }
+        ul {
+            margin-bottom: 15px;
+        }
+        li {
+            margin-bottom: 5px;
+        }
+        strong {
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <h1>Textile Multi-Branch ERP - Business Flows</h1>
+    
+    <p>Based on the architecture of your application and the Filament resources currently generated, your Textile Multi-Branch ERP is structured into <strong>11 major business flows (modules)</strong>.</p>
+    
+    <p>Here is a comprehensive breakdown of all the flows and the specific components (resources) they handle:</p>
+
+    <h3>1. Organization & Administration Flow</h3>
+    <p>Manages the foundational setup, branch hierarchy, and access control.</p>
+    <ul>
+        <li><strong>Structure:</strong> Companies, Business Units, Branches, Departments, Designations.</li>
+        <li><strong>Access Control:</strong> Users, Roles, Permissions, Branch Users, User Branch Accesses.</li>
+        <li><strong>Settings:</strong> Branch Settings, Financial Years, Dashboard Widgets, States, Cities, Countries.</li>
+    </ul>
+
+    <h3>2. Product & Merchandise Flow (PIM)</h3>
+    <p>Handles the complex product catalog typical for a textile business.</p>
+    <ul>
+        <li><strong>Catalog Core:</strong> Products, Product Categories, Product Sub-Categories, Product Lines, Brands.</li>
+        <li><strong>Textile Specifics:</strong> Product Variants, Attributes, Attribute Values, Colors, Sizes, Styles, Seasons, Designs, Fabric Types, Pattern Types.</li>
+        <li><strong>Pricing & Media:</strong> Price Lists, Product Images, Product Barcodes, Merchandise Plannings.</li>
+    </ul>
+
+    <h3>3. Inventory & Warehouse Flow (WMS)</h3>
+    <p>Tracks physical stock movement across multiple branches and warehouses.</p>
+    <ul>
+        <li><strong>Warehouse Structure:</strong> Warehouses, Warehouse Zones, Racks, Bins, Bin Stocks.</li>
+        <li><strong>Stock Management:</strong> Stocks, Stock Ledgers, Stock Adjustments, Stock Transactions, Stock Valuations, Stock Reservations.</li>
+        <li><strong>Transfers & Transit:</strong> Branch Inventories, Transit Inventories, Stock Transfers, Warehouse Transfers, Transfer Requests/Approvals/Receipts/Items.</li>
+        <li><strong>Operations:</strong> Goods Receipt Notes (GRNs), Picking Lists, Packing Lists, Inventory Counts, Inventory Reconciliations.</li>
+    </ul>
+
+    <h3>4. Procurement & Vendor Flow</h3>
+    <p>Manages the purchasing cycle from requesting items to paying suppliers.</p>
+    <ul>
+        <li><strong>Suppliers:</strong> Vendors, Vendor Categories, Vendor Contacts, Vendor Agreements, Vendor Price Lists.</li>
+        <li><strong>Purchasing Cycle:</strong> Purchase Requisitions, Request for Quotations (RFQs), Purchase Orders, Purchase Order Items, Purchase Returns.</li>
+        <li><strong>Vendor Management:</strong> Vendor Payments, Vendor Performances.</li>
+    </ul>
+
+    <h3>5. Point of Sale (POS) & Retail Sales Flow</h3>
+    <p>Handles the front-end billing and retail operations at branch locations.</p>
+    <ul>
+        <li><strong>POS Infrastructure:</strong> POS Terminals, POS Counters.</li>
+        <li><strong>Sales Cycle:</strong> POS Sales, POS Sale Items, POS Returns.</li>
+        <li><strong>Cash Management:</strong> Cash Registers, Cash Openings, Cash Closings, Cash Books.</li>
+        <li><strong>Transactions:</strong> Payments, Receipts, Payment Modes, Quotations.</li>
+    </ul>
+
+    <h3>6. CRM, Loyalty & Promotions Flow</h3>
+    <p>Manages customer relationships, retention, and marketing offers.</p>
+    <ul>
+        <li><strong>Customers:</strong> Customers, Customer Groups, Customer Wallets, Customer Feedback.</li>
+        <li><strong>Loyalty System:</strong> Loyalty Programs, Loyalty Points, Loyalty Cards, Membership Plans.</li>
+        <li><strong>Promotions:</strong> Promo Codes, Coupons, Gift Vouchers, Discount Rules, Promotion Types.</li>
+        <li><strong>Special Offers:</strong> Buy-X-Get-Y Offers, Combo Offers, Festival Offers.</li>
+        <li><strong>Support:</strong> Complaint Tickets, Complaint Categories.</li>
+    </ul>
+
+    <h3>7. Finance & Accounting Flow</h3>
+    <p>Handles the core financial ledgers and accounting entries.</p>
+    <ul>
+        <li><strong>Accounts Setup:</strong> Chart of Accounts, Account Groups, Ledgers, Cost Centers, Bank Accounts.</li>
+        <li><strong>Entries:</strong> Journals, Journal Entries, Contra Entries, Credit Notes, Debit Notes.</li>
+        <li><strong>Financials:</strong> Trial Balances, Currencies.</li>
+    </ul>
+
+    <h3>8. HR & Payroll Flow (HRMS)</h3>
+    <p>Manages employee lifecycles and salary processing.</p>
+    <ul>
+        <li><strong>Employee Core:</strong> Employees, Employee Documents, Employee Transfers, Employee Exits.</li>
+        <li><strong>Time & Leave:</strong> Attendances, Shifts, Holidays, Employee Leaves, Leave Types.</li>
+        <li><strong>Compensation:</strong> Salary Structures, Salary Components, Deductions, Incentives, Bonuses, Reimbursements, Employee Salary Assignments.</li>
+        <li><strong>Payroll & Compliance:</strong> Payroll Cycles, Payroll Processings, Professional Taxes, ESI Contributions, PF Contributions, Employee Tax Declarations, Investment Types.</li>
+    </ul>
+
+    <h3>9. GST Taxation & Compliance Flow (India Specific)</h3>
+    <p>Handles Indian statutory requirements and tax filings.</p>
+    <ul>
+        <li><strong>GST Core:</strong> GST Categories, GST Rates, HSN Codes, HSN/SAC Codes.</li>
+        <li><strong>Filing & Docs:</strong> GST Returns, Tax Invoices, Tax Groups, E-Invoices, E-Way Bills.</li>
+        <li><strong>Deductions:</strong> TDS Records, TCS Records.</li>
+    </ul>
+
+    <h3>10. Asset & Service Management Flow</h3>
+    <p>Tracks company-owned assets and handles maintenance or external servicing.</p>
+    <ul>
+        <li><strong>Assets:</strong> Assets, Asset Categories, Asset Allocations, Asset Transfers.</li>
+        <li><strong>Asset Lifecycle:</strong> Asset Depreciations, Asset Maintenances, Asset Disposals.</li>
+        <li><strong>Services:</strong> Service Requests, Service Assignments, Technician Visits, Warranty Claims.</li>
+    </ul>
+
+    <h3>11. Reports & Analytics Flow</h3>
+    <p>Provides intelligence across all the modules.</p>
+    <ul>
+        <li><strong>Dashboards:</strong> KPI Reports, Branch Performance Reports.</li>
+        <li><strong>Module Reports:</strong> Financial Reports, HR Reports, Inventory Reports, Purchase Reports, Sales Reports, Service Reports, GST Reports.</li>
+    </ul>
+</body>
+</html>
