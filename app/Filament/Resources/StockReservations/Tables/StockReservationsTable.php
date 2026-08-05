@@ -14,6 +14,8 @@ class StockReservationsTable
     {
         return $table
             ->columns([
+                TextColumn::make('reservation_number')
+                    ->searchable(),
                 TextColumn::make('product.name')
                     ->sortable(),
                 TextColumn::make('productVariant.sku')
@@ -23,7 +25,18 @@ class StockReservationsTable
                 TextColumn::make('quantity')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('reference_id')->numeric()
+                TextColumn::make('reservation_type')
+                    ->searchable(),
+                TextColumn::make('reference_document')
+                    ->searchable(),
+                TextColumn::make('reservation_date')
+                    ->dateTime()
+                    ->sortable(),
+                TextColumn::make('expiry_date')
+                    ->dateTime()
+                    ->sortable(),
+                TextColumn::make('reference_id')
+                    ->numeric()
                     ->sortable(),
                 TextColumn::make('status')
                     ->searchable(),
@@ -35,6 +48,12 @@ class StockReservationsTable
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('company.name')
+                    ->sortable(),
+                TextColumn::make('warehouse.name')
+                    ->sortable(),
+                TextColumn::make('creator.name')
+                    ->sortable(),
             ])
             ->filters([
                 //
@@ -46,7 +65,6 @@ class StockReservationsTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ])
-            ->defaultSort('updated_at', 'desc');
+            ]);
     }
 }

@@ -17,10 +17,12 @@ use Filament\Tables\Table;
 class StockReservationResource extends Resource
 {
     protected static \UnitEnum|string|null $navigationGroup = '7. Inventory Management';
-    protected static ?string $model = StockReservation::class;
     protected static ?int $navigationSort = 6;
+    protected static ?string $model = StockReservation::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCube;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+
+    protected static ?string $recordTitleAttribute = 'reservation_number';
 
     public static function form(Schema $schema): Schema
     {

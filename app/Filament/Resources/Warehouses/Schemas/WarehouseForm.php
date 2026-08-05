@@ -28,6 +28,9 @@ class WarehouseForm
                 Toggle::make('is_default')
                     ->label('Is Default')
                     ->default(false),
+                Toggle::make('is_damaged')
+                    ->label('Is Damaged / Quarantine Warehouse')
+                    ->default(false),
                 Toggle::make('status')
                     ->required(),
             ]);

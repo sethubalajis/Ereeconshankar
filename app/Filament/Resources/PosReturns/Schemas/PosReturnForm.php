@@ -54,6 +54,8 @@ class PosReturnForm
                                 'return_quantity' => $soldQty,
                                 'unit_price' => $unitPrice,
                                 'line_total' => round($soldQty * $unitPrice, 2),
+                                'return_reason' => 'Exchange Request',
+                                'condition' => 'Good',
                             ];
                         })->values()->all() ?? [];
 
@@ -96,6 +98,40 @@ class PosReturnForm
                                 $set('return_quantity', $qty);
                                 $set('line_total', round($qty * $unitPrice, 2));
                             })
+                            ->required(),
+                        Select::make('return_reason')
+                            ->label('Return Reason')
+                            ->options([
+                                'Wrong Color' => 'Wrong Color',
+                                'Wrong Size' => 'Wrong Size',
+                                'Wrong Design' => 'Wrong Design',
+                                'Wrong Model' => 'Wrong Model',
+                                'Customer Preference' => 'Customer Preference',
+                                'Exchange Request' => 'Exchange Request',
+                                'Damaged' => 'Damaged',
+                                'Torn' => 'Torn',
+                                'Broken' => 'Broken',
+                                'Defective' => 'Defective',
+                                'Used' => 'Used',
+                                'Expired' => 'Expired',
+                                'Manufacturing Defect' => 'Manufacturing Defect',
+                            ])
+                            ->live()
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                $saleableReasons = ['Wrong Color', 'Wrong Size', 'Wrong Design', 'Wrong Model', 'Customer Preference', 'Exchange Request'];
+                                if (in_array($state, $saleableReasons)) {
+                                    $set('condition', 'Good');
+                                } else {
+                                    $set('condition', 'Damaged');
+                                }
+                            })
+                            ->required(),
+                        Select::make('condition')
+                            ->label('Condition')
+                            ->options([
+                                'Good' => 'Good (Saleable)',
+                                'Damaged' => 'Damaged (Unsaleable)',
+                            ])
                             ->required(),
                         TextInput::make('unit_price')
                             ->label('Unit Price')

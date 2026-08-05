@@ -79,6 +79,8 @@ class InventoryService
             // 'out'
             $stock->quantity -= $quantity;
         }
+        
+        $stock->available_qty = $stock->quantity - ($stock->reserved_qty ?? 0) - ($stock->damaged_qty ?? 0);
         $stock->save();
 
         // 2. Create Stock Transaction

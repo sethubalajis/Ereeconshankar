@@ -8,17 +8,7 @@ class Stock extends Model
 {
     protected $guarded = [];
 
-    protected $appends = ['available_quantity'];
 
-    public function getAvailableQuantityAttribute()
-    {
-        return $this->quantity;
-    }
-
-    public function setAvailableQuantityAttribute($value)
-    {
-        $this->attributes['quantity'] = $value;
-    }
 
     public function product() {
         return $this->belongsTo(Product::class, 'product_id');
@@ -31,5 +21,17 @@ class Stock extends Model
     }
     public function warehouse() {
         return $this->belongsTo(Warehouse::class, 'warehouse_id');
+    }
+
+    public function reserve($qty) {
+        $this->reserved_qty += $qty;
+        $this->available_qty = $this->quantity - $this->reserved_qty - ($this->damaged_qty ?? 0);
+        $this->save();
+    }
+
+    public function release($qty) {
+        $this->reserved_qty -= $qty;
+        $this->available_qty = $this->quantity - $this->reserved_qty - ($this->damaged_qty ?? 0);
+        $this->save();
     }
 }

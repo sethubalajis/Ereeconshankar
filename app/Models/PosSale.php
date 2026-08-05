@@ -38,4 +38,10 @@ class PosSale extends Model
     public function posSaleItems() {
         return $this->hasMany(PosSaleItem::class, 'pos_sale_id');
     }
+    public function stockReservation() {
+        return $this->belongsTo(StockReservation::class, 'stock_reservation_id');
+    }
+    public function warehouse() {
+        return $this->belongsTo(Warehouse::class, 'warehouse_id');
+    }
 }
