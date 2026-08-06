@@ -36,7 +36,7 @@ class PurchaseRequisitionForm
                     })
                     ->readOnly(),
                 \Filament\Forms\Components\Select::make('subject')
-                    ->options(function () {
+                    ->options(function (?string $state) {
                         $defaults = [
                             'Office Supplies Request' => 'Office Supplies Request',
                             'IT Equipment Purchase' => 'IT Equipment Purchase',
@@ -52,13 +52,19 @@ class PurchaseRequisitionForm
                             ->pluck('subject', 'subject')
                             ->toArray();
                             
-                        return array_merge($defaults, $existing);
+                        $options = array_merge($defaults, $existing);
+                        
+                        if ($state && !isset($options[$state])) {
+                            $options[$state] = $state;
+                        }
+                        
+                        return $options;
                     })
                     ->searchable()
                     ->createOptionForm([
                         \Filament\Forms\Components\TextInput::make('subject')
                             ->required()
-                            ->label('New Subject'),
+                            ->label('New Subject Name'),
                     ])
                     ->createOptionUsing(function (array $data) {
                         return $data['subject'];
