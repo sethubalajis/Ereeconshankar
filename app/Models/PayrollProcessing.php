@@ -203,20 +203,44 @@ class PayrollProcessing extends Model
                 ->whereBetween('date', [$cycle->start_date, $cycle->end_date])
                 ->whereIn('status', ['half_day', 'Half Day'])
                 ->count();
-                
-            $absentDates = \App\Models\Attendance::where('employee_id', $this->employee_id)
-                ->whereBetween('date', [$cycle->start_date, $cycle->end_date])
-                ->whereIn('status', ['absent', 'Absent'])
-                ->pluck('date');
+
+            $paidHolidayDays = \App\Models\Holiday::whereBetween('date', [$cycle->start_date, $cycle->end_date])
+                ->where(function ($query) {
+                    $query->whereNull('is_restricted')
+                        ->orWhere('is_restricted', false);
+                })
+                ->count();
                 
             $paidLeaveDays = 0;
+            $missingAttendanceDays = 0;
             $lopDays = 0;
+            $presentDaysEquivalent = 0;
             
             $year = \Carbon\Carbon::parse($cycle->start_date)->year;
             $month = \Carbon\Carbon::parse($cycle->start_date)->month;
             
-            foreach ($absentDates as $date) {
-                // Find if there is an approved leave for this date
+            foreach (\Carbon\CarbonPeriod::create($cycle->start_date, $cycle->end_date) as $day) {
+                $date = $day->toDateString();
+
+                $attendanceStatus = \App\Models\Attendance::where('employee_id', $this->employee_id)
+                    ->where('date', $date)
+                    ->value('status');
+
+                if (in_array($attendanceStatus, ['present', 'Present', 'half_day', 'Half Day'], true)) {
+                    continue;
+                }
+
+                $holiday = \App\Models\Holiday::whereDate('date', $date)
+                    ->where(function ($query) {
+                        $query->whereNull('is_restricted')
+                            ->orWhere('is_restricted', false);
+                    })
+                    ->exists();
+
+                if ($holiday) {
+                    continue;
+                }
+
                 $leave = \App\Models\EmployeeLeave::where('employee_id', $this->employee_id)
                     ->where('status', 'approved')
                     ->where('start_date', '<=', $date)
@@ -245,11 +269,12 @@ class PayrollProcessing extends Model
                         $lopDays++;
                     }
                 } else {
+                    $missingAttendanceDays++;
                     $lopDays++;
                 }
             }
 
-            $effectivePresentDays = $presentDays + ($halfDays * 0.5) + $paidLeaveDays;
+            $effectivePresentDays = $presentDays + ($halfDays * 0.5) + $paidLeaveDays + $paidHolidayDays;
             
             $lossOfPay = 0;
             if ($totalDays > 0) {
