@@ -8,6 +8,16 @@ class VendorCategory extends Model
 {
     protected $guarded = [];
 
+    protected static function booted()
+    {
+        static::creating(function ($model) {
+            if (empty($model->code)) {
+                $lastCategory = static::orderBy('id', 'desc')->first();
+                $nextId = $lastCategory ? $lastCategory->id + 1 : 1;
+                $model->code = 'VCAT-' . str_pad($nextId, 3, '0', STR_PAD_LEFT);
+            }
+        });
+    }
 
     public function vendors()
     {
