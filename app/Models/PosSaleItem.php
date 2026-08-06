@@ -13,6 +13,10 @@ class PosSaleItem extends Model
         static::saved(function ($item) {
             $item->processStockDeduction();
         });
+        
+        static::deleted(function ($item) {
+            $item->processStockRestore();
+        });
     }
 
     public function processStockDeduction(): void
@@ -23,12 +27,24 @@ class PosSaleItem extends Model
 
         $reference = 'POS-SALE-' . $this->pos_sale_id . '-' . $this->id;
 
-        $alreadyApplied = StockTransaction::query()
-            ->where('reference', $reference)
+        $existingOutTransactions = StockTransaction::query()
+            ->where('reference', 'like', $reference . '%')
+            ->whereNot('reference', 'like', 'POS-SALE-RESTORE-%')
             ->where('reference_type', 'App\\Models\\PosSale')
-            ->exists();
+            ->get();
+            
+        $netDeducted = 0;
+        foreach ($existingOutTransactions as $tx) {
+            if ($tx->transaction_type === 'out') {
+                $netDeducted += $tx->quantity;
+            } else {
+                $netDeducted -= $tx->quantity;
+            }
+        }
 
-        if ($alreadyApplied) {
+        $diff = $this->quantity - $netDeducted;
+        
+        if ($diff == 0) {
             return;
         }
 
@@ -41,19 +57,67 @@ class PosSaleItem extends Model
         }
 
         $inventoryService = new \App\Services\InventoryService();
+        
+        $transactionType = $diff > 0 ? 'out' : 'in';
+        $qtyToAdjust = abs($diff);
+        
+        $adjReference = $existingOutTransactions->isEmpty() ? $reference : $reference . '-ADJ-' . uniqid();
+
         $inventoryService->updateStock(
             $this->product_id,
             $this->product_variant_id,
             $this->posSale->branch_id,
             $warehouseId,
-            'out',
-            $this->quantity,
+            $transactionType,
+            $qtyToAdjust,
             $this->unit_price,
-            $reference,
+            $adjReference,
             'App\\Models\\PosSale',
             true, // preventNewStockOnOut
             true  // reuseExistingStockRow
         );
+    }
+    
+    public function processStockRestore(): void
+    {
+        if (! $this->posSale || $this->posSale->status !== 'completed') {
+            return;
+        }
+
+        $reference = 'POS-SALE-' . $this->pos_sale_id . '-' . $this->id;
+        $restoreRef = 'POS-SALE-RESTORE-' . $this->pos_sale_id . '-' . $this->id;
+
+        $previouslyDeducted = StockTransaction::query()
+            ->where('reference', $reference)
+            ->where('reference_type', 'App\\Models\\PosSale')
+            ->exists();
+
+        $alreadyRestored = StockTransaction::query()
+            ->where('reference', $restoreRef)
+            ->where('reference_type', 'App\\Models\\PosSale')
+            ->exists();
+
+        if ($previouslyDeducted && ! $alreadyRestored) {
+            $warehouseId = data_get($this->posSale, 'warehouse_id');
+            if (! $warehouseId && $this->posSale->branch_id) {
+                $warehouseId = Warehouse::defaultIdForBranch((int) $this->posSale->branch_id);
+            }
+
+            $inventoryService = new \App\Services\InventoryService();
+            $inventoryService->updateStock(
+                $this->product_id,
+                $this->product_variant_id,
+                $this->posSale->branch_id,
+                $warehouseId,
+                'in',
+                $this->quantity,
+                $this->unit_price,
+                $restoreRef,
+                'App\\Models\\PosSale',
+                false,
+                true
+            );
+        }
     }
 
     //

@@ -23,6 +23,16 @@ class StocksTable
                 TextColumn::make('warehouse.name')
                     ->sortable(),
                 TextColumn::make('quantity')
+                    ->label('Total Qty')
+                    ->numeric()
+                    ->sortable(),
+                TextColumn::make('reserved_qty')
+                    ->label('Reserved Qty')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('available_qty')
+                    ->label('Available Qty')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('avg_cost')

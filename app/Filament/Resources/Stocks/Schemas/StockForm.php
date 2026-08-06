@@ -26,7 +26,18 @@ class StockForm
                     ->live()
                     ->afterStateUpdated(fn ($set, $get) => self::fetchStockDetails($set, $get)),
                 TextInput::make('quantity')
+                    ->label('Total Qty')
                     ->required()
+                    ->numeric()
+                    ->default(0.0),
+                TextInput::make('reserved_qty')
+                    ->label('Reserved Qty')
+                    ->readOnly()
+                    ->numeric()
+                    ->default(0.0),
+                TextInput::make('available_qty')
+                    ->label('Available Qty')
+                    ->readOnly()
                     ->numeric()
                     ->default(0.0),
                 TextInput::make('avg_cost')
@@ -64,9 +75,13 @@ class StockForm
 
             if ($stock) {
                 $set('quantity', $stock->quantity);
+                $set('reserved_qty', $stock->reserved_qty);
+                $set('available_qty', $stock->available_qty);
                 $set('avg_cost', $stock->avg_cost);
             } else {
                 $set('quantity', 0);
+                $set('reserved_qty', 0);
+                $set('available_qty', 0);
                 $set('avg_cost', 0.0);
             }
         }

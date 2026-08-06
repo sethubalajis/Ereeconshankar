@@ -51,7 +51,18 @@ class PosReturn extends Model
                     continue;
                 }
 
-                $reference = 'POS-RET-' . $model->id . '-' . $posSaleItemId;
+                $condition = $item['condition'] ?? 'Good';
+                
+                if ($condition === 'Damaged') {
+                    $damagedWarehouse = Warehouse::getDamagedWarehouseForBranch((int) $sale->branch_id);
+                    $targetWarehouseId = $damagedWarehouse ? $damagedWarehouse->id : $warehouseId;
+                    $reference = 'POS-RET-DAMAGED-' . $model->id . '-' . $posSaleItemId;
+                    $isDamaged = true;
+                } else {
+                    $targetWarehouseId = $warehouseId;
+                    $reference = 'POS-RET-SALEABLE-' . $model->id . '-' . $posSaleItemId;
+                    $isDamaged = false;
+                }
 
                 $alreadyApplied = StockTransaction::query()
                     ->where('reference', $reference)
@@ -71,19 +82,34 @@ class PosReturn extends Model
 
                 $unitPrice = (float) ($item['unit_price'] ?? $saleItem->unit_price ?? 0);
 
-                $inventoryService->updateStock(
-                    $saleItem->product_id,
-                    $saleItem->product_variant_id,
-                    $sale->branch_id,
-                    $warehouseId,
-                    'in',
-                    $returnQty,
-                    $unitPrice,
-                    $reference,
-                    'App\\Models\\PosReturn',
-                    false,
-                    $usedDefaultWarehouse
-                );
+                if (! $isDamaged) {
+                    $inventoryService->updateStock(
+                        $saleItem->product_id,
+                        $saleItem->product_variant_id,
+                        $sale->branch_id,
+                        $targetWarehouseId,
+                        'in',
+                        $returnQty,
+                        $unitPrice,
+                        $reference,
+                        'App\\Models\\PosReturn',
+                        false,
+                        $usedDefaultWarehouse && !$isDamaged
+                    );
+                } else {
+                    \App\Models\DamagedProduct::create([
+                        'product_id' => $saleItem->product_id,
+                        'product_variant_id' => $saleItem->product_variant_id,
+                        'branch_id' => $sale->branch_id,
+                        'warehouse_id' => $targetWarehouseId,
+                        'quantity' => $returnQty,
+                        'source_type' => 'App\\Models\\PosReturn',
+                        'source_id' => $model->id,
+                        'reason' => $item['return_reason'] ?? 'Damaged Return',
+                        'reported_date' => $model->return_date ?? now(),
+                        'status' => 'Quarantined',
+                    ]);
+                }
             }
         });
     }

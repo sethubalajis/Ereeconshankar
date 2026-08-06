@@ -9,8 +9,19 @@ class CreateStockReservation extends CreateRecord
 {
     protected static string $resource = StockReservationResource::class;
 
-    protected function getRedirectUrl(): string
+    protected function handleRecordCreation(array $data): \Illuminate\Database\Eloquent\Model
     {
-        return $this->getResource()::getUrl('index');
+        try {
+            $service = app(\App\Services\StockReservationService::class);
+            return $service->reserveStock($data);
+        } catch (\Exception $e) {
+            \Filament\Notifications\Notification::make()
+                ->danger()
+                ->title('Reservation Failed')
+                ->body($e->getMessage())
+                ->send();
+
+            throw new \Filament\Support\Exceptions\Halt();
+        }
     }
 }

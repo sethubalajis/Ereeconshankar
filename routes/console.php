@@ -87,3 +87,5 @@ Artisan::command('tds:backfill-payroll-processing {--dry-run : Show what would b
     $this->line('Unchanged: ' . $unchanged);
     $this->line('Skipped: ' . $skipped);
 })->purpose('Backfill payroll_processing_id for TDS records based on employee and payroll cycle dates.');
+
+\Illuminate\Support\Facades\Schedule::command('reservations:expire')->daily();

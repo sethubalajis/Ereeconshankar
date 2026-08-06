@@ -11,6 +11,7 @@ class Warehouse extends Model
     protected $casts = [
         'status' => 'boolean',
         'is_default' => 'boolean',
+        'is_damaged' => 'boolean',
     ];
 
     protected static function booted(): void
@@ -46,5 +47,26 @@ class Warehouse extends Model
             ->where('branch_id', $branchId)
             ->where('is_default', true)
             ->value('id');
+    }
+
+    public static function getDamagedWarehouseForBranch(int $branchId): ?self
+    {
+        $warehouse = self::query()
+            ->where('branch_id', $branchId)
+            ->where('is_damaged', true)
+            ->first();
+
+        if (! $warehouse) {
+            $branch = Branch::find($branchId);
+            $warehouse = self::create([
+                'branch_id' => $branchId,
+                'name' => 'Damaged Goods - ' . ($branch ? $branch->name : 'Branch ' . $branchId),
+                'is_damaged' => true,
+                'is_default' => false,
+                'status' => true,
+            ]);
+        }
+
+        return $warehouse;
     }
 }

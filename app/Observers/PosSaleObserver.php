@@ -144,6 +144,14 @@ class PosSaleObserver
                     $item->processStockDeduction();
                 }
                 
+                // Mark associated stock reservation as completed
+                if ($posSale->stock_reservation_id) {
+                    $reservation = \App\Models\StockReservation::find($posSale->stock_reservation_id);
+                    if ($reservation && $reservation->status !== \App\Models\StockReservation::STATUS_COMPLETED) {
+                        $reservation->update(['status' => \App\Models\StockReservation::STATUS_COMPLETED]);
+                    }
+                }
+                
                 // Trigger Email Notification
                 if ($posSale->customer_id) {
                     $customer = $posSale->customer;

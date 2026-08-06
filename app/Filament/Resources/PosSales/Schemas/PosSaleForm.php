@@ -154,7 +154,22 @@ class PosSaleForm
                     ->dehydrated(fn () => \Illuminate\Support\Facades\Schema::hasColumn('pos_sales', 'applied_offers')),
                 Select::make('branch_id')
                     ->relationship('branch', 'name')
-                    ->required(),
+                    ->required()
+                    ->live()
+                    ->afterStateUpdated(function ($state, $set) {
+                        if ($state) {
+                            $set('warehouse_id', \App\Models\Warehouse::defaultIdForBranch((int) $state));
+                        }
+                    }),
+                Select::make('warehouse_id')
+                    ->relationship('warehouse', 'name', function ($query, $get) {
+                        $branchId = $get('branch_id');
+                        if ($branchId) {
+                            $query->where('branch_id', $branchId);
+                        }
+                    })
+                    ->label('Warehouse (Optional)')
+                    ->nullable(),
                 Select::make('pos_terminal_id')
                     ->relationship('posTerminal', 'terminal_name')
                     ->required(),
@@ -171,8 +186,32 @@ class PosSaleForm
                     ->live()
                     ->afterStateUpdated(function ($set, $get) use ($recalculateAll) {
                         $set('selected_offers', []);
+                        $set('stock_reservation_id', null);
                         $recalculateAll($set, $get);
                     }),
+                Select::make('stock_reservation_id')
+                    ->label('Stock Reservation (Optional)')
+                    ->relationship('stockReservation', 'reservation_number', function ($query, $get) {
+                        $customerId = $get('customer_id');
+                        if ($customerId) {
+                            $query->whereIn('status', [\App\Models\StockReservation::STATUS_PENDING, \App\Models\StockReservation::STATUS_RESERVED]);
+                            // Assuming we might want to filter by customer later, but stock_reservations doesn't have customer_id. Wait! 
+                            // stock_reservations has branch_id, company_id. How are reservations linked to customers? 
+                            // Ah, they might not be linked to customers explicitly in the schema! 
+                            // Let's check stock_reservations migration... Wait, no customer_id in stock_reservations?
+                            // Let's look at `2026_06_29_070310_create_stock_reservations_table.php` and `2026_08_04_054844_update_stock_reservations_table.php`. 
+                            // No customer_id. 
+                            // I will just show active reservations for the branch.
+                        }
+                        $branchId = $get('branch_id');
+                        if ($branchId) {
+                            $query->where('branch_id', $branchId);
+                        }
+                    })
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->reservation_number ?? 'Reservation #' . $record->id)
+                    ->searchable()
+                    ->preload()
+                    ->live(),
                 Placeholder::make('membership_placeholder')
                     ->label('Customer CRM & Loyalty Info')
                     ->content(function ($get) {
@@ -211,9 +250,37 @@ class PosSaleForm
                     ->default(now()->timezone('Asia/Kolkata')),
                 Repeater::make('posSaleItems')
                     ->relationship('posSaleItems')
+                    ->itemLabel(fn (array $state): ?string => (\App\Models\Product::find($state['product_id'])?->name ?? 'New Item') . (isset($state['product_variant_id']) && $state['product_variant_id'] ? ' (' . \App\Models\ProductVariant::find($state['product_variant_id'])?->sku . ')' : ''))
                     ->schema([
                         Select::make('product_id')
-                            ->relationship('product', 'name', fn ($query) => $query->whereIn('product_type', ['Sellable', 'Inventory']))
+                            ->relationship('product', 'name', function ($query, $get) {
+                                $query->where('product_type', 1);
+                                
+                                $branchId = $get('../../branch_id');
+                                $reservationId = $get('../../stock_reservation_id');
+                                
+                                if ($branchId) {
+                                    $productIdsWithStock = \App\Models\Stock::where('branch_id', $branchId)
+                                        ->where('available_qty', '>', 0)
+                                        ->pluck('product_id')
+                                        ->toArray();
+                                        
+                                    if ($reservationId) {
+                                        $reservedProductIds = \App\Models\StockReservation::where('id', $reservationId)
+                                            ->pluck('product_id')
+                                            ->toArray();
+                                        $productIdsWithStock = array_unique(array_merge($productIdsWithStock, $reservedProductIds));
+                                    }
+                                    
+                                    if (!empty($productIdsWithStock)) {
+                                        $query->whereIn('id', $productIdsWithStock);
+                                    } else {
+                                        $query->whereNull('id');
+                                    }
+                                }
+                            })
+                            ->searchable()
+                            ->preload()
                             ->live()
                             ->afterStateUpdated(function ($set, $get) use ($recalculateAll) {
                                 $set('product_variant_id', null);
@@ -223,10 +290,40 @@ class PosSaleForm
                         Select::make('product_variant_id')
                             ->relationship('productVariant', 'sku', function ($query, $get) {
                                 $productId = $get('product_id');
+                                $branchId = $get('../../branch_id');
+                                $reservationId = $get('../../stock_reservation_id');
+
                                 if ($productId) {
                                     $query->where('product_id', $productId);
                                 }
+                                
+                                if ($branchId && $productId) {
+                                    $variantIdsWithStock = \App\Models\Stock::where('branch_id', $branchId)
+                                        ->where('product_id', $productId)
+                                        ->where('available_qty', '>', 0)
+                                        ->pluck('product_variant_id')
+                                        ->filter()
+                                        ->toArray();
+
+                                    if ($reservationId) {
+                                        $reservedVariantIds = \App\Models\StockReservation::where('id', $reservationId)
+                                            ->where('product_id', $productId)
+                                            ->pluck('product_variant_id')
+                                            ->filter()
+                                            ->toArray();
+                                        $variantIdsWithStock = array_unique(array_merge($variantIdsWithStock, $reservedVariantIds));
+                                    }
+                                    
+                                    if (!empty($variantIdsWithStock)) {
+                                        $query->whereIn('id', $variantIdsWithStock);
+                                    } else {
+                                        $query->whereNull('id');
+                                    }
+                                }
                             })
+                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->sku ?? 'Variant #' . $record->id)
+                            ->searchable()
+                            ->preload()
                             ->live()
                             ->afterStateUpdated(function ($state, $set, $get) use ($recalculateAll) {
                                 if ($state) {
@@ -245,6 +342,40 @@ class PosSaleForm
                             ->default(1)
                             ->required()
                             ->live()
+                            ->rule(function ($get) {
+                                return function (string $attribute, $value, \Closure $fail) use ($get) {
+                                    $productId = $get('product_id');
+                                    $variantId = $get('product_variant_id');
+                                    $branchId = $get('../../branch_id');
+                                    $reservationId = $get('../../stock_reservation_id');
+                                    
+                                    if ($productId && $branchId) {
+                                        $stockQuery = \App\Models\Stock::where('product_id', $productId)
+                                            ->where('branch_id', $branchId);
+                                            
+                                        if ($variantId) {
+                                            $stockQuery->where('product_variant_id', $variantId);
+                                        } else {
+                                            $stockQuery->whereNull('product_variant_id');
+                                        }
+                                        
+                                        $available = (float) $stockQuery->sum('available_qty');
+                                        $qty = (float) $value;
+                                        
+                                        // If a reservation is selected, allow purchasing up to the available + reserved (for that reservation's product)
+                                        if ($reservationId) {
+                                            $res = \App\Models\StockReservation::find($reservationId);
+                                            if ($res && $res->product_id == $productId && $res->product_variant_id == $variantId) {
+                                                $available += $res->quantity;
+                                            }
+                                        }
+
+                                        if ($available < $qty) {
+                                            $fail("Product is reserved and currently unavailable for sale. (Available: {$available})");
+                                        }
+                                    }
+                                };
+                            })
                             ->afterStateUpdated(function ($state, $set, $get) use ($recalculateAll) {
                                 $unitPrice = (float) ($get('unit_price') ?: 0);
                                 $discount = (float) ($get('discount') ?: 0);
@@ -366,6 +497,7 @@ class PosSaleForm
                     ->relationship('giftVoucher', 'voucher_code', function ($query) {
                         $query->where('is_redeemed', false)->where('amount', '>', 0)->whereDate('expiry_date', '>=', now());
                     })
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->voucher_code ?? 'Voucher #' . $record->id)
                     ->searchable()
                     ->preload()
                     ->live()

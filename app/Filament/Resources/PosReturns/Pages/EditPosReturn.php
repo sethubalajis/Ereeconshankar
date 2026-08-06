@@ -26,6 +26,8 @@ class EditPosReturn extends EditRecord
                     'return_quantity' => $qty,
                     'unit_price' => $unitPrice,
                     'line_total' => round($qty * $unitPrice, 2),
+                    'return_reason' => $item['return_reason'] ?? 'Exchange Request',
+                    'condition' => $item['condition'] ?? 'Good',
                 ];
             })
             ->filter(fn ($item): bool => (float) $item['return_quantity'] > 0)

@@ -12,6 +12,24 @@ class StockTransaction extends Model
     public function stock() {
         return $this->belongsTo(Stock::class, 'stock_id');
     }
+    public function company() {
+        return $this->belongsTo(Company::class, 'company_id');
+    }
+    public function branch() {
+        return $this->belongsTo(Branch::class, 'branch_id');
+    }
+    public function warehouse() {
+        return $this->belongsTo(Warehouse::class, 'warehouse_id');
+    }
+    public function product() {
+        return $this->belongsTo(Product::class, 'product_id');
+    }
+    public function financialYear() {
+        return $this->belongsTo(FinancialYear::class, 'financial_year_id');
+    }
+    public function user() {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
     protected static function booted()
     {
