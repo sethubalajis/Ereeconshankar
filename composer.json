@@ -55,6 +55,7 @@
         ],
         "test:pest": [
             "@php artisan config:clear --ansi",
+            "Composer\\Config::disableProcessTimeout",
             "./vendor/bin/pest"
         ],
         "post-autoload-dump": [
