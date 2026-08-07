@@ -86,8 +86,20 @@ class InventoryService
         // 2. Create Stock Transaction
         StockTransaction::create([
             'stock_id' => $stock->id,
+            'company_id' => $stock->branch?->company_id ?? null,
+            'branch_id' => $branchId,
+            'warehouse_id' => $stock->warehouse_id,
+            'product_id' => $productId,
             'transaction_type' => $transactionType,
             'quantity' => $quantity,
+            'on_hand_before' => $openingQty,
+            'on_hand_after' => $stock->quantity,
+            'reserved_before' => $stock->exists ? $stock->getOriginal('reserved_qty') ?? 0 : 0,
+            'reserved_after' => $stock->reserved_qty ?? 0,
+            'available_before' => $stock->exists ? $stock->getOriginal('available_qty') ?? 0 : 0,
+            'available_after' => $stock->available_qty,
+            'user_id' => auth()->id(),
+            'transaction_date' => now(),
             'reference' => $reference,
             'reference_type' => $referenceType,
         ]);
