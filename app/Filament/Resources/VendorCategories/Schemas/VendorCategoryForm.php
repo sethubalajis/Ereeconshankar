@@ -15,7 +15,7 @@ class VendorCategoryForm
                 TextInput::make('name')
                     ->required(),
                 TextInput::make('code')
-                    ->required(),
+                    ->placeholder('Auto Generated'),
                 Textarea::make('description')
                     ->columnSpanFull(),
             ]);

@@ -26,7 +26,7 @@ class VendorForm
                 TextInput::make('name')
                     ->required(),
                 TextInput::make('code')
-                    ->required(),
+                    ->placeholder('Auto Generated'),
                 TextInput::make('contact_person'),
                 TextInput::make('email')
                     ->label('Email address')
