@@ -20,7 +20,8 @@ class BinForm
                     ->dehydrated(false)
                     ->placeholder('Auto generated on creation'),
                 TextInput::make('max_weight')
-                    ->numeric(),
+                    ->numeric()
+                    ->suffix('kg'),
             ]);
     }
 }

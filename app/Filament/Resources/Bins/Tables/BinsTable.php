@@ -22,7 +22,8 @@ class BinsTable
                     ->searchable(),
                 TextColumn::make('max_weight')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->suffix(' kg'),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

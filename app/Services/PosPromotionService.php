@@ -386,6 +386,19 @@ class PosPromotionService
         $pointsToRedeem = 0;
         $walletAmount = 0;
         $appliedDetails = [];
+        $promotionCount = 0;
+
+        foreach ($selectedKeys as $key) {
+            if (! isset($eligibleOffers[$key])) continue;
+            
+            if (!in_array($key, ['loyalty_points', 'wallet_balance'])) {
+                $promotionCount++;
+            }
+        }
+
+        if ($promotionCount > 1) {
+            throw new \Exception('Multiple promotional offers cannot be combined manually. Please select only the single best offer or a valid stackable combination.');
+        }
 
         foreach ($selectedKeys as $key) {
             if (! isset($eligibleOffers[$key])) {
