@@ -18,4 +18,7 @@ class BranchInventory extends Model
     public function productVariant() {
         return $this->belongsTo(ProductVariant::class, 'product_variant_id');
     }
+    public function warehouse() {
+        return $this->belongsTo(Warehouse::class, 'warehouse_id');
+    }
 }

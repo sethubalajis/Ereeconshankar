@@ -49,7 +49,22 @@ class PosSaleForm
 
             $selectedOfferKeys = $get('selected_offers') ?? $get('../../selected_offers') ?? [];
 
-            $calcResult = $promotionService->calculateSelectedOffers($selectedOfferKeys, $eligibleOffers, $subtotalAfterLineDiscounts);
+            try {
+                $calcResult = $promotionService->calculateSelectedOffers($selectedOfferKeys, $eligibleOffers, $subtotalAfterLineDiscounts);
+            } catch (\Exception $e) {
+                \Filament\Notifications\Notification::make()
+                    ->danger()
+                    ->title('Invalid Offer Combination')
+                    ->body($e->getMessage())
+                    ->send();
+                
+                $set('selected_offers', []);
+                if ($get('../../posSaleItems') !== null) {
+                    $set('../../selected_offers', []);
+                }
+                $selectedOfferKeys = [];
+                $calcResult = $promotionService->calculateSelectedOffers($selectedOfferKeys, $eligibleOffers, $subtotalAfterLineDiscounts);
+            }
 
             $promoDiscountAmount = $calcResult['promo_discount'];
             $pointsRedeemAmount = $calcResult['points_redeem_amount'];

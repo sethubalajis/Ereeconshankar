@@ -13,7 +13,12 @@ class WarehouseZoneForm
             ->components([
                 \Filament\Forms\Components\Select::make('warehouse_id')->relationship('warehouse', 'name')
                     ->required(),
-                TextInput::make('name')
+                \Filament\Forms\Components\Select::make('name')
+                    ->options([
+                        'Zone A' => 'Zone A',
+                        'Zone B' => 'Zone B',
+                        'Zone C' => 'Zone C',
+                    ])
                     ->required(),
                 TextInput::make('code')
                     ->disabled()
