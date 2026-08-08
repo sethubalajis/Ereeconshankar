@@ -41,18 +41,21 @@ class PromotionEngine
         $expandedItems = $this->expandItems($items);
 
         // 2. Prioritize Offers
-        $offers = collect($availableOffers)->sortByDesc('priority');
+        $offers = collect($availableOffers)->sortByDesc(function ($offer) {
+            return $offer['priority'] ?? 0;
+        });
 
         // 3. Evaluate Offers
         $auditLog = [];
 
         foreach ($offers as $offer) {
             $type = $offer['type'];
+            $engineType = $offer['engine_type'] ?? null;
             
-            if ($type === 'B1G1') {
+            if ($type === 'free_item' || $engineType === 'B1G1') {
                 $expandedItems = $this->applyBuyXGetY($expandedItems, $offer, $auditLog);
             } 
-            elseif (in_array($type, ['PRODUCT_DISCOUNT', 'FESTIVAL', 'CUSTOMER_GROUP'])) {
+            elseif (in_array($type, ['percentage', 'fixed']) || in_array($engineType, ['PRODUCT_DISCOUNT', 'FESTIVAL', 'CUSTOMER_GROUP'])) {
                 $expandedItems = $this->applyPercentageDiscount($expandedItems, $offer, $auditLog);
             }
         }
@@ -201,7 +204,10 @@ class PromotionEngine
     protected function applyPercentageDiscount(Collection $items, array $offer, array &$auditLog): Collection
     {
         $targetProductId = $offer['target_product_id'] ?? null;
-        $discountPercent = $offer['percentage'];
+        $isPercentage = $offer['type'] === 'percentage';
+        $discountValue = $offer['value'] ?? ($offer['percentage'] ?? 0);
+        $maxDiscount = $offer['max_discount'] ?? null;
+        $title = $offer['title'] ?? $offer['name'] ?? 'Discount';
 
         $eligibleItems = $items->filter(function ($item) use ($targetProductId) {
             if ($item->is_free_item) return false;
@@ -211,17 +217,19 @@ class PromotionEngine
 
         if ($eligibleItems->isEmpty()) {
             $auditLog[] = [
-                'promotion' => $offer['name'],
+                'promotion' => $title,
                 'status' => 'NOT_ELIGIBLE',
                 'reason' => 'No eligible non-free items found.',
             ];
             return $items;
         }
+        
+        $totalDiscountApplied = 0;
 
         foreach ($eligibleItems as $item) {
             if ($item->exclusive_lock) {
                 $auditLog[] = [
-                    'promotion' => $offer['name'],
+                    'promotion' => $title,
                     'product_id' => $item->product_id,
                     'status' => 'REJECTED',
                     'reason' => 'Item is locked by a higher priority exclusive offer.',
@@ -230,31 +238,53 @@ class PromotionEngine
             }
 
             // Calculate potential discount
-            $potentialDiscount = round($item->net_price * ($discountPercent / 100), 2);
+            $potentialDiscount = 0;
+            if ($isPercentage) {
+                $potentialDiscount = round($item->net_price * ($discountValue / 100), 2);
+            } else {
+                // For fixed discount across cart, we might want to distribute it or just apply to first item? 
+                // Wait, if it's item-level fixed, we apply it. If it's cart-level, we should prorate.
+                // Assuming it's item-level or we just use value for now.
+                $potentialDiscount = min($item->net_price, $discountValue);
+            }
 
             if ($potentialDiscount <= 0) continue;
+            
+            // Check max discount across this promotion
+            if ($maxDiscount !== null && ($totalDiscountApplied + $potentialDiscount) > $maxDiscount) {
+                $potentialDiscount = $maxDiscount - $totalDiscountApplied;
+                if ($potentialDiscount <= 0) {
+                    $auditLog[] = [
+                        'promotion' => $title,
+                        'status' => 'REJECTED',
+                        'reason' => 'Max discount limit reached for this promotion.',
+                    ];
+                    break;
+                }
+            }
 
             // Apply discount
             $item->net_price -= $potentialDiscount;
             $item->total_discount_amount += $potentialDiscount;
+            $totalDiscountApplied += $potentialDiscount;
             
-            if (!$offer['is_stackable']) {
+            if (!($offer['is_stackable'] ?? false)) {
                 $item->exclusive_lock = true;
             }
 
             $promoData = [
-                'id' => $offer['id'],
-                'type' => $offer['type'],
-                'name' => $offer['name'],
+                'id' => $offer['id'] ?? $offer['key'] ?? null,
+                'type' => $offer['type'] ?? 'promotion',
+                'name' => $title,
                 'discount_amount' => $potentialDiscount,
             ];
             $item->applied_promotions[] = $promoData;
 
             $auditLog[] = [
-                'promotion' => $offer['name'],
+                'promotion' => $title,
                 'product_id' => $item->product_id,
                 'status' => 'APPLIED',
-                'reason' => 'Percentage discount applied.',
+                'reason' => 'Discount applied.',
                 'discount_amount' => $potentialDiscount
             ];
         }
