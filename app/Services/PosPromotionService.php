@@ -96,7 +96,7 @@ class PosPromotionService
 
         // 1. Customer Benefits
         if ($customerId) {
-            $customer = Customer::with(['customerGroup', 'membershipPlan'])->find($customerId);
+            $customer = Customer::with(['customerGroup', 'loyaltyCards'])->find($customerId);
             if ($customer) {
                 // Customer Group Discount
                 $group = $customer->customerGroup;
@@ -116,7 +116,9 @@ class PosPromotionService
                 }
 
                 // Membership Plan Discount
-                $plan = $customer->membershipPlan;
+                $activeMembershipAssignment = $customer->activeMembership()->with('membershipPlan')->first();
+                $plan = $activeMembershipAssignment ? $activeMembershipAssignment->membershipPlan : null;
+
                 if ($plan && $plan->status && isset($plan->discount_percentage) && $plan->discount_percentage > 0) {
                     $discVal = round(($subtotal * $plan->discount_percentage) / 100, 2);
                     $offerArray = [

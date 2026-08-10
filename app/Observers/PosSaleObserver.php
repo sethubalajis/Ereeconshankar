@@ -113,6 +113,18 @@ class PosSaleObserver
                 $voucher->save();
             }
         }
+
+        // Increment Coupon Usage
+        if (is_array($model->applied_offers)) {
+            foreach ($model->applied_offers as $offer) {
+                if (isset($offer['key']) && str_starts_with($offer['key'], 'coupon_')) {
+                    $couponId = (int) str_replace('coupon_', '', $offer['key']);
+                    if ($couponId) {
+                        \App\Models\Coupon::where('id', $couponId)->increment('current_usage');
+                    }
+                }
+            }
+        }
         
         // Trigger Email Notification if completed
         if ($model->status === 'completed' && $model->customer_id) {

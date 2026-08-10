@@ -23,6 +23,10 @@ class PosSalesTable
                     ->sortable(),
                 TextColumn::make('customer.name')
                     ->sortable(),
+                TextColumn::make('customerMembership.membershipPlan.name')
+                    ->label('Membership')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('invoice_number')
                     ->searchable(),
                 TextColumn::make('sale_date')

@@ -48,9 +48,11 @@ class PromotionSettingsTable
                     ->sortable(),
                 TextColumn::make('start_date')
                     ->dateTime()
+                    ->timezone('Asia/Kolkata')
                     ->sortable(),
                 TextColumn::make('end_date')
                     ->dateTime()
+                    ->timezone('Asia/Kolkata')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

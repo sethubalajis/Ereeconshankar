@@ -235,12 +235,20 @@ class PosSaleForm
                             return 'Select a customer to view their details, loyalty status, and wallet balance.';
                         }
 
-                        $customer = \App\Models\Customer::with(['customerGroup', 'membershipPlan'])->find($customerId);
+                        $customer = \App\Models\Customer::with(['customerGroup'])->find($customerId);
                         if (! $customer) return 'Customer not found.';
 
                         $group = $customer->customerGroup;
-                        $plan = $customer->membershipPlan;
-                        $card = \Illuminate\Support\Facades\DB::table('loyalty_cards')->where('customer_id', $customerId)->where('status', true)->first();
+                        $activeMembershipAssignment = $customer->activeMembership()->with('membershipPlan')->first();
+                        $plan = $activeMembershipAssignment ? $activeMembershipAssignment->membershipPlan : null;
+                        $card = \Illuminate\Support\Facades\DB::table('loyalty_cards')
+                            ->where('customer_id', $customerId)
+                            ->where('status', true)
+                            ->where(function($query) {
+                                $query->whereNull('expiry_date')
+                                      ->orWhere('expiry_date', '>=', now()->toDateString());
+                            })
+                            ->first();
                         $program = \App\Models\LoyaltyProgram::resolveForCustomer($customer);
 
                         $html = "<strong>Name:</strong> {$customer->name} ({$customer->phone})<br>";
