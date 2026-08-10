@@ -67,10 +67,25 @@ class PosSaleForm
             }
 
             $promoDiscountAmount = $calcResult['promo_discount'];
-            $pointsRedeemAmount = $calcResult['points_redeem_amount'];
-            $pointsToRedeem = $calcResult['points_to_redeem'];
+            
+            $pointsToRedeem = (int) ($get('redeem_points') ?? $get('../../redeem_points') ?? 0);
+            $pointsRedeemAmount = 0;
+            if ($pointsToRedeem > 0 && $customerId) {
+                $customer = \App\Models\Customer::find($customerId);
+                $program = \App\Models\LoyaltyProgram::resolveForCustomer($customer);
+                $valPerPoint = $program ? (float) $program->value_per_point : 1.0;
+                $pointsRedeemAmount = round($pointsToRedeem * $valPerPoint, 2);
+            }
+            
             $walletUseAmount = $calcResult['wallet_amount'];
             $appliedDetails = $calcResult['applied_details'];
+
+            // Validate that we don't redeem more than subtotal
+            $subtotalWithPromo = max(0, $subtotalAfterLineDiscounts - $promoDiscountAmount);
+            if ($pointsRedeemAmount > $subtotalWithPromo) {
+                $pointsRedeemAmount = $subtotalWithPromo;
+                // Re-calculate points to match amount if possible, but keeping it simple for now
+            }
 
             $totalDiscountAmount = $manualDiscountsSum + $promoDiscountAmount;
             
@@ -165,6 +180,7 @@ class PosSaleForm
 
         return $schema
             ->components([
+                \Filament\Forms\Components\Hidden::make('customer_membership_id'),
                 \Filament\Forms\Components\Hidden::make('applied_offers')
                     ->dehydrated(fn () => \Illuminate\Support\Facades\Schema::hasColumn('pos_sales', 'applied_offers')),
                 Select::make('branch_id')
@@ -202,6 +218,16 @@ class PosSaleForm
                     ->afterStateUpdated(function ($set, $get) use ($recalculateAll) {
                         $set('selected_offers', []);
                         $set('stock_reservation_id', null);
+                        
+                        $customerId = $get('customer_id');
+                        if ($customerId) {
+                            $customer = \App\Models\Customer::find($customerId);
+                            $activeMembershipAssignment = $customer ? $customer->activeMembership()->first() : null;
+                            $set('customer_membership_id', $activeMembershipAssignment ? $activeMembershipAssignment->id : null);
+                        } else {
+                            $set('customer_membership_id', null);
+                        }
+                        
                         $recalculateAll($set, $get);
                     }),
                 Select::make('stock_reservation_id')
@@ -502,7 +528,23 @@ class PosSaleForm
                     ->label('Redeem Loyalty Points')
                     ->numeric()
                     ->default(0)
-                    ->readOnly(),
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function ($state, $set, $get) use ($recalculateAll) {
+                        $recalculateAll($set, $get);
+                    })
+                    ->rule(function ($get) {
+                        return function (string $attribute, $value, \Closure $fail) use ($get) {
+                            $customerId = $get('customer_id');
+                            if (!$customerId && $value > 0) {
+                                $fail('Please select a customer first.');
+                                return;
+                            }
+                            $customer = \App\Models\Customer::find($customerId);
+                            if ($customer && $value > $customer->total_points) {
+                                $fail("Customer only has {$customer->total_points} points available.");
+                            }
+                        };
+                    }),
                 TextInput::make('redeem_points_amount')
                     ->label('Points Value (Amount)')
                     ->numeric()

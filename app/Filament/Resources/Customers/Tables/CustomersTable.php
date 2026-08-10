@@ -52,7 +52,7 @@ class CustomersTable
             ->filters([
                 //
             ])
-            ->defaultSort('created_at', 'desc')
+            ->defaultSort('id', 'desc')
             ->recordActions([
                 EditAction::make(),
             ])

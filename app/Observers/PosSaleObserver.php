@@ -20,49 +20,30 @@ class PosSaleObserver
                 // Deduct redeemed points
                 if ($model->redeem_points > 0) {
                     $pointsToDeduct = (int) $model->redeem_points;
-                    $openingBalance = $customer->total_points;
-                    $customer->total_points -= $pointsToDeduct;
-                    $customer->lifetime_points_redeemed += $pointsToDeduct;
-                    \Illuminate\Support\Facades\DB::table('loyalty_points')->insert([
-                        'customer_id' => $customer->id,
-                        'pos_sale_id' => $model->id,
-                        'loyalty_program_id' => $program ? $program->id : null,
-                        'transaction_type' => 'redeem',
-                        'points_redeemed' => $pointsToDeduct,
-                        'opening_balance' => $openingBalance,
-                        'closing_balance' => $customer->total_points,
-                        'invoice_number' => $model->invoice_number,
-                        'remarks' => 'Redeemed on POS Sale ' . $model->invoice_number,
-                        'transaction_date' => now()->toDateString(),
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
+                    $loyaltyService = app(\App\Services\LoyaltyService::class);
+                    try {
+                        $loyaltyService->redeemPoints($customer, $model, $pointsToDeduct);
+                        $customer->lifetime_points_redeemed += $pointsToDeduct;
+                    } catch (\Exception $e) {
+                        \Illuminate\Support\Facades\Log::error("Loyalty redemption failed: " . $e->getMessage());
+                    }
                 }
                 
                 // Earn new points
                 if ($program && $model->net_amount > 0) {
-                    $amountPerPoint = max(1, $program->amount_per_point); // Prevent division by zero
-                    $pointsEarned = floor($model->net_amount / $amountPerPoint) * $program->points_per_amount;
+                    $loyaltyService = app(\App\Services\LoyaltyService::class);
+                    $amountPerPoint = max(1, $program->amount_per_point ?? 100); // Fallback to 100 if missing
+                    $pointsEarned = (int) floor($model->net_amount / $amountPerPoint) * ($program->points_per_amount ?? 1);
                     if ($pointsEarned > 0) {
-                        $openingBalance = $customer->total_points;
-                        $customer->total_points += $pointsEarned;
-                        $customer->lifetime_points_earned += $pointsEarned;
-                        \Illuminate\Support\Facades\DB::table('loyalty_points')->insert([
-                            'customer_id' => $customer->id,
-                            'pos_sale_id' => $model->id,
-                            'loyalty_program_id' => $program->id,
-                            'transaction_type' => 'earn',
-                            'points_earned' => $pointsEarned,
-                            'opening_balance' => $openingBalance,
-                            'closing_balance' => $customer->total_points,
-                            'invoice_number' => $model->invoice_number,
-                            'remarks' => 'Earned from POS Sale ' . $model->invoice_number,
-                            'transaction_date' => now()->toDateString(),
-                            'created_at' => now(),
-                            'updated_at' => now(),
-                        ]);
+                        try {
+                            $loyaltyService->earnPoints($customer, $model, $pointsEarned);
+                            $customer->lifetime_points_earned += $pointsEarned;
+                        } catch (\Exception $e) {
+                            \Illuminate\Support\Facades\Log::error("Loyalty earning failed: " . $e->getMessage());
+                        }
                     }
                 }
+
 
                 // Deduct used wallet balance
                 if ($model->use_wallet_balance > 0) {
@@ -95,6 +76,21 @@ class PosSaleObserver
 
                 if ($eligiblePlan && $customer->membership_plan_id !== $eligiblePlan->id) {
                     $customer->membership_plan_id = $eligiblePlan->id;
+                    
+                    // Expire old memberships
+                    \App\Models\CustomerMembership::where('customer_id', $customer->id)
+                        ->where('status', 'Active')
+                        ->update(['status' => 'Expired', 'end_date' => now()->toDateString()]);
+                    
+                    // Assign new CustomerMembership
+                    $durationMonths = $eligiblePlan->duration_months ?? 12;
+                    \App\Models\CustomerMembership::create([
+                        'customer_id' => $customer->id,
+                        'membership_plan_id' => $eligiblePlan->id,
+                        'start_date' => now()->toDateString(),
+                        'end_date' => now()->addMonths($durationMonths)->toDateString(),
+                        'status' => 'Active',
+                    ]);
                 }
                 
                 // Save customer profile automatically

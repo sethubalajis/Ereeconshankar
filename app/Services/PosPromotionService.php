@@ -134,31 +134,6 @@ class PosPromotionService
                     }
                 }
 
-                // Loyalty Points Info
-                if ($customer->total_points > 0) {
-                    $program = LoyaltyProgram::resolveForCustomer($customer);
-                    $valPerPoint = $program ? (float) $program->value_per_point : 1.0;
-                    $maxRedeemPercentage = ($program && $program->max_redemption_percentage) ? (float) $program->max_redemption_percentage : 100.0;
-
-                    $maxRedeemableAmount = round(($subtotal * $maxRedeemPercentage) / 100, 2);
-                    $maxPointsAllowed = $valPerPoint > 0 ? (int) floor($maxRedeemableAmount / $valPerPoint) : $customer->total_points;
-                    $actualPointsRedeemable = min($customer->total_points, $maxPointsAllowed);
-                    $estimatedValue = round($actualPointsRedeemable * $valPerPoint, 2);
-
-                    $offerArray = [
-                        'key' => 'loyalty_points',
-                        'category' => 'Loyalty Points',
-                        'title' => "Redeem Loyalty Points: {$actualPointsRedeemable} pts available (Value: ₹{$estimatedValue})",
-                        'type' => 'points',
-                        'available_points' => $customer->total_points,
-                        'max_points' => $actualPointsRedeemable,
-                        'value_per_point' => $valPerPoint,
-                        'estimated_discount' => $estimatedValue,
-                    ];
-                    if ($applyPromoSettings('LOYALTY', $offerArray)) {
-                        $offers['loyalty_points'] = $offerArray;
-                    }
-                }
 
                 // Wallet Balance Info
                 if ($customer->wallet_balance > 0) {
@@ -477,17 +452,7 @@ class PosPromotionService
 
             $offer = $eligibleOffers[$key];
 
-            if ($key === 'loyalty_points') {
-                $pointsToRedeem = $offer['max_points'] ?? 0;
-                $pointsRedeemAmount = $offer['estimated_discount'] ?? 0;
-                $appliedDetails[] = [
-                    'key' => $key,
-                    'title' => $offer['title'],
-                    'amount' => $pointsRedeemAmount,
-                    'type' => 'points',
-                    'points' => $pointsToRedeem,
-                ];
-            } elseif ($key === 'wallet_balance') {
+            if ($key === 'wallet_balance') {
                 $walletAmount = $offer['estimated_discount'] ?? 0;
                 $appliedDetails[] = [
                     'key' => $key,

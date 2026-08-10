@@ -47,7 +47,8 @@ class LoyaltyService
             'points' => $points,
             'reference' => 'POS Sale #' . $posSale->id,
             'created_by' => auth()->id() ?? 1,
-            // Assuming financial_year_id might be needed globally or branch-wise
+            'transaction_date' => now()->toDateString(),
+            'financial_year_id' => $posSale->financial_year_id ?? null,
         ]);
 
         $customer->increment('total_points', $points);
@@ -77,6 +78,8 @@ class LoyaltyService
             'points' => -$points,
             'reference' => 'Redeemed on POS Sale #' . $posSale->id,
             'created_by' => auth()->id() ?? 1,
+            'transaction_date' => now()->toDateString(),
+            'financial_year_id' => $posSale->financial_year_id ?? null,
         ]);
 
         $customer->decrement('total_points', $points);
