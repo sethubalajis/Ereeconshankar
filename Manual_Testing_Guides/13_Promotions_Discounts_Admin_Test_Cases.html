@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manual Test Case Document: Module 13 - Promotions & Discounts</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.5; padding: 24px; color: #111; }
+    h1, h2, h3 { color: #0f172a; }
+    pre { white-space: pre-wrap; font-family: Consolas, monospace; background: #f8fafc; padding: 16px; border-radius: 8px; }
+    code { background: #f8fafc; padding: 2px 4px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <h1>Manual Test Case Document: Module 13 - Promotions & Discounts</h1>
+  <h2>1. Purpose</h2>
+  <p>This document provides detailed manual test cases for all features under the admin module &quot;13. Promotions & Discounts&quot; available at http://127.0.0.1:8000/admin.</p>
+  <p>It covers end-to-end testing of:</p>
+  <ul>
+    <li>Coupons</li>
+    <li>Promo Codes</li>
+    <li>Discount Rules</li>
+    <li>Buy X Get Y Offers</li>
+    <li>Combo Offers</li>
+    <li>Festival Offers</li>
+    <li>Price Lists</li>
+    <li>Promotion-related validation and workflow behavior</li>
+  </ul>
+  <h2>2. Test Objective</h2>
+  <p>Verify that each promotion feature can be created, edited, viewed, disabled, and used correctly from the admin side and that the workflow behaves properly for manual business validation.</p>
+  <h2>3. Test Environment / Pre-requisites</h2>
+  <ol>
+    <li>Application is running at http://127.0.0.1:8000/admin.</li>
+    <li>Admin user is logged in.</li>
+    <li>At least one product, product variant, and customer exist.</li>
+    <li>Promotion-related master data such as customer groups, membership plans, and products are available.</li>
+    <li>Browser is ready and test data is prepared.</li>
+  </ol>
+  <h2>4. General Test Instructions</h2>
+  <ul>
+    <li>Use a fresh test record for each test case where possible.</li>
+    <li>Record the date, time, and result for every test.</li>
+    <li>Capture screenshots of successful creation, validation errors, and edit/delete actions.</li>
+    <li>Verify both UI behavior and stored data after each action.</li>
+  </ul>
+  <h2>5. Detailed Test Cases</h2>
+  <h3>5.1 Coupons</h3>
+  <h4>TC-COU-001: Create Coupon with Percentage Discount</h4>
+  <ul>
+    <li><strong>Objective:</strong> Verify a coupon can be created successfully with a percentage discount.</li>
+    <li><strong>Steps:</strong>
+      <ol>
+        <li>Go to Module 13 -&gt; Coupons.</li>
+        <li>Click Create.</li>
+        <li>Enter code: <code>WELCOME10</code>.</li>
+        <li>Enter discount percentage: <code>10</code>.</li>
+        <li>Enter min purchase amount: <code>1000</code>.</li>
+        <li>Enter max usage: <code>5</code>.</li>
+        <li>Set status to Active.</li>
+        <li>Save.</li>
+      </ol>
+    </li>
+    <li><strong>Expected Result:</strong> The coupon is created successfully and appears in the list.</li>
+  </ul>
+  <h4>TC-COU-002: Create Coupon with Fixed Amount Discount</h4>
+  <ul>
+    <li><strong>Objective:</strong> Verify fixed amount coupon creation.</li>
+    <li><strong>Steps:</strong> Create a coupon with code <code>FLAT200</code> and discount amount <code>200</code>.</li>
+    <li><strong>Expected Result:</strong> The coupon saves successfully.</li>
+  </ul>
+  <h3>5.2 Promo Codes</h3>
+  <h4>TC-PC-001: Create Promo Code</h4>
+  <ul>
+    <li><strong>Objective:</strong> Verify promo code creation.</li>
+    <li><strong>Steps:</strong> Create a promo code, set discount and validity dates, save.</li>
+    <li><strong>Expected Result:</strong> The promo code is created and listed.</li>
+  </ul>
+  <h3>5.3 Discount Rules</h3>
+  <h4>TC-DR-001: Create Percentage-Based Discount Rule</h4>
+  <ul>
+    <li><strong>Objective:</strong> Verify discount rule creation with a percentage discount.</li>
+    <li><strong>Steps:</strong> Create a discount rule with a selected promotion type and percentage value.</li>
+    <li><strong>Expected Result:</strong> The rule is created successfully.</li>
+  </ul>
+  <h3>5.4 Buy X Get Y Offers</h3>
+  <h4>TC-BXY-001: Create Buy X Get Y Offer</h4>
+  <ul>
+    <li><strong>Objective:</strong> Verify BOGO-style offer creation.</li>
+    <li><strong>Expected Result:</strong> The offer is created and displayed in the list.</li>
+  </ul>
+  <h3>5.5 Combo Offers</h3>
+  <h4>TC-CO-001: Create Combo Offer</h4>
+  <ul>
+    <li><strong>Objective:</strong> Verify combo offer creation.</li>
+    <li><strong>Expected Result:</strong> The combo offer is created and listed.</li>
+  </ul>
+  <h3>5.6 Festival Offers</h3>
+  <h4>TC-FO-001: Create Festival Offer</h4>
+  <ul>
+    <li><strong>Objective:</strong> Verify festival offer creation.</li>
+    <li><strong>Expected Result:</strong> The festival offer is created successfully.</li>
+  </ul>
+  <h3>5.7 Price Lists</h3>
+  <h4>TC-PL-001: Create Price List</h4>
+  <ul>
+    <li><strong>Objective:</strong> Verify price list creation.</li>
+    <li><strong>Expected Result:</strong> The price list is created successfully.</li>
+  </ul>
+  <h2>6. End-to-End Business Flow Testing</h2>
+  <h3>TC-E2E-001: Create and Apply a Coupon in a Promotion Workflow</h3>
+  <p>Validate the full flow from admin configuration to promotion availability and application.</p>
+  <h2>7. Negative / Error Handling Tests</h2>
+  <h3>TC-NEG-001: Save Form with Missing Required Values</h3>
+  <p>Validation errors should appear and the invalid record should not be saved.</p>
+</body>
+</html>
