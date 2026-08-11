@@ -44,4 +44,7 @@ class PosSale extends Model
     public function warehouse() {
         return $this->belongsTo(Warehouse::class, 'warehouse_id');
     }
+    public function customerMembership() {
+        return $this->belongsTo(CustomerMembership::class, 'customer_membership_id');
+    }
 }

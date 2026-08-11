@@ -16,7 +16,9 @@ class LoyaltyCardForm
                 \Filament\Forms\Components\Select::make('customer_id')->relationship('customer', 'name')
                     ->required(),
                 TextInput::make('card_number')
-                    ->required(),
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->placeholder('Auto-generated on save'),
                 DatePicker::make('issue_date')
                     ->required()
                     ->default(now()->timezone('Asia/Kolkata')),

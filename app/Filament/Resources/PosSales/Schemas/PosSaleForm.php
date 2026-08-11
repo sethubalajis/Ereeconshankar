@@ -67,10 +67,25 @@ class PosSaleForm
             }
 
             $promoDiscountAmount = $calcResult['promo_discount'];
-            $pointsRedeemAmount = $calcResult['points_redeem_amount'];
-            $pointsToRedeem = $calcResult['points_to_redeem'];
-            $walletUseAmount = $calcResult['wallet_amount'];
+            
+            $pointsToRedeem = (int) ($get('redeem_points') ?? $get('../../redeem_points') ?? 0);
+            $pointsRedeemAmount = 0;
+            if ($pointsToRedeem > 0 && $customerId) {
+                $customer = \App\Models\Customer::find($customerId);
+                $program = \App\Models\LoyaltyProgram::resolveForCustomer($customer);
+                $valPerPoint = $program ? (float) $program->value_per_point : 1.0;
+                $pointsRedeemAmount = round($pointsToRedeem * $valPerPoint, 2);
+            }
+            
+            $walletUseAmount = (float) ($get('use_wallet_balance') ?? $get('../../use_wallet_balance') ?? 0);
             $appliedDetails = $calcResult['applied_details'];
+
+            // Validate that we don't redeem more than subtotal
+            $subtotalWithPromo = max(0, $subtotalAfterLineDiscounts - $promoDiscountAmount);
+            if ($pointsRedeemAmount > $subtotalWithPromo) {
+                $pointsRedeemAmount = $subtotalWithPromo;
+                // Re-calculate points to match amount if possible, but keeping it simple for now
+            }
 
             $totalDiscountAmount = $manualDiscountsSum + $promoDiscountAmount;
             
@@ -165,6 +180,7 @@ class PosSaleForm
 
         return $schema
             ->components([
+                \Filament\Forms\Components\Hidden::make('customer_membership_id'),
                 \Filament\Forms\Components\Hidden::make('applied_offers')
                     ->dehydrated(fn () => \Illuminate\Support\Facades\Schema::hasColumn('pos_sales', 'applied_offers')),
                 Select::make('branch_id')
@@ -202,6 +218,16 @@ class PosSaleForm
                     ->afterStateUpdated(function ($set, $get) use ($recalculateAll) {
                         $set('selected_offers', []);
                         $set('stock_reservation_id', null);
+                        
+                        $customerId = $get('customer_id');
+                        if ($customerId) {
+                            $customer = \App\Models\Customer::find($customerId);
+                            $activeMembershipAssignment = $customer ? $customer->activeMembership()->first() : null;
+                            $set('customer_membership_id', $activeMembershipAssignment ? $activeMembershipAssignment->id : null);
+                        } else {
+                            $set('customer_membership_id', null);
+                        }
+                        
                         $recalculateAll($set, $get);
                     }),
                 Select::make('stock_reservation_id')
@@ -235,12 +261,20 @@ class PosSaleForm
                             return 'Select a customer to view their details, loyalty status, and wallet balance.';
                         }
 
-                        $customer = \App\Models\Customer::with(['customerGroup', 'membershipPlan'])->find($customerId);
+                        $customer = \App\Models\Customer::with(['customerGroup'])->find($customerId);
                         if (! $customer) return 'Customer not found.';
 
                         $group = $customer->customerGroup;
-                        $plan = $customer->membershipPlan;
-                        $card = \Illuminate\Support\Facades\DB::table('loyalty_cards')->where('customer_id', $customerId)->where('status', true)->first();
+                        $activeMembershipAssignment = $customer->activeMembership()->with('membershipPlan')->first();
+                        $plan = $activeMembershipAssignment ? $activeMembershipAssignment->membershipPlan : null;
+                        $card = \Illuminate\Support\Facades\DB::table('loyalty_cards')
+                            ->where('customer_id', $customerId)
+                            ->where('status', true)
+                            ->where(function($query) {
+                                $query->whereNull('expiry_date')
+                                      ->orWhere('expiry_date', '>=', now()->toDateString());
+                            })
+                            ->first();
                         $program = \App\Models\LoyaltyProgram::resolveForCustomer($customer);
 
                         $html = "<strong>Name:</strong> {$customer->name} ({$customer->phone})<br>";
@@ -297,11 +331,39 @@ class PosSaleForm
                             ->searchable()
                             ->preload()
                             ->live()
-                            ->afterStateUpdated(function ($set, $get) use ($recalculateAll) {
+                            ->afterStateUpdated(function ($state, $set, $get) use ($recalculateAll) {
                                 $set('product_variant_id', null);
+                                if ($state) {
+                                    $product = \App\Models\Product::find($state);
+                                    if ($product) {
+                                        $customerId = $get('../../customer_id');
+                                        $branchId = $get('../../branch_id');
+                                        $customer = $customerId ? \App\Models\Customer::find($customerId) : null;
+                                        
+                                        $priceService = new \App\Services\PriceListService();
+                                        $priceListItem = $priceService->getApplicablePriceListItem(
+                                            $state,
+                                            null,
+                                            $customerId,
+                                            $customer ? $customer->customer_group_id : null,
+                                            $customer ? $customer->activeMembership()->first()?->membership_plan_id : null,
+                                            $branchId
+                                        );
+                                        
+                                        $unitPrice = $priceListItem ? $priceListItem->selling_price : $product->base_price;
+                                        
+                                        $set('price_list_id', $priceListItem ? $priceListItem->price_list_id : null);
+                                        $set('unit_price', $unitPrice);
+                                        
+                                        $qty = (float) ($get('quantity') ?: 1);
+                                        $disc = (float) ($get('discount') ?: 0);
+                                        $set('total_price', ($unitPrice * $qty) - $disc);
+                                    }
+                                }
                                 $recalculateAll($set, $get);
                             })
                             ->required(),
+                        \Filament\Forms\Components\Hidden::make('price_list_id'),
                         Select::make('product_variant_id')
                             ->relationship('productVariant', 'sku', function ($query, $get) {
                                 $productId = $get('product_id');
@@ -344,10 +406,29 @@ class PosSaleForm
                                 if ($state) {
                                     $variant = \App\Models\ProductVariant::find($state);
                                     if ($variant) {
-                                        $set('unit_price', $variant->selling_price);
+                                        $productId = $get('product_id');
+                                        $customerId = $get('../../customer_id');
+                                        $branchId = $get('../../branch_id');
+                                        $customer = $customerId ? \App\Models\Customer::find($customerId) : null;
+                                        
+                                        $priceService = new \App\Services\PriceListService();
+                                        $priceListItem = $priceService->getApplicablePriceListItem(
+                                            $productId,
+                                            $state,
+                                            $customerId,
+                                            $customer ? $customer->customer_group_id : null,
+                                            $customer ? $customer->activeMembership()->first()?->membership_plan_id : null,
+                                            $branchId
+                                        );
+                                        
+                                        $unitPrice = $priceListItem ? $priceListItem->selling_price : $variant->selling_price;
+                                        
+                                        $set('price_list_id', $priceListItem ? $priceListItem->price_list_id : null);
+                                        $set('unit_price', $unitPrice);
+                                        
                                         $qty = (float) ($get('quantity') ?: 1);
                                         $disc = (float) ($get('discount') ?: 0);
-                                        $set('total_price', ($variant->selling_price * $qty) - $disc);
+                                        $set('total_price', ($unitPrice * $qty) - $disc);
                                         $recalculateAll($set, $get);
                                     }
                                 }
@@ -494,7 +575,23 @@ class PosSaleForm
                     ->label('Redeem Loyalty Points')
                     ->numeric()
                     ->default(0)
-                    ->readOnly(),
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function ($state, $set, $get) use ($recalculateAll) {
+                        $recalculateAll($set, $get);
+                    })
+                    ->rule(function ($get) {
+                        return function (string $attribute, $value, \Closure $fail) use ($get) {
+                            $customerId = $get('customer_id');
+                            if (!$customerId && $value > 0) {
+                                $fail('Please select a customer first.');
+                                return;
+                            }
+                            $customer = \App\Models\Customer::find($customerId);
+                            if ($customer && $value > $customer->total_points) {
+                                $fail("Customer only has {$customer->total_points} points available.");
+                            }
+                        };
+                    }),
                 TextInput::make('redeem_points_amount')
                     ->label('Points Value (Amount)')
                     ->numeric()
@@ -506,7 +603,23 @@ class PosSaleForm
                     ->numeric()
                     ->prefix('₹')
                     ->default(0)
-                    ->readOnly(),
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function ($state, $set, $get) use ($recalculateAll) {
+                        $recalculateAll($set, $get);
+                    })
+                    ->rule(function ($get) {
+                        return function (string $attribute, $value, \Closure $fail) use ($get) {
+                            $customerId = $get('customer_id');
+                            if (!$customerId && $value > 0) {
+                                $fail('Please select a customer first.');
+                                return;
+                            }
+                            $customer = \App\Models\Customer::find($customerId);
+                            if ($customer && $value > $customer->wallet_balance) {
+                                $fail("Customer only has ₹{$customer->wallet_balance} in wallet.");
+                            }
+                        };
+                    }),
                 Select::make('gift_voucher_id')
                     ->label('Gift Voucher')
                     ->relationship('giftVoucher', 'voucher_code', function ($query) {

@@ -17,5 +17,8 @@ class MembershipPlan extends Model
         });
     }
 
-    //
+    public function customerMemberships()
+    {
+        return $this->hasMany(CustomerMembership::class, 'membership_plan_id');
+    }
 }

@@ -66,15 +66,43 @@ class PosPromotionService
         $offers = [];
         $now = Carbon::now();
 
+        $promoSettings = \App\Models\PromotionSetting::all()->keyBy('offer_type');
+        $applyPromoSettings = function ($offerType, array &$offerDef) use ($promoSettings, $now, $subtotal) {
+            $setting = $promoSettings->get($offerType);
+            if (!$setting) {
+                // Defaults if no setting configured
+                $offerDef['priority'] = 0;
+                $offerDef['is_stackable'] = false;
+                $offerDef['is_exclusive'] = false;
+                $offerDef['best_price_only'] = false;
+                return true;
+            }
+
+            // Global rules check from PromotionSetting
+            if ($setting->start_date && $now->lt($setting->start_date)) return false;
+            if ($setting->end_date && $now->gt($setting->end_date)) return false;
+            if ($setting->min_bill_amount > 0 && $subtotal < $setting->min_bill_amount) return false;
+            
+            // Apply settings to offer
+            $offerDef['priority'] = $setting->priority;
+            $offerDef['is_stackable'] = $setting->is_stackable;
+            $offerDef['is_exclusive'] = $setting->is_exclusive;
+            $offerDef['best_price_only'] = $setting->best_price_only;
+            $offerDef['exclusions'] = $setting->exclusions ?? [];
+            $offerDef['stack_group'] = $setting->stack_group;
+            $offerDef['max_discount'] = $setting->max_discount;
+            return true;
+        };
+
         // 1. Customer Benefits
         if ($customerId) {
-            $customer = Customer::with(['customerGroup', 'membershipPlan'])->find($customerId);
+            $customer = Customer::with(['customerGroup', 'loyaltyCards'])->find($customerId);
             if ($customer) {
                 // Customer Group Discount
                 $group = $customer->customerGroup;
                 if ($group && $group->status && $group->discount_percentage > 0) {
                     $discVal = round(($subtotal * $group->discount_percentage) / 100, 2);
-                    $offers['customer_group'] = [
+                    $offerArray = [
                         'key' => 'customer_group',
                         'category' => 'Customer Group',
                         'title' => "Customer Group ({$group->name}): {$group->discount_percentage}% off",
@@ -82,13 +110,18 @@ class PosPromotionService
                         'value' => (float) $group->discount_percentage,
                         'estimated_discount' => $discVal,
                     ];
+                    if ($applyPromoSettings('CUSTOMER_GROUP', $offerArray)) {
+                        $offers['customer_group'] = $offerArray;
+                    }
                 }
 
                 // Membership Plan Discount
-                $plan = $customer->membershipPlan;
+                $activeMembershipAssignment = $customer->activeMembership()->with('membershipPlan')->first();
+                $plan = $activeMembershipAssignment ? $activeMembershipAssignment->membershipPlan : null;
+
                 if ($plan && $plan->status && isset($plan->discount_percentage) && $plan->discount_percentage > 0) {
                     $discVal = round(($subtotal * $plan->discount_percentage) / 100, 2);
-                    $offers['membership_plan'] = [
+                    $offerArray = [
                         'key' => 'membership_plan',
                         'category' => 'Membership Plan',
                         'title' => "Membership ({$plan->name}): {$plan->discount_percentage}% off",
@@ -96,43 +129,13 @@ class PosPromotionService
                         'value' => (float) $plan->discount_percentage,
                         'estimated_discount' => $discVal,
                     ];
+                    if ($applyPromoSettings('MEMBERSHIP', $offerArray)) {
+                        $offers['membership_plan'] = $offerArray;
+                    }
                 }
 
-                // Loyalty Points Info
-                if ($customer->total_points > 0) {
-                    $program = LoyaltyProgram::resolveForCustomer($customer);
-                    $valPerPoint = $program ? (float) $program->value_per_point : 1.0;
-                    $maxRedeemPercentage = ($program && $program->max_redemption_percentage) ? (float) $program->max_redemption_percentage : 100.0;
 
-                    $maxRedeemableAmount = round(($subtotal * $maxRedeemPercentage) / 100, 2);
-                    $maxPointsAllowed = $valPerPoint > 0 ? (int) floor($maxRedeemableAmount / $valPerPoint) : $customer->total_points;
-                    $actualPointsRedeemable = min($customer->total_points, $maxPointsAllowed);
-                    $estimatedValue = round($actualPointsRedeemable * $valPerPoint, 2);
 
-                    $offers['loyalty_points'] = [
-                        'key' => 'loyalty_points',
-                        'category' => 'Loyalty Points',
-                        'title' => "Redeem Loyalty Points: {$actualPointsRedeemable} pts available (Value: ₹{$estimatedValue})",
-                        'type' => 'points',
-                        'available_points' => $customer->total_points,
-                        'max_points' => $actualPointsRedeemable,
-                        'value_per_point' => $valPerPoint,
-                        'estimated_discount' => $estimatedValue,
-                    ];
-                }
-
-                // Wallet Balance Info
-                if ($customer->wallet_balance > 0) {
-                    $maxWalletUse = min((float) $customer->wallet_balance, $subtotal);
-                    $offers['wallet_balance'] = [
-                        'key' => 'wallet_balance',
-                        'category' => 'Wallet Balance',
-                        'title' => "Use Wallet Balance: Available ₹" . number_format($customer->wallet_balance, 2),
-                        'type' => 'wallet',
-                        'available_balance' => (float) $customer->wallet_balance,
-                        'estimated_discount' => round($maxWalletUse, 2),
-                    ];
-                }
             }
         }
 
@@ -155,7 +158,7 @@ class PosPromotionService
                 $discVal = min((float) $coupon->discount_amount, $subtotal);
             }
 
-            $offers["coupon_{$coupon->id}"] = [
+            $offerArray = [
                 'key' => "coupon_{$coupon->id}",
                 'category' => 'Coupon',
                 'title' => "Coupon ({$coupon->code}): " . ($coupon->discount_percentage ? "{$coupon->discount_percentage}% off" : "₹{$coupon->discount_amount} off"),
@@ -163,6 +166,9 @@ class PosPromotionService
                 'value' => (float) ($coupon->discount_percentage ?: $coupon->discount_amount),
                 'estimated_discount' => $discVal,
             ];
+            if ($applyPromoSettings('COUPON', $offerArray)) {
+                $offers["coupon_{$coupon->id}"] = $offerArray;
+            }
         }
 
         // 3. Promo Codes
@@ -180,7 +186,7 @@ class PosPromotionService
                 $discVal = min((float) $promo->discount_amount, $subtotal);
             }
 
-            $offers["promo_code_{$promo->id}"] = [
+            $offerArray = [
                 'key' => "promo_code_{$promo->id}",
                 'category' => 'Promo Code',
                 'title' => "Promo Code ({$promo->code}): " . ($promo->discount_percentage ? "{$promo->discount_percentage}% off" : "₹{$promo->discount_amount} off"),
@@ -188,6 +194,9 @@ class PosPromotionService
                 'value' => (float) ($promo->discount_percentage ?: $promo->discount_amount),
                 'estimated_discount' => $discVal,
             ];
+            if ($applyPromoSettings('PROMO_CODE', $offerArray)) {
+                $offers["promo_code_{$promo->id}"] = $offerArray;
+            }
         }
 
         // 4. Festival Offers
@@ -222,7 +231,7 @@ class PosPromotionService
                 $discVal = min((float) $offer->discount_amount, $subtotal);
             }
 
-            $offers["festival_offer_{$offer->id}"] = [
+            $offerArray = [
                 'key' => "festival_offer_{$offer->id}",
                 'category' => 'Festival Offer',
                 'title' => "Festival Offer ({$offer->name}): " . ($offer->discount_percentage ? "{$offer->discount_percentage}% off" : "₹" . ($offer->discount_amount ?? 0) . " off"),
@@ -230,6 +239,9 @@ class PosPromotionService
                 'value' => (float) ($offer->discount_percentage ?: ($offer->discount_amount ?? 0)),
                 'estimated_discount' => $discVal,
             ];
+            if ($applyPromoSettings('FESTIVAL', $offerArray)) {
+                $offers["festival_offer_{$offer->id}"] = $offerArray;
+            }
         }
 
         // 5. Buy X Get Y Offers
@@ -265,13 +277,23 @@ class PosPromotionService
                     $estimatedDisc = round($timesTriggered * $bxy->get_quantity * $unitPrice, 2);
                 }
 
-                $offers["buy_x_get_y_{$bxy->id}"] = [
+                $offerArray = [
                     'key' => "buy_x_get_y_{$bxy->id}",
                     'category' => 'Buy X Get Y Offer',
                     'title' => "Buy X Get Y: Buy {$bxy->buy_quantity} of {$buyProductName}, Get {$bxy->get_quantity} of {$getProductName} FREE",
                     'type' => 'free_item',
                     'estimated_discount' => $estimatedDisc,
+                    // also add standard type string for engine to match:
+                    'engine_type' => 'B1G1',
+                    'name' => "Buy X Get Y ({$bxy->name})",
+                    'buy_product_id' => $bxy->buy_product_id,
+                    'buy_quantity' => $bxy->buy_quantity,
+                    'get_quantity' => $bxy->get_quantity,
+                    'id' => "BXY_{$bxy->id}"
                 ];
+                if ($applyPromoSettings('B1G1', $offerArray)) {
+                    $offers["buy_x_get_y_{$bxy->id}"] = $offerArray;
+                }
             }
         }
 
@@ -293,13 +315,16 @@ class PosPromotionService
             }
 
             if ($discVal > 0) {
-                $offers["combo_offer_{$combo->id}"] = [
+                $offerArray = [
                     'key' => "combo_offer_{$combo->id}",
                     'category' => 'Combo Offer',
                     'title' => "Combo Offer ({$combo->name}): Combo Special Price",
                     'type' => 'combo',
                     'estimated_discount' => $discVal,
                 ];
+                if ($applyPromoSettings('COMBO', $offerArray)) {
+                    $offers["combo_offer_{$combo->id}"] = $offerArray;
+                }
             }
         }
 
@@ -336,7 +361,7 @@ class PosPromotionService
                 $discVal = min((float) $rule->discount_amount, $subtotal);
             }
 
-            $offers["discount_rule_{$rule->id}"] = [
+            $offerArray = [
                 'key' => "discount_rule_{$rule->id}",
                 'category' => 'Discount Rule',
                 'title' => "Discount Rule ({$rule->code} - {$rule->name}): " . ($rule->discount_percentage ? "{$rule->discount_percentage}% off" : "₹{$rule->discount_amount} off"),
@@ -344,29 +369,12 @@ class PosPromotionService
                 'value' => (float) ($rule->discount_percentage ?: $rule->discount_amount),
                 'estimated_discount' => $discVal,
             ];
-        }
-
-        // Price Lists
-        if (Schema::hasColumn('price_lists', 'discount_percentage')) {
-            $priceLists = PriceList::query()
-                ->where('status', true)
-                ->where(fn($q) => $q->whereNull('valid_from')->orWhereDate('valid_from', '<=', $now))
-                ->where(fn($q) => $q->whereNull('valid_to')->orWhereDate('valid_to', '>=', $now))
-                ->where('discount_percentage', '>', 0)
-                ->get();
-
-            foreach ($priceLists as $pl) {
-                $discVal = round(($subtotal * $pl->discount_percentage) / 100, 2);
-                $offers["price_list_{$pl->id}"] = [
-                    'key' => "price_list_{$pl->id}",
-                    'category' => 'Price List',
-                    'title' => "Price List ({$pl->name}): {$pl->discount_percentage}% off",
-                    'type' => 'percentage',
-                    'value' => (float) $pl->discount_percentage,
-                    'estimated_discount' => $discVal,
-                ];
+            if ($applyPromoSettings('DISCOUNT_RULE', $offerArray)) {
+                $offers["discount_rule_{$rule->id}"] = $offerArray;
             }
         }
+
+
 
         return $offers;
     }
@@ -407,17 +415,7 @@ class PosPromotionService
 
             $offer = $eligibleOffers[$key];
 
-            if ($key === 'loyalty_points') {
-                $pointsToRedeem = $offer['max_points'] ?? 0;
-                $pointsRedeemAmount = $offer['estimated_discount'] ?? 0;
-                $appliedDetails[] = [
-                    'key' => $key,
-                    'title' => $offer['title'],
-                    'amount' => $pointsRedeemAmount,
-                    'type' => 'points',
-                    'points' => $pointsToRedeem,
-                ];
-            } elseif ($key === 'wallet_balance') {
+            if ($key === 'wallet_balance') {
                 $walletAmount = $offer['estimated_discount'] ?? 0;
                 $appliedDetails[] = [
                     'key' => $key,

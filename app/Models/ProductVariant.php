@@ -40,4 +40,9 @@ class ProductVariant extends Model
     {
         return $this->hasMany(ProductBarcode::class, 'product_variant_id');
     }
+
+    public function priceListItems(): HasMany
+    {
+        return $this->hasMany(PriceListItem::class, 'product_variant_id');
+    }
 }

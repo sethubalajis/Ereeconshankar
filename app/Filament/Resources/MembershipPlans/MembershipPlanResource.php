@@ -35,7 +35,7 @@ class MembershipPlanResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            \App\Filament\Resources\MembershipPlans\RelationManagers\CustomerMembershipsRelationManager::class,
         ];
     }
 

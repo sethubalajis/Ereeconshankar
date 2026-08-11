@@ -111,6 +111,23 @@ class PosReturn extends Model
                     ]);
                 }
             }
+            
+            // Process Wallet Refund
+            if ($sale->customer_id) {
+                $walletRef = 'Refunded for POS Return #' . $model->id;
+                $alreadyCredited = \App\Models\CustomerWallet::where('pos_sale_id', $sale->id)
+                    ->where('transaction_type', 'credit')
+                    ->where('reference', $walletRef)
+                    ->exists();
+
+                if (!$alreadyCredited && $model->return_amount > 0) {
+                    $customer = \App\Models\Customer::find($sale->customer_id);
+                    if ($customer) {
+                        $walletService = app(\App\Services\WalletService::class);
+                        $walletService->creditWallet($customer, $sale, (float) $model->return_amount, $walletRef);
+                    }
+                }
+            }
         });
     }
 

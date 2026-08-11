@@ -35,7 +35,7 @@ class PriceListResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            \App\Filament\Resources\PriceLists\RelationManagers\PriceListItemsRelationManager::class,
         ];
     }
 
