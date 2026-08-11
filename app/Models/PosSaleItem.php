@@ -130,4 +130,7 @@ class PosSaleItem extends Model
     public function productVariant() {
         return $this->belongsTo(ProductVariant::class, 'product_variant_id');
     }
+    public function appliedPriceList() {
+        return $this->belongsTo(PriceList::class, 'price_list_id');
+    }
 }

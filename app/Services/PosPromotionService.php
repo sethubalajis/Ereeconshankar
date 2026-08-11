@@ -388,30 +388,7 @@ class PosPromotionService
             }
         }
 
-        // Price Lists
-        if (Schema::hasColumn('price_lists', 'discount_percentage')) {
-            $priceLists = PriceList::query()
-                ->where('status', true)
-                ->where(fn($q) => $q->whereNull('valid_from')->orWhereDate('valid_from', '<=', $now))
-                ->where(fn($q) => $q->whereNull('valid_to')->orWhereDate('valid_to', '>=', $now))
-                ->where('discount_percentage', '>', 0)
-                ->get();
 
-            foreach ($priceLists as $pl) {
-                $discVal = round(($subtotal * $pl->discount_percentage) / 100, 2);
-                $offerArray = [
-                    'key' => "price_list_{$pl->id}",
-                    'category' => 'Price List',
-                    'title' => "Price List ({$pl->name}): {$pl->discount_percentage}% off",
-                    'type' => 'percentage',
-                    'value' => (float) $pl->discount_percentage,
-                    'estimated_discount' => $discVal,
-                ];
-                if ($applyPromoSettings('PRICE_LIST', $offerArray)) {
-                    $offers["price_list_{$pl->id}"] = $offerArray;
-                }
-            }
-        }
 
         return $offers;
     }

@@ -331,11 +331,39 @@ class PosSaleForm
                             ->searchable()
                             ->preload()
                             ->live()
-                            ->afterStateUpdated(function ($set, $get) use ($recalculateAll) {
+                            ->afterStateUpdated(function ($state, $set, $get) use ($recalculateAll) {
                                 $set('product_variant_id', null);
+                                if ($state) {
+                                    $product = \App\Models\Product::find($state);
+                                    if ($product) {
+                                        $customerId = $get('../../customer_id');
+                                        $branchId = $get('../../branch_id');
+                                        $customer = $customerId ? \App\Models\Customer::find($customerId) : null;
+                                        
+                                        $priceService = new \App\Services\PriceListService();
+                                        $priceListItem = $priceService->getApplicablePriceListItem(
+                                            $state,
+                                            null,
+                                            $customerId,
+                                            $customer ? $customer->customer_group_id : null,
+                                            $customer ? $customer->activeMembership()->first()?->membership_plan_id : null,
+                                            $branchId
+                                        );
+                                        
+                                        $unitPrice = $priceListItem ? $priceListItem->selling_price : $product->base_price;
+                                        
+                                        $set('price_list_id', $priceListItem ? $priceListItem->price_list_id : null);
+                                        $set('unit_price', $unitPrice);
+                                        
+                                        $qty = (float) ($get('quantity') ?: 1);
+                                        $disc = (float) ($get('discount') ?: 0);
+                                        $set('total_price', ($unitPrice * $qty) - $disc);
+                                    }
+                                }
                                 $recalculateAll($set, $get);
                             })
                             ->required(),
+                        \Filament\Forms\Components\Hidden::make('price_list_id'),
                         Select::make('product_variant_id')
                             ->relationship('productVariant', 'sku', function ($query, $get) {
                                 $productId = $get('product_id');
@@ -378,10 +406,29 @@ class PosSaleForm
                                 if ($state) {
                                     $variant = \App\Models\ProductVariant::find($state);
                                     if ($variant) {
-                                        $set('unit_price', $variant->selling_price);
+                                        $productId = $get('product_id');
+                                        $customerId = $get('../../customer_id');
+                                        $branchId = $get('../../branch_id');
+                                        $customer = $customerId ? \App\Models\Customer::find($customerId) : null;
+                                        
+                                        $priceService = new \App\Services\PriceListService();
+                                        $priceListItem = $priceService->getApplicablePriceListItem(
+                                            $productId,
+                                            $state,
+                                            $customerId,
+                                            $customer ? $customer->customer_group_id : null,
+                                            $customer ? $customer->activeMembership()->first()?->membership_plan_id : null,
+                                            $branchId
+                                        );
+                                        
+                                        $unitPrice = $priceListItem ? $priceListItem->selling_price : $variant->selling_price;
+                                        
+                                        $set('price_list_id', $priceListItem ? $priceListItem->price_list_id : null);
+                                        $set('unit_price', $unitPrice);
+                                        
                                         $qty = (float) ($get('quantity') ?: 1);
                                         $disc = (float) ($get('discount') ?: 0);
-                                        $set('total_price', ($variant->selling_price * $qty) - $disc);
+                                        $set('total_price', ($unitPrice * $qty) - $disc);
                                         $recalculateAll($set, $get);
                                     }
                                 }

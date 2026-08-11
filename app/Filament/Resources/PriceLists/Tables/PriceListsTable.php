@@ -19,10 +19,14 @@ class PriceListsTable
                     ->searchable(),
                 TextColumn::make('code')
                     ->searchable(),
-                TextColumn::make('valid_from')
+                TextColumn::make('price_type')
+                    ->searchable(),
+                TextColumn::make('priority')
+                    ->sortable(),
+                TextColumn::make('start_date')
                     ->date()
                     ->sortable(),
-                TextColumn::make('valid_to')
+                TextColumn::make('end_date')
                     ->date()
                     ->sortable(),
                 IconColumn::make('status')
