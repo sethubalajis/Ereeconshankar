@@ -135,21 +135,7 @@ class PosPromotionService
                 }
 
 
-                // Wallet Balance Info
-                if ($customer->wallet_balance > 0) {
-                    $maxWalletUse = min((float) $customer->wallet_balance, $subtotal);
-                    $offerArray = [
-                        'key' => 'wallet_balance',
-                        'category' => 'Wallet Balance',
-                        'title' => "Use Wallet Balance: Available ₹" . number_format($customer->wallet_balance, 2),
-                        'type' => 'wallet',
-                        'available_balance' => (float) $customer->wallet_balance,
-                        'estimated_discount' => round($maxWalletUse, 2),
-                    ];
-                    if ($applyPromoSettings('WALLET', $offerArray)) {
-                        $offers['wallet_balance'] = $offerArray;
-                    }
-                }
+
             }
         }
 

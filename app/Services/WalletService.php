@@ -39,7 +39,7 @@ class WalletService
             'created_by' => auth()->id() ?? 1,
         ]);
 
-        $customer->decrement('wallet_balance', $amount);
+
     }
     
     /**
@@ -50,7 +50,7 @@ class WalletService
      * @param float $amount
      * @throws Exception
      */
-    public function creditWallet(Customer $customer, PosSale $posSale, float $amount)
+    public function creditWallet(Customer $customer, PosSale $posSale, float $amount, string $reference = null)
     {
         if ($amount <= 0) return;
 
@@ -60,10 +60,10 @@ class WalletService
             'branch_id' => $posSale->branch_id,
             'transaction_type' => 'credit',
             'amount' => $amount,
-            'reference' => 'Credited from POS Sale #' . $posSale->id,
+            'reference' => $reference ?? ('Credited from POS Sale #' . $posSale->id),
             'created_by' => auth()->id() ?? 1,
         ]);
 
-        $customer->increment('wallet_balance', $amount);
+
     }
 }

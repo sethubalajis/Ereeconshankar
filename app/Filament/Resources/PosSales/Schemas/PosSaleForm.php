@@ -77,7 +77,7 @@ class PosSaleForm
                 $pointsRedeemAmount = round($pointsToRedeem * $valPerPoint, 2);
             }
             
-            $walletUseAmount = $calcResult['wallet_amount'];
+            $walletUseAmount = (float) ($get('use_wallet_balance') ?? $get('../../use_wallet_balance') ?? 0);
             $appliedDetails = $calcResult['applied_details'];
 
             // Validate that we don't redeem more than subtotal
@@ -603,7 +603,23 @@ class PosSaleForm
                     ->numeric()
                     ->prefix('₹')
                     ->default(0)
-                    ->readOnly(),
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function ($state, $set, $get) use ($recalculateAll) {
+                        $recalculateAll($set, $get);
+                    })
+                    ->rule(function ($get) {
+                        return function (string $attribute, $value, \Closure $fail) use ($get) {
+                            $customerId = $get('customer_id');
+                            if (!$customerId && $value > 0) {
+                                $fail('Please select a customer first.');
+                                return;
+                            }
+                            $customer = \App\Models\Customer::find($customerId);
+                            if ($customer && $value > $customer->wallet_balance) {
+                                $fail("Customer only has ₹{$customer->wallet_balance} in wallet.");
+                            }
+                        };
+                    }),
                 Select::make('gift_voucher_id')
                     ->label('Gift Voucher')
                     ->relationship('giftVoucher', 'voucher_code', function ($query) {

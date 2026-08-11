@@ -52,7 +52,15 @@ class CustomersTable
             ->filters([
                 //
             ])
-            ->defaultSort('id', 'desc')
+            ->modifyQueryUsing(function (\Illuminate\Database\Eloquent\Builder $query) {
+                return $query->orderByDesc(
+                    \App\Models\PosSale::select('created_at')
+                        ->whereColumn('customer_id', 'customers.id')
+                        ->where('status', 'completed')
+                        ->latest('created_at')
+                        ->take(1)
+                )->orderByDesc('id');
+            })
             ->recordActions([
                 EditAction::make(),
             ])
