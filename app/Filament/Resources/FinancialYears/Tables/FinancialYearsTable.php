@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\FinancialYears\Tables;
 
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
@@ -42,6 +43,7 @@ class FinancialYearsTable
             ])
             ->recordActions([
                 \Filament\Actions\EditAction::make(),
+                DeleteAction::make(),
                 \Filament\Actions\Action::make('closeYear')
                     ->label('Close Year')
                     ->icon('heroicon-o-lock-closed')
