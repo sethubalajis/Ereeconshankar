@@ -20,12 +20,18 @@ class PriceListItemsRelationManager extends RelationManager
         return $schema
             ->components([
                 Forms\Components\Select::make('product_id')
-                    ->relationship('product', 'name')
+                    ->relationship('product', 'name', fn ($query) => $query->where('product_type', 1))
                     ->required()
-                    ->searchable(),
+                    ->live()
+                    ->preload(),
                 Forms\Components\Select::make('product_variant_id')
-                    ->relationship('productVariant', 'sku')
-                    ->searchable(),
+                    ->relationship('productVariant', 'sku', function ($query, $get) {
+                        $productId = $get('product_id');
+                        if ($productId) {
+                            $query->where('product_id', $productId);
+                        }
+                    })
+                    ->preload(),
                 Forms\Components\TextInput::make('selling_price')
                     ->required()
                     ->numeric()

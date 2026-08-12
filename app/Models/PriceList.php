@@ -35,16 +35,6 @@ class PriceList extends Model
         return $this->belongsTo(Company::class, 'company_id');
     }
 
-    public function customer(): BelongsTo
-    {
-        return $this->belongsTo(Customer::class, 'customer_id');
-    }
-
-    public function customerGroup(): BelongsTo
-    {
-        return $this->belongsTo(CustomerGroup::class, 'customer_group_id');
-    }
-
     public function membershipPlan(): BelongsTo
     {
         return $this->belongsTo(MembershipPlan::class, 'membership_plan_id');
@@ -53,11 +43,6 @@ class PriceList extends Model
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class, 'branch_id');
-    }
-
-    public function currency(): BelongsTo
-    {
-        return $this->belongsTo(Currency::class, 'currency_id');
     }
 
     public function createdBy(): BelongsTo

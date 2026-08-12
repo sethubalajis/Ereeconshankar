@@ -394,27 +394,123 @@ class PosPromotionService
         $pointsToRedeem = 0;
         $walletAmount = 0;
         $appliedDetails = [];
-        $promotionCount = 0;
-
+        
+        $selectedDiscounts = [];
+        $selectedPayments = [];
+        
         foreach ($selectedKeys as $key) {
             if (! isset($eligibleOffers[$key])) continue;
             
-            if (!in_array($key, ['loyalty_points', 'wallet_balance'])) {
-                $promotionCount++;
-            }
-        }
-
-        if ($promotionCount > 1) {
-            throw new \Exception('Multiple promotional offers cannot be combined manually. Please select only the single best offer or a valid stackable combination.');
-        }
-
-        foreach ($selectedKeys as $key) {
-            if (! isset($eligibleOffers[$key])) {
-                continue;
-            }
-
             $offer = $eligibleOffers[$key];
+            
+            // Separate payments (Wallet, Loyalty) from discounts
+            if (in_array($key, ['wallet_balance', 'loyalty_points']) || (isset($offer['type']) && in_array($offer['type'], ['wallet', 'loyalty']))) {
+                $selectedPayments[$key] = $offer;
+            } else {
+                $selectedDiscounts[$key] = $offer;
+            }
+        }
+        
+        // --- 1. Evaluate "Best Price Only" ---
+        $hasBestPriceOnly = collect($selectedDiscounts)->contains('best_price_only', true);
+        if ($hasBestPriceOnly && count($selectedDiscounts) > 1) {
+            $bestOfferKey = null;
+            $bestOfferDiscount = -1;
+            $bestOfferPriority = -1;
+            
+            foreach ($selectedDiscounts as $k => $offer) {
+                $disc = $offer['estimated_discount'] ?? 0;
+                $priority = $offer['priority'] ?? 0;
+                
+                if ($disc > $bestOfferDiscount || ($disc == $bestOfferDiscount && $priority > $bestOfferPriority)) {
+                    $bestOfferDiscount = $disc;
+                    $bestOfferPriority = $priority;
+                    $bestOfferKey = $k;
+                }
+            }
+            
+            if ($bestOfferKey) {
+                $selectedDiscounts = [$bestOfferKey => $selectedDiscounts[$bestOfferKey]];
+            }
+        }
+        
+        // --- 2. Evaluate "Is Exclusive" ---
+        $exclusiveOffers = collect($selectedDiscounts)->filter(fn($o) => !empty($o['is_exclusive']));
+        if ($exclusiveOffers->isNotEmpty() && count($selectedDiscounts) > 1) {
+            $exclusiveOfferTitle = $exclusiveOffers->first()['title'] ?? 'Exclusive Offer';
+            throw new \Exception("The '{$exclusiveOfferTitle}' promotion is exclusive and cannot be combined with any other discounts.");
+        }
+        
+        // --- 3. Evaluate "Is Stackable" & "Stack Groups" ---
+        if (count($selectedDiscounts) > 1) {
+            $offerTypes = [];
+            
+            foreach ($selectedDiscounts as $k => $offer) {
+                if (isset($offer['is_stackable']) && !$offer['is_stackable']) {
+                    throw new \Exception("The '{$offer['title']}' promotion is not stackable and cannot be combined.");
+                }
+                
+                if (str_starts_with($k, 'coupon_')) $offerTypes['coupon'] = ($offerTypes['coupon'] ?? 0) + 1;
+                elseif (str_starts_with($k, 'promo_code_')) $offerTypes['promo_code'] = ($offerTypes['promo_code'] ?? 0) + 1;
+                elseif (str_starts_with($k, 'festival_offer_')) $offerTypes['festival'] = ($offerTypes['festival'] ?? 0) + 1;
+                elseif (str_starts_with($k, 'buy_x_get_y_')) $offerTypes['b1g1'] = ($offerTypes['b1g1'] ?? 0) + 1;
+                elseif (str_starts_with($k, 'combo_offer_')) $offerTypes['combo'] = ($offerTypes['combo'] ?? 0) + 1;
+                elseif (str_starts_with($k, 'discount_rule_')) $offerTypes['discount_rule'] = ($offerTypes['discount_rule'] ?? 0) + 1;
+                elseif ($k === 'customer_group') $offerTypes['customer_group'] = ($offerTypes['customer_group'] ?? 0) + 1;
+                elseif ($k === 'membership_plan') $offerTypes['membership'] = ($offerTypes['membership'] ?? 0) + 1;
+            }
+            
+            $c_coupon = $offerTypes['coupon'] ?? 0;
+            $c_promo = $offerTypes['promo_code'] ?? 0;
+            $c_fest = $offerTypes['festival'] ?? 0;
+            $c_b1g1 = $offerTypes['b1g1'] ?? 0;
+            $c_combo = $offerTypes['combo'] ?? 0;
+            $c_dr = $offerTypes['discount_rule'] ?? 0;
+            $c_mem = $offerTypes['membership'] ?? 0;
+            $c_cg = $offerTypes['customer_group'] ?? 0;
 
+            if ($c_coupon > 1) throw new \Exception('Cannot apply multiple coupons. Please select only one.');
+            if ($c_promo > 1) throw new \Exception('Cannot apply multiple promo codes. Please select only one.');
+            if ($c_fest > 1) throw new \Exception('Cannot apply multiple festival offers. Please select only one.');
+            if ($c_b1g1 > 1) throw new \Exception('Cannot apply multiple Buy X Get Y offers manually.');
+            if ($c_coupon > 0 && $c_promo > 0) throw new \Exception('Cannot combine a Coupon with a Promo Code.');
+            if (($c_b1g1 > 0 || $c_combo > 0) && $c_dr > 0) throw new \Exception('Cannot combine Product Discounts with Combos or Buy X Get Y offers.');
+            if ($c_b1g1 > 0 && $c_combo > 0) throw new \Exception('Cannot combine Buy X Get Y offers with Combo offers.');
+            if ($c_fest > 0) {
+                if ($c_combo > 0) throw new \Exception('Cannot combine Festival Offers with Combo Offers.');
+                if ($c_b1g1 > 0) throw new \Exception('Cannot combine Festival Offers with Buy X Get Y Offers.');
+                if ($c_mem > 0) throw new \Exception('Cannot combine Festival Offers with Membership Discounts.');
+                if ($c_cg > 0) throw new \Exception('Cannot combine Festival Offers with Customer Group Discounts.');
+            }
+            if ($c_mem > 0 && $c_cg > 0) throw new \Exception('Cannot stack Membership and Customer Group percentage discounts. Please select the best one.');
+            if ($c_coupon > 0) {
+                if ($c_mem > 0) throw new \Exception('Cannot combine Coupons with Membership Discounts by default.');
+                if ($c_cg > 0) throw new \Exception('Cannot combine Coupons with Customer Group Discounts by default.');
+            }
+        }
+        
+        // --- 4. Final Calculation ---
+        foreach ($selectedDiscounts as $key => $offer) {
+            $disc = $offer['estimated_discount'] ?? 0;
+            
+            if (!empty($offer['max_discount']) && $offer['max_discount'] > 0) {
+                $disc = min($disc, (float) $offer['max_discount']);
+            }
+            
+            $promoDiscount += $disc;
+            $appliedDetails[] = [
+                'key' => $key,
+                'title' => $offer['title'],
+                'amount' => $disc,
+                'type' => $offer['type'] ?? 'promotion',
+            ];
+        }
+        
+        if ($promoDiscount > $subtotal) {
+            $promoDiscount = $subtotal;
+        }
+        
+        foreach ($selectedPayments as $key => $offer) {
             if ($key === 'wallet_balance') {
                 $walletAmount = $offer['estimated_discount'] ?? 0;
                 $appliedDetails[] = [
@@ -424,13 +520,11 @@ class PosPromotionService
                     'type' => 'wallet',
                 ];
             } else {
-                $disc = $offer['estimated_discount'] ?? 0;
-                $promoDiscount += $disc;
                 $appliedDetails[] = [
                     'key' => $key,
                     'title' => $offer['title'],
-                    'amount' => $disc,
-                    'type' => $offer['type'] ?? 'promotion',
+                    'amount' => $offer['estimated_discount'] ?? 0,
+                    'type' => $offer['type'] ?? 'payment',
                 ];
             }
         }

@@ -344,8 +344,6 @@ class PosSaleForm
                                         $priceListItem = $priceService->getApplicablePriceListItem(
                                             $state,
                                             null,
-                                            $customerId,
-                                            $customer ? $customer->customer_group_id : null,
                                             $customer ? $customer->activeMembership()->first()?->membership_plan_id : null,
                                             $branchId
                                         );
@@ -415,8 +413,6 @@ class PosSaleForm
                                         $priceListItem = $priceService->getApplicablePriceListItem(
                                             $productId,
                                             $state,
-                                            $customerId,
-                                            $customer ? $customer->customer_group_id : null,
                                             $customer ? $customer->activeMembership()->first()?->membership_plan_id : null,
                                             $branchId
                                         );
