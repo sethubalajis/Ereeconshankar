@@ -9,12 +9,12 @@ use App\Filament\Branch\Resources\StockValuations\Schemas\StockValuationForm;
 use App\Filament\Branch\Resources\StockValuations\Tables\StockValuationsTable;
 use App\Models\StockValuation;
 use BackedEnum;
-use Filament\Resources\Resource;
+use App\Filament\Branch\Resources\BaseBranchResource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class StockValuationResource extends Resource
+class StockValuationResource extends BaseBranchResource
 {
     protected static \UnitEnum|string|null $navigationGroup = '7. Inventory Management';
     protected static ?string $model = StockValuation::class;

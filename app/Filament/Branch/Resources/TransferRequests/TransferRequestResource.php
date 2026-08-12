@@ -9,12 +9,12 @@ use App\Filament\Branch\Resources\TransferRequests\Schemas\TransferRequestForm;
 use App\Filament\Branch\Resources\TransferRequests\Tables\TransferRequestsTable;
 use App\Models\TransferRequest;
 use BackedEnum;
-use Filament\Resources\Resource;
+use App\Filament\Branch\Resources\BaseBranchResource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class TransferRequestResource extends Resource
+class TransferRequestResource extends BaseBranchResource
 {
     protected static \UnitEnum|string|null $navigationGroup = '10. Stock Transfer';
     protected static ?int $navigationSort = 1;

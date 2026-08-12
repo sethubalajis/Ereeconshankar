@@ -9,12 +9,12 @@ use App\Filament\Branch\Resources\PurchaseOrders\Schemas\PurchaseOrderForm;
 use App\Filament\Branch\Resources\PurchaseOrders\Tables\PurchaseOrdersTable;
 use App\Models\PurchaseOrder;
 use BackedEnum;
-use Filament\Resources\Resource;
+use App\Filament\Branch\Resources\BaseBranchResource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class PurchaseOrderResource extends Resource
+class PurchaseOrderResource extends BaseBranchResource
 {
     protected static \UnitEnum|string|null $navigationGroup = '5. Procurement';
     protected static ?string $model = PurchaseOrder::class;

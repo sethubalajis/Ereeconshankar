@@ -9,12 +9,12 @@ use App\Filament\Branch\Resources\CustomerFeedback\Schemas\CustomerFeedbackForm;
 use App\Filament\Branch\Resources\CustomerFeedback\Tables\CustomerFeedbackTable;
 use App\Models\CustomerFeedback;
 use BackedEnum;
-use Filament\Resources\Resource;
+use App\Filament\Branch\Resources\BaseBranchResource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class CustomerFeedbackResource extends Resource
+class CustomerFeedbackResource extends BaseBranchResource
 {
     protected static \UnitEnum|string|null $navigationGroup = '19. Service & Complaints';
     protected static ?int $navigationSort = 8;

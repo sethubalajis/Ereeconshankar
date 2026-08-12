@@ -9,12 +9,12 @@ use App\Filament\Branch\Resources\Assets\Schemas\AssetForm;
 use App\Filament\Branch\Resources\Assets\Tables\AssetsTable;
 use App\Models\Asset;
 use BackedEnum;
-use Filament\Resources\Resource;
+use App\Filament\Branch\Resources\BaseBranchResource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class AssetResource extends Resource
+class AssetResource extends BaseBranchResource
 {
     protected static \UnitEnum|string|null $navigationGroup = '18. Asset Management';
     protected static ?int $navigationSort = 2;

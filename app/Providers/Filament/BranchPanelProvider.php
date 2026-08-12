@@ -2,6 +2,8 @@
 
 namespace App\Providers\Filament;
 
+use App\Http\Middleware\ForceBranchTenantInput;
+use App\Models\Branch;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -26,6 +28,7 @@ class BranchPanelProvider extends PanelProvider
             ->id('branch')
             ->path('branch')
             ->login()
+            ->tenant(Branch::class, ownershipRelationship: 'branch')
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -43,6 +46,7 @@ class BranchPanelProvider extends PanelProvider
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
                 StartSession::class,
+                ForceBranchTenantInput::class,
                 AuthenticateSession::class,
                 ShareErrorsFromSession::class,
                 VerifyCsrfToken::class,

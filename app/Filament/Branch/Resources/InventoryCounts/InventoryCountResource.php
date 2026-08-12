@@ -9,12 +9,12 @@ use App\Filament\Branch\Resources\InventoryCounts\Schemas\InventoryCountForm;
 use App\Filament\Branch\Resources\InventoryCounts\Tables\InventoryCountsTable;
 use App\Models\InventoryCount;
 use BackedEnum;
-use Filament\Resources\Resource;
+use App\Filament\Branch\Resources\BaseBranchResource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class InventoryCountResource extends Resource
+class InventoryCountResource extends BaseBranchResource
 {
     protected static \UnitEnum|string|null $navigationGroup = '7. Inventory Management';
     protected static ?string $model = InventoryCount::class;

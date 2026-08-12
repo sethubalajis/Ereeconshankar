@@ -9,12 +9,12 @@ use App\Filament\Branch\Resources\Employees\Schemas\EmployeeForm;
 use App\Filament\Branch\Resources\Employees\Tables\EmployeesTable;
 use App\Models\Employee;
 use BackedEnum;
-use Filament\Resources\Resource;
+use App\Filament\Branch\Resources\BaseBranchResource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class EmployeeResource extends Resource
+class EmployeeResource extends BaseBranchResource
 {
     protected static \UnitEnum|string|null $navigationGroup = '16. Human Resources';
     protected static ?int $navigationSort = 3;

@@ -9,12 +9,12 @@ use App\Filament\Branch\Resources\BranchPerformanceReports\Schemas\BranchPerform
 use App\Filament\Branch\Resources\BranchPerformanceReports\Tables\BranchPerformanceReportsTable;
 use App\Models\BranchPerformanceReport;
 use BackedEnum;
-use Filament\Resources\Resource;
+use App\Filament\Branch\Resources\BaseBranchResource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class BranchPerformanceReportResource extends Resource
+class BranchPerformanceReportResource extends BaseBranchResource
 {
     protected static \UnitEnum|string|null $navigationGroup = '20. Reports & BI Dashboard';
     protected static ?int $navigationSort = 8;

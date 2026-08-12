@@ -9,12 +9,12 @@ use App\Filament\Branch\Resources\PosSaleItems\Schemas\PosSaleItemForm;
 use App\Filament\Branch\Resources\PosSaleItems\Tables\PosSaleItemsTable;
 use App\Models\PosSaleItem;
 use BackedEnum;
-use Filament\Resources\Resource;
+use App\Filament\Branch\Resources\BaseBranchResource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class PosSaleItemResource extends Resource
+class PosSaleItemResource extends BaseBranchResource
 {
     protected static \UnitEnum|string|null $navigationGroup = '11. Retail POS';
     protected static ?int $navigationSort = 7;

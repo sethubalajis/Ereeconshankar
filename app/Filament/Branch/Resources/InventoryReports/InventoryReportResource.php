@@ -9,12 +9,12 @@ use App\Filament\Branch\Resources\InventoryReports\Schemas\InventoryReportForm;
 use App\Filament\Branch\Resources\InventoryReports\Tables\InventoryReportsTable;
 use App\Models\InventoryReport;
 use BackedEnum;
-use Filament\Resources\Resource;
+use App\Filament\Branch\Resources\BaseBranchResource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class InventoryReportResource extends Resource
+class InventoryReportResource extends BaseBranchResource
 {
     protected static \UnitEnum|string|null $navigationGroup = '20. Reports & BI Dashboard';
     protected static ?int $navigationSort = 4;

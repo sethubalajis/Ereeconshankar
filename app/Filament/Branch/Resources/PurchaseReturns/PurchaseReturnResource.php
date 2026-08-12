@@ -9,12 +9,12 @@ use App\Filament\Branch\Resources\PurchaseReturns\Schemas\PurchaseReturnForm;
 use App\Filament\Branch\Resources\PurchaseReturns\Tables\PurchaseReturnsTable;
 use App\Models\PurchaseReturn;
 use BackedEnum;
-use Filament\Resources\Resource;
+use App\Filament\Branch\Resources\BaseBranchResource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class PurchaseReturnResource extends Resource
+class PurchaseReturnResource extends BaseBranchResource
 {
     protected static \UnitEnum|string|null $navigationGroup = '5. Procurement';
     protected static ?string $model = PurchaseReturn::class;

@@ -9,12 +9,12 @@ use App\Filament\Branch\Resources\PosTerminals\Schemas\PosTerminalForm;
 use App\Filament\Branch\Resources\PosTerminals\Tables\PosTerminalsTable;
 use App\Models\PosTerminal;
 use BackedEnum;
-use Filament\Resources\Resource;
+use App\Filament\Branch\Resources\BaseBranchResource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class PosTerminalResource extends Resource
+class PosTerminalResource extends BaseBranchResource
 {
     protected static \UnitEnum|string|null $navigationGroup = '11. Retail POS';
     protected static ?int $navigationSort = 1;
