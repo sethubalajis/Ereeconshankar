@@ -9,12 +9,12 @@ use App\Filament\Branch\Resources\BranchSettings\Schemas\BranchSettingForm;
 use App\Filament\Branch\Resources\BranchSettings\Tables\BranchSettingsTable;
 use App\Models\BranchSetting;
 use BackedEnum;
-use Filament\Resources\Resource;
+use App\Filament\Branch\Resources\BaseBranchResource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class BranchSettingResource extends Resource
+class BranchSettingResource extends BaseBranchResource
 {
     protected static \UnitEnum|string|null $navigationGroup = '9. Branch Management';
     protected static ?int $navigationSort = 2;

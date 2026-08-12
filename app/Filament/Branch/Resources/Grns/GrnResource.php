@@ -9,12 +9,12 @@ use App\Filament\Branch\Resources\Grns\Schemas\GrnForm;
 use App\Filament\Branch\Resources\Grns\Tables\GrnsTable;
 use App\Models\Grn;
 use BackedEnum;
-use Filament\Resources\Resource;
+use App\Filament\Branch\Resources\BaseBranchResource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class GrnResource extends Resource
+class GrnResource extends BaseBranchResource
 {
     protected static \UnitEnum|string|null $navigationGroup = '5. Procurement';
     protected static ?string $model = Grn::class;

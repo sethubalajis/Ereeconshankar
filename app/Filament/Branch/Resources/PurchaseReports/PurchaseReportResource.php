@@ -9,12 +9,12 @@ use App\Filament\Branch\Resources\PurchaseReports\Schemas\PurchaseReportForm;
 use App\Filament\Branch\Resources\PurchaseReports\Tables\PurchaseReportsTable;
 use App\Models\PurchaseReport;
 use BackedEnum;
-use Filament\Resources\Resource;
+use App\Filament\Branch\Resources\BaseBranchResource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class PurchaseReportResource extends Resource
+class PurchaseReportResource extends BaseBranchResource
 {
     protected static \UnitEnum|string|null $navigationGroup = '20. Reports & BI Dashboard';
     protected static ?int $navigationSort = 3;

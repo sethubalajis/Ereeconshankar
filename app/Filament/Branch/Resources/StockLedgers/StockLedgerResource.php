@@ -9,13 +9,13 @@ use App\Filament\Branch\Resources\StockLedgers\Schemas\StockLedgerForm;
 use App\Filament\Branch\Resources\StockLedgers\Tables\StockLedgersTable;
 use App\Models\StockLedger;
 use BackedEnum;
-use Filament\Resources\Resource;
+use App\Filament\Branch\Resources\BaseBranchResource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 
-class StockLedgerResource extends Resource
+class StockLedgerResource extends BaseBranchResource
 {
     protected static \UnitEnum|string|null $navigationGroup = '7. Inventory Management';
     protected static ?string $model = StockLedger::class;

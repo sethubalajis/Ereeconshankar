@@ -9,12 +9,12 @@ use App\Filament\Branch\Resources\AssetTransfers\Schemas\AssetTransferForm;
 use App\Filament\Branch\Resources\AssetTransfers\Tables\AssetTransfersTable;
 use App\Models\AssetTransfer;
 use BackedEnum;
-use Filament\Resources\Resource;
+use App\Filament\Branch\Resources\BaseBranchResource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class AssetTransferResource extends Resource
+class AssetTransferResource extends BaseBranchResource
 {
     protected static \UnitEnum|string|null $navigationGroup = '18. Asset Management';
     protected static ?int $navigationSort = 4;

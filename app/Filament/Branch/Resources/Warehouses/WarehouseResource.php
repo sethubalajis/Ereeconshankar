@@ -9,12 +9,12 @@ use App\Filament\Branch\Resources\Warehouses\Schemas\WarehouseForm;
 use App\Filament\Branch\Resources\Warehouses\Tables\WarehousesTable;
 use App\Models\Warehouse;
 use BackedEnum;
-use Filament\Resources\Resource;
+use App\Filament\Branch\Resources\BaseBranchResource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class WarehouseResource extends Resource
+class WarehouseResource extends BaseBranchResource
 {
     protected static \UnitEnum|string|null $navigationGroup = '8. Warehouse Management';
     protected static ?string $model = Warehouse::class;

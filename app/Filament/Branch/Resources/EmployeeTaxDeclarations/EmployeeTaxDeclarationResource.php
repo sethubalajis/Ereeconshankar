@@ -9,12 +9,12 @@ use App\Filament\Branch\Resources\EmployeeTaxDeclarations\Schemas\EmployeeTaxDec
 use App\Filament\Branch\Resources\EmployeeTaxDeclarations\Tables\EmployeeTaxDeclarationsTable;
 use App\Models\EmployeeTaxDeclaration;
 use BackedEnum;
-use Filament\Resources\Resource;
+use App\Filament\Branch\Resources\BaseBranchResource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class EmployeeTaxDeclarationResource extends Resource
+class EmployeeTaxDeclarationResource extends BaseBranchResource
 {
     protected static ?string $model = EmployeeTaxDeclaration::class;
 

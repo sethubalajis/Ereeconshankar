@@ -9,12 +9,12 @@ use App\Filament\Branch\Resources\Stocks\Schemas\StockForm;
 use App\Filament\Branch\Resources\Stocks\Tables\StocksTable;
 use App\Models\Stock;
 use BackedEnum;
-use Filament\Resources\Resource;
+use App\Filament\Branch\Resources\BaseBranchResource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class StockResource extends Resource
+class StockResource extends BaseBranchResource
 {
     protected static \UnitEnum|string|null $navigationGroup = '7. Inventory Management';
     protected static ?string $model = Stock::class;

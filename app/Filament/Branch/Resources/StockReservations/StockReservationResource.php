@@ -9,12 +9,12 @@ use App\Filament\Branch\Resources\StockReservations\Schemas\StockReservationForm
 use App\Filament\Branch\Resources\StockReservations\Tables\StockReservationsTable;
 use App\Models\StockReservation;
 use BackedEnum;
-use Filament\Resources\Resource;
+use App\Filament\Branch\Resources\BaseBranchResource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class StockReservationResource extends Resource
+class StockReservationResource extends BaseBranchResource
 {
     protected static \UnitEnum|string|null $navigationGroup = '7. Inventory Management';
     protected static ?string $model = StockReservation::class;

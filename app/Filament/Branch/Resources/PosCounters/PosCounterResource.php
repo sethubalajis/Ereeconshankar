@@ -9,12 +9,12 @@ use App\Filament\Branch\Resources\PosCounters\Schemas\PosCounterForm;
 use App\Filament\Branch\Resources\PosCounters\Tables\PosCountersTable;
 use App\Models\PosCounter;
 use BackedEnum;
-use Filament\Resources\Resource;
+use App\Filament\Branch\Resources\BaseBranchResource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class PosCounterResource extends Resource
+class PosCounterResource extends BaseBranchResource
 {
     protected static \UnitEnum|string|null $navigationGroup = '11. Retail POS';
     protected static ?int $navigationSort = 2;

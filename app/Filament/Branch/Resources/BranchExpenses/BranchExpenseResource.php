@@ -9,12 +9,12 @@ use App\Filament\Branch\Resources\BranchExpenses\Schemas\BranchExpenseForm;
 use App\Filament\Branch\Resources\BranchExpenses\Tables\BranchExpensesTable;
 use App\Models\BranchExpense;
 use BackedEnum;
-use Filament\Resources\Resource;
+use App\Filament\Branch\Resources\BaseBranchResource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class BranchExpenseResource extends Resource
+class BranchExpenseResource extends BaseBranchResource
 {
     protected static \UnitEnum|string|null $navigationGroup = '9. Branch Management';
     protected static ?int $navigationSort = 5;
