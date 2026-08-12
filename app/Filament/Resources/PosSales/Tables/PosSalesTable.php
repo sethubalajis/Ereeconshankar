@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\PosSales\Tables;
 
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
@@ -96,6 +97,7 @@ class PosSalesTable
             ->defaultSort('created_at', 'desc')
             ->recordActions([
                 EditAction::make(),
+                DeleteAction::make(),
                 \Filament\Actions\Action::make('download_receipt')
                     ->label('Receipt')
                     ->icon('heroicon-o-document-text')

@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Roles\Tables;
 use App\Filament\Resources\Roles\RoleResource;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
@@ -44,6 +45,7 @@ class RolesTable
             ])
             ->recordActions([
                 EditAction::make(),
+                DeleteAction::make(),
                 Action::make('permissions')
                     ->label('Permissions')
                     ->url(fn ($record): string => RoleResource::getUrl('permissions', ['record' => $record])),

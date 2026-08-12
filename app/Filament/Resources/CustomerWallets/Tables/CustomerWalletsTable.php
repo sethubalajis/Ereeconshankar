@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\CustomerWallets\Tables;
 
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
@@ -42,6 +43,7 @@ class CustomerWalletsTable
             ->defaultSort('transaction_date', 'desc')
             ->recordActions([
                 EditAction::make(),
+                DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

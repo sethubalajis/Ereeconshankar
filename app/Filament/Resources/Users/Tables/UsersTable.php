@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Users\Tables;
 use App\Filament\Resources\Users\UserResource;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
@@ -40,6 +41,7 @@ class UsersTable
             ])
             ->recordActions([
                 EditAction::make(),
+                DeleteAction::make(),
                 Action::make('permissions')
                     ->label('Permissions')
                     ->url(fn ($record): string => UserResource::getUrl('permissions', ['record' => $record])),

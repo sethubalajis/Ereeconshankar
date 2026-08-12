@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\FinancialReports\Tables;
 
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
@@ -58,6 +59,7 @@ class FinancialReportsTable
             ])
             ->recordActions([
                 EditAction::make(),
+                DeleteAction::make(),
                 \Filament\Actions\Action::make('download_pdf')
                     ->label('PDF')
                     ->icon('heroicon-o-arrow-down-tray')

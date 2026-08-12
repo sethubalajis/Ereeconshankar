@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\PosSaleItems\Tables;
 
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
@@ -47,6 +48,7 @@ class PosSaleItemsTable
             ->defaultSort('created_at', 'desc')
             ->recordActions([
                 EditAction::make(),
+                DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
