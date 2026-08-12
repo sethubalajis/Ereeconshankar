@@ -22,16 +22,20 @@ class PromotionSettingForm
                     ->numeric()
                     ->default(0),
                 Toggle::make('is_stackable')
-                    ->required(),
+                    ->required()
+                    ->helperText('Allow this promotion to combine with other eligible promotions.'),
                 Toggle::make('is_exclusive')
-                    ->required(),
+                    ->required()
+                    ->helperText('When enabled, no other promotion can be applied with this promotion.'),
                 Toggle::make('best_price_only')
-                    ->required(),
+                    ->required()
+                    ->helperText('When enabled, apply only the best eligible promotion according to pricing rules.'),
                 Select::make('exclusions')
                     ->multiple()
                     ->options(\App\Models\PromotionType::pluck('name', 'code')),
                 Select::make('stack_group')
-                    ->options(\App\Models\PromotionSetting::whereNotNull('stack_group')->distinct()->pluck('stack_group', 'stack_group')),
+                    ->options(\App\Models\PromotionSetting::whereNotNull('stack_group')->distinct()->pluck('stack_group', 'stack_group'))
+                    ->helperText('Controls which promotion group this promotion belongs to.'),
                 Select::make('eligible_customers')->multiple()->options(\App\Models\Customer::pluck('name', 'id')),
                 Select::make('eligible_customer_groups')->multiple()->options(\App\Models\CustomerGroup::pluck('name', 'id')),
                 Select::make('eligible_memberships')->multiple()->options(\App\Models\MembershipPlan::pluck('name', 'id')),

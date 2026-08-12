@@ -24,35 +24,12 @@ class PriceListForm
                     ->dehydrated()
                     ->required()
                     ->unique(ignoreRecord: true),
-                \Filament\Forms\Components\Select::make('price_type')
-                    ->options([
-                        'Retail' => 'Retail',
-                        'Wholesale' => 'Wholesale',
-                        'Member' => 'Member',
-                        'Special' => 'Special',
-                        'Branch' => 'Branch',
-                    ])
-                    ->nullable(),
-                \Filament\Forms\Components\Select::make('customer_id')
-                    ->relationship('customer', 'name')
-                    ->searchable()
-                    ->nullable(),
-                \Filament\Forms\Components\Select::make('customer_group_id')
-                    ->relationship('customerGroup', 'name')
-                    ->nullable(),
                 \Filament\Forms\Components\Select::make('membership_plan_id')
                     ->relationship('membershipPlan', 'name')
                     ->nullable(),
                 \Filament\Forms\Components\Select::make('branch_id')
                     ->relationship('branch', 'name')
                     ->nullable(),
-                \Filament\Forms\Components\Select::make('currency_id')
-                    ->relationship('currency', 'name')
-                    ->nullable(),
-                TextInput::make('priority')
-                    ->numeric()
-                    ->default(1)
-                    ->required(),
                 DatePicker::make('start_date')
                     ->default(now()->timezone('Asia/Kolkata')),
                 DatePicker::make('end_date')

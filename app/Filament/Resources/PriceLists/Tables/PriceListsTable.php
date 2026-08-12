@@ -20,10 +20,6 @@ class PriceListsTable
                     ->searchable(),
                 TextColumn::make('code')
                     ->searchable(),
-                TextColumn::make('price_type')
-                    ->searchable(),
-                TextColumn::make('priority')
-                    ->sortable(),
                 TextColumn::make('start_date')
                     ->date()
                     ->sortable(),
