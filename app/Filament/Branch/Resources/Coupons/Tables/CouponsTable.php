@@ -1,0 +1,70 @@
+<?php
+
+namespace App\Filament\Branch\Resources\Coupons\Tables;
+
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+
+class CouponsTable
+{
+    public static function configure(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('code')
+                    ->searchable(),
+                TextColumn::make('discount_percentage')
+                    ->numeric()
+                    ->suffix('%')
+                    ->sortable(),
+                TextColumn::make('discount_amount')
+                    ->numeric()
+                    ->prefix('₹ ')
+                    ->sortable(),
+                TextColumn::make('start_date')
+                    ->date()
+                    ->sortable(),
+                TextColumn::make('end_date')
+                    ->date()
+                    ->sortable(),
+                TextColumn::make('min_purchase_amount')
+                    ->numeric()
+                    ->prefix('₹ ')
+                    ->sortable(),
+                TextColumn::make('max_usage')
+                    ->numeric()
+                    ->sortable(),
+                TextColumn::make('current_usage')
+                    ->numeric()
+                    ->sortable(),
+                IconColumn::make('status')
+                    ->boolean(),
+                TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                //
+            ])
+            ->defaultSort('created_at', 'desc')
+            ->recordActions([
+                EditAction::make(),
+                DeleteAction::make(),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+}
