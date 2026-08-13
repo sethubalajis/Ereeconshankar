@@ -3,6 +3,7 @@
 use App\Filament\Resources\FinancialYears\Pages\CreateFinancialYear;
 use App\Filament\Resources\FinancialYears\Pages\EditFinancialYear;
 use App\Filament\Resources\FinancialYears\Pages\ListFinancialYears;
+use App\Models\Company;
 use App\Models\FinancialYear;
 use App\Models\Role;
 use App\Models\User;
@@ -38,6 +39,7 @@ it('validates required fields when creating a financial year', function (): void
 
     Livewire::test(CreateFinancialYear::class)
         ->fillForm([
+            'company_id' => null,
             'name' => '',
             'start_date' => null,
             'end_date' => null,
@@ -46,6 +48,7 @@ it('validates required fields when creating a financial year', function (): void
         ])
         ->call('create')
         ->assertHasFormErrors([
+            'company_id' => 'required',
             'name' => 'required',
             'start_date' => 'required',
             'end_date' => 'required',
@@ -54,9 +57,11 @@ it('validates required fields when creating a financial year', function (): void
 
 it('performs financial year crud operations', function (): void {
     actingAs(makeFinancialYearAdminUser());
+    $company = Company::query()->create(['name' => 'Test Company', 'code' => 'TC001', 'status' => true]);
 
     Livewire::test(CreateFinancialYear::class)
         ->fillForm([
+            'company_id' => $company->getKey(),
             'name' => 'FY 2026-2027',
             'start_date' => '2026-04-01',
             'end_date' => '2027-03-31',
@@ -74,6 +79,7 @@ it('performs financial year crud operations', function (): void {
 
     Livewire::test(EditFinancialYear::class, ['record' => $record->getKey()])
         ->fillForm([
+            'company_id' => $company->getKey(),
             'name' => 'FY 2027-2028',
             'start_date' => '2027-04-01',
             'end_date' => '2028-03-31',

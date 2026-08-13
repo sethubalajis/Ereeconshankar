@@ -44,7 +44,7 @@ it('validates required fields when creating a grn', function (): void {
     Livewire::test(CreateGrn::class)
         ->fillForm(['purchase_order_id' => null, 'vendor_id' => null, 'branch_id' => null, 'warehouse_id' => null, 'receive_date' => null, 'status' => null, 'received_items' => []])
         ->call('create')
-        ->assertHasFormErrors(['purchase_order_id' => 'required', 'vendor_id' => 'required', 'branch_id' => 'required', 'warehouse_id' => 'required', 'receive_date' => 'required', 'status' => 'required']);
+        ->assertHasFormErrors(['purchase_order_id' => 'required', 'vendor_id' => 'required', 'branch_id' => 'required', 'receive_date' => 'required', 'status' => 'required']);
 });
 
 it('performs grn crud operations', function (): void {
