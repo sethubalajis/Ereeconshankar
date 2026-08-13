@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\HasBranch;
+
 use Illuminate\Database\Eloquent\Model;
 
 class WarrantyClaim extends Model
 {
+    use HasBranch;
+
     protected $guarded = [];
 
     //
@@ -14,5 +18,10 @@ class WarrantyClaim extends Model
     }
     public function product() {
         return $this->belongsTo(Product::class, 'product_id');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 }

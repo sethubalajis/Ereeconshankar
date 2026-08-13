@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use App\Traits\HasBranch;
+
 use App\Traits\BelongsToFinancialYear;
 
 use Illuminate\Database\Eloquent\Model;
 
 class JournalEntry extends Model
 {
+    use HasBranch;
+
     use BelongsToFinancialYear;
     protected $guarded = [];
 
@@ -32,5 +36,10 @@ class JournalEntry extends Model
     }
     public function chartOfAccount() {
         return $this->belongsTo(ChartOfAccount::class, 'chart_of_account_id');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 }

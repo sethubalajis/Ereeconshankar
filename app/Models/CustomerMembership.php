@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\HasBranch;
+
 use Illuminate\Database\Eloquent\Model;
 
 class CustomerMembership extends Model
 {
+    use HasBranch;
+
     protected $guarded = [];
 
     protected $casts = [
@@ -40,5 +44,10 @@ class CustomerMembership extends Model
     public function updatedBy()
     {
         return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 }

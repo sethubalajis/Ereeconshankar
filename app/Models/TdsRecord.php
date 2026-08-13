@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use App\Traits\HasBranch;
+
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class TdsRecord extends Model
 {
+    use HasBranch;
+
     protected $guarded = [];
 
     public function payrollProcessing() {
@@ -60,5 +64,10 @@ class TdsRecord extends Model
             ->first();
 
         return (string) ($fallbackPayroll?->payrollCycle?->name ?? '-');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 }

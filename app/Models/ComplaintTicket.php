@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\HasBranch;
+
 use Illuminate\Database\Eloquent\Model;
 
 class ComplaintTicket extends Model
 {
+    use HasBranch;
+
     protected $guarded = [];
 
     protected static function booted()
@@ -42,5 +46,10 @@ class ComplaintTicket extends Model
     }
     public function complaintCategory() {
         return $this->belongsTo(ComplaintCategory::class, 'complaint_category_id');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 }

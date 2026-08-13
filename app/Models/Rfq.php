@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\HasBranch;
+
 use Illuminate\Database\Eloquent\Model;
 
 class Rfq extends Model
 {
+    use HasBranch;
+
     protected $guarded = [];
 
     //
@@ -23,5 +27,10 @@ class Rfq extends Model
                 $model->rfq_number = 'RFQ-' . str_pad($nextId, 4, '0', STR_PAD_LEFT);
             }
         });
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 }

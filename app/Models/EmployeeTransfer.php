@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\HasTransferBranch;
+
 use Illuminate\Database\Eloquent\Model;
 
 class EmployeeTransfer extends Model
 {
+    use HasTransferBranch;
+
     protected $guarded = [];
 
     //

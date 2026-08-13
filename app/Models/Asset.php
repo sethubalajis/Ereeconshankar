@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\HasBranch;
+
 use Illuminate\Database\Eloquent\Model;
 
 class Asset extends Model
 {
+    use HasBranch;
+
     protected $guarded = [];
 
     //

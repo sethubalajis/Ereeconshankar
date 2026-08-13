@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use App\Traits\HasBranch;
+
 use App\Traits\BelongsToFinancialYear;
 
 use Illuminate\Database\Eloquent\Model;
 
 class PurchaseRequisition extends Model
 {
+    use HasBranch;
+
     use BelongsToFinancialYear;
     protected $guarded = [];
 

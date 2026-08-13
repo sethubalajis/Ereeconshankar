@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use App\Traits\HasBranch;
+
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\BelongsToFinancialYear;
 
 class LoyaltyPoint extends Model
 {
+    use HasBranch;
+
     use BelongsToFinancialYear;
 
     protected $guarded = [];

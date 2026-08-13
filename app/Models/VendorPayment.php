@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use App\Traits\HasBranch;
+
 use App\Traits\BelongsToFinancialYear;
 
 use Illuminate\Database\Eloquent\Model;
 
 class VendorPayment extends Model
 {
+    use HasBranch;
+
     use BelongsToFinancialYear;
     protected $guarded = [];
 
@@ -20,5 +24,10 @@ class VendorPayment extends Model
     }
     public function paymentMode() {
         return $this->belongsTo(PaymentMode::class, 'payment_mode_id');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 }
