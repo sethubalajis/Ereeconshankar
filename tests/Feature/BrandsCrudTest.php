@@ -26,14 +26,13 @@ it('performs brand crud operations', function (): void {
     Livewire::test(CreateBrand::class)
         ->fillForm([
             'name' => 'Brand CRUD',
-            'code' => 'BRD001',
             'description' => 'Brand CRUD test',
             'status' => true,
         ])
         ->call('create')
         ->assertHasNoFormErrors();
 
-    $record = Brand::query()->where('code', 'BRD001')->firstOrFail();
+    $record = Brand::query()->where('name', 'Brand CRUD')->firstOrFail();
 
     Livewire::test(ListBrands::class)
         ->assertSuccessful()
@@ -42,7 +41,6 @@ it('performs brand crud operations', function (): void {
     Livewire::test(EditBrand::class, ['record' => $record->getKey()])
         ->fillForm([
             'name' => 'Brand CRUD Updated',
-            'code' => 'BRD002',
             'description' => 'Brand CRUD updated',
             'status' => true,
         ])
@@ -50,7 +48,7 @@ it('performs brand crud operations', function (): void {
         ->assertHasNoFormErrors();
 
     $record->refresh();
-    expect($record->code)->toBe('BRD002');
+    expect($record->name)->toBe('Brand CRUD Updated');
 
     Livewire::test(EditBrand::class, ['record' => $record->getKey()])
         ->callAction('delete');

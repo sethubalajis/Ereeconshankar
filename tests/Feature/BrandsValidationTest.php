@@ -36,7 +36,6 @@ it('prevents duplicate brand name at validation level', function (): void {
     Livewire::test(CreateBrand::class)
         ->fillForm([
             'name' => 'Duplicate Brand',
-            'code' => 'BRV002',
             'status' => true,
         ])
         ->call('create')
@@ -46,25 +45,9 @@ it('prevents duplicate brand name at validation level', function (): void {
 });
 
 it('prevents duplicate brand code at validation level', function (): void {
-    actingAs(makeBrandValidationAdminUser());
+    // Code is auto-generated; duplicate prevention is at DB level, not form level.
+})->skip('Code is auto-generated and not submitted via form — no form validation to test.');
 
-    Brand::query()->create([
-        'name' => 'Brand One',
-        'code' => 'BRV003',
-        'status' => true,
-    ]);
-
-    Livewire::test(CreateBrand::class)
-        ->fillForm([
-            'name' => 'Brand Two',
-            'code' => 'BRV003',
-            'status' => true,
-        ])
-        ->call('create')
-        ->assertHasFormErrors([
-            'code' => 'unique',
-        ]);
-});
 
 it('uploads and stores brand logo image', function (): void {
     $disk = 'public';
@@ -76,14 +59,13 @@ it('uploads and stores brand logo image', function (): void {
     Livewire::test(CreateBrand::class)
         ->fillForm([
             'name' => 'Brand Logo Upload',
-            'code' => 'BRV004',
             'logo' => $logo,
             'status' => true,
         ])
         ->call('create')
         ->assertHasNoFormErrors();
 
-    $brand = Brand::query()->where('code', 'BRV004')->first();
+    $brand = Brand::query()->where('name', 'Brand Logo Upload')->first();
 
     expect($brand)->not->toBeNull();
     expect($brand->logo)->not->toBeEmpty();
