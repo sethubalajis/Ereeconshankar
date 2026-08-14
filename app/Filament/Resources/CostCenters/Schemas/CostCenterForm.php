@@ -23,6 +23,7 @@ class CostCenterForm
                 Textarea::make('description')
                     ->columnSpanFull(),
                 Toggle::make('status')
+                    ->default(true)
                     ->required(),
             ]);
     }

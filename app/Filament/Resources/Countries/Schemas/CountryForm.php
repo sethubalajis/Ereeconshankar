@@ -19,6 +19,7 @@ class CountryForm
                 TextInput::make('phone_code')
                     ->tel(),
                 Toggle::make('status')
+                    ->default(true)
                     ->required(),
             ]);
     }

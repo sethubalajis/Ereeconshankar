@@ -17,6 +17,7 @@ class CityForm
                 TextInput::make('name')
                     ->required(),
                 Toggle::make('status')
+                    ->default(true)
                     ->required(),
             ]);
     }
