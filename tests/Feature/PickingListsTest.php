@@ -37,9 +37,9 @@ it('validates required fields when creating a picking list', function (): void {
     actingAs(makePickingListsAdminUser());
 
     Livewire::test(CreatePickingList::class)
-        ->fillForm(['warehouse_id' => null, 'reference_id' => null, 'reference_type' => '', 'status' => ''])
+        ->fillForm(['warehouse_id' => null, 'reference_name' => '', 'reference_type' => '', 'status' => ''])
         ->call('create')
-        ->assertHasFormErrors(['warehouse_id' => 'required', 'status' => 'required']);
+        ->assertHasFormErrors(['warehouse_id' => 'required', 'reference_name' => 'required', 'status' => 'required']);
 });
 
 it('performs picking list crud operations', function (): void {
@@ -47,15 +47,15 @@ it('performs picking list crud operations', function (): void {
     $warehouse = createPickingListWarehouse();
 
     Livewire::test(CreatePickingList::class)
-        ->fillForm(['warehouse_id' => $warehouse->getKey(), 'reference_id' => 501, 'reference_type' => 'stock_transfer', 'status' => 'pending'])
+        ->fillForm(['warehouse_id' => $warehouse->getKey(), 'reference_name' => 'SO-501', 'reference_type' => 'App\Models\SalesOrder', 'status' => 'pending'])
         ->call('create')
         ->assertHasNoFormErrors();
 
     $record = PickingList::query()->firstOrFail();
-    Livewire::test(ListPickingLists::class)->assertSuccessful()->assertSee('stock_transfer');
+    Livewire::test(ListPickingLists::class)->assertSuccessful()->assertSee('pending');
 
     Livewire::test(EditPickingList::class, ['record' => $record->getKey()])
-        ->fillForm(['warehouse_id' => $warehouse->getKey(), 'reference_id' => 502, 'reference_type' => 'dispatch', 'status' => 'completed'])
+        ->fillForm(['warehouse_id' => $warehouse->getKey(), 'reference_name' => 'SO-502', 'reference_type' => 'App\Models\WarehouseTransfer', 'status' => 'completed'])
         ->call('save')
         ->assertHasNoFormErrors();
 

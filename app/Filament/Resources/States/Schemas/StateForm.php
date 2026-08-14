@@ -18,6 +18,7 @@ class StateForm
                     ->required(),
                 TextInput::make('code'),
                 Toggle::make('status')
+                    ->default(true)
                     ->required(),
             ]);
     }

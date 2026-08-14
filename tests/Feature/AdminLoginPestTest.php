@@ -1,41 +1,32 @@
 <?php
 
+use App\Models\Role;
 use App\Models\User;
 use Filament\Auth\Pages\Login;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Livewire\Livewire;
 use function Pest\Laravel\get;
 
-beforeEach(function (): void {
-    Schema::dropIfExists('users');
+uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
 
-    Schema::create('users', function (Blueprint $table): void {
-        $table->id();
-        $table->string('name');
-        $table->string('email')->unique();
-        $table->timestamp('email_verified_at')->nullable();
-        $table->string('password');
-        $table->rememberToken();
-        $table->timestamps();
-    });
-});
+function makeAdminLoginUser(): User
+{
+    $role = Role::query()->firstOrCreate(['name' => 'Super Admin', 'guard_name' => 'web']);
+    $user = User::factory()->create(['email' => 'admin@example.com', 'password' => 'password']);
+    $user->assignRole($role);
+    return $user;
+}
 
 it('loads the admin login page', function (): void {
     get('/admin/login')->assertOk();
 });
 
 it('allows a valid user to log in from admin login', function (): void {
-    $password = 'ValidPass123!';
-
-    $user = User::factory()->create([
-        'password' => $password,
-    ]);
+    $user = makeAdminLoginUser();
 
     Livewire::test(Login::class)
         ->fillForm([
             'email' => $user->email,
-            'password' => $password,
+            'password' => 'password',
             'remember' => false,
         ])
         ->call('authenticate')
@@ -47,9 +38,7 @@ it('allows a valid user to log in from admin login', function (): void {
 });
 
 it('rejects invalid credentials from admin login', function (): void {
-    $user = User::factory()->create([
-        'password' => 'ValidPass123!',
-    ]);
+    $user = makeAdminLoginUser();
 
     Livewire::test(Login::class)
         ->fillForm([

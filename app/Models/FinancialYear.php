@@ -15,6 +15,10 @@ class FinancialYear extends Model
         return $this->belongsTo(Company::class);
     }
 
+    public function merchandisePlannings(): HasMany
+    {
+        return $this->hasMany(MerchandisePlanning::class, 'financial_year_id');
+    }
     protected static function booted()
     {
         static::saving(function ($model) {

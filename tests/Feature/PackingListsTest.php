@@ -32,7 +32,7 @@ function createPackingListSetup(): PickingList
 
     return PickingList::query()->create([
         'warehouse_id' => $warehouse->getKey(),
-        'reference_id' => 101,
+        'reference_name' => 'Stock Transfer 101',
         'reference_type' => 'stock_transfer',
         'status' => 'pending',
     ]);

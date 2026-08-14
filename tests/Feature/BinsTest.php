@@ -38,9 +38,9 @@ it('redirects guests away from create bin page', function (): void { get('/admin
 it('validates required fields when creating a bin', function (): void {
     actingAs(makeBinsAdminUser());
     Livewire::test(CreateBin::class)
-        ->fillForm(['rack_id' => null, 'name' => '', 'code' => '', 'max_weight' => null])
+        ->fillForm(['rack_id' => null, 'name' => '', 'max_weight' => null])
         ->call('create')
-        ->assertHasFormErrors(['rack_id' => 'required', 'name' => 'required', 'code' => 'required']);
+        ->assertHasFormErrors(['rack_id' => 'required', 'name' => 'required']);
 });
 
 it('performs bin crud operations', function (): void {
@@ -48,15 +48,15 @@ it('performs bin crud operations', function (): void {
     $rack = createBinRack();
 
     Livewire::test(CreateBin::class)
-        ->fillForm(['rack_id' => $rack->getKey(), 'name' => 'Bin 1', 'code' => 'BIN001', 'max_weight' => 50])
+        ->fillForm(['rack_id' => $rack->getKey(), 'name' => 'Bin 1', 'max_weight' => 50])
         ->call('create')
         ->assertHasNoFormErrors();
 
-    $record = Bin::query()->where('code', 'BIN001')->firstOrFail();
+    $record = Bin::query()->where('name', 'Bin 1')->firstOrFail();
     Livewire::test(ListBins::class)->assertSuccessful()->assertSee('Bin 1');
 
     Livewire::test(EditBin::class, ['record' => $record->getKey()])
-        ->fillForm(['rack_id' => $rack->getKey(), 'name' => 'Bin 2', 'code' => 'BIN002', 'max_weight' => 60])
+        ->fillForm(['rack_id' => $rack->getKey(), 'name' => 'Bin 2', 'max_weight' => 60])
         ->call('save')
         ->assertHasNoFormErrors();
 

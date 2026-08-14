@@ -2,30 +2,23 @@
 
 namespace Tests\Feature;
 
+use App\Models\Role;
 use App\Models\User;
 use Filament\Auth\Pages\Login;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
 
 class AdminLoginTest extends TestCase
 {
-    protected function setUp(): void
+    use RefreshDatabase;
+
+    private function makeAdminUser(): User
     {
-        parent::setUp();
-
-        Schema::dropIfExists('users');
-
-        Schema::create('users', function (Blueprint $table): void {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
-            $table->timestamps();
-        });
+        $role = Role::query()->firstOrCreate(['name' => 'Super Admin', 'guard_name' => 'web']);
+        $user = User::factory()->create(['email' => 'admin@example.com', 'password' => 'password']);
+        $user->assignRole($role);
+        return $user;
     }
 
     public function test_admin_login_page_loads(): void
@@ -35,16 +28,12 @@ class AdminLoginTest extends TestCase
 
     public function test_admin_login_succeeds_with_valid_credentials(): void
     {
-        $password = 'ValidPass123!';
-
-        $user = User::factory()->create([
-            'password' => $password,
-        ]);
+        $user = $this->makeAdminUser();
 
         Livewire::test(Login::class)
             ->fillForm([
                 'email' => $user->email,
-                'password' => $password,
+                'password' => 'password',
                 'remember' => false,
             ])
             ->call('authenticate')
@@ -57,9 +46,7 @@ class AdminLoginTest extends TestCase
 
     public function test_admin_login_fails_with_invalid_credentials(): void
     {
-        $user = User::factory()->create([
-            'password' => 'ValidPass123!',
-        ]);
+        $user = $this->makeAdminUser();
 
         Livewire::test(Login::class)
             ->fillForm([

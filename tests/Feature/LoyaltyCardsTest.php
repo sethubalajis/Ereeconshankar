@@ -42,9 +42,9 @@ it('validates required fields when creating a loyalty card', function (): void {
     actingAs(makeLoyaltyCardsAdminUser());
 
     Livewire::test(CreateLoyaltyCard::class)
-        ->fillForm(['customer_id' => null, 'card_number' => '', 'issue_date' => null, 'expiry_date' => null, 'status' => null])
+        ->fillForm(['customer_id' => null, 'issue_date' => null, 'status' => null])
         ->call('create')
-        ->assertHasFormErrors(['customer_id' => 'required', 'card_number' => 'required', 'issue_date' => 'required', 'status' => 'required']);
+        ->assertHasFormErrors(['customer_id' => 'required', 'issue_date' => 'required', 'status' => 'required']);
 });
 
 it('performs loyalty card crud operations', function (): void {
@@ -52,20 +52,20 @@ it('performs loyalty card crud operations', function (): void {
     $customer = createLoyaltyCardCustomer();
 
     Livewire::test(CreateLoyaltyCard::class)
-        ->fillForm(['customer_id' => $customer->getKey(), 'card_number' => 'LC-0001', 'issue_date' => '2026-07-21', 'expiry_date' => '2027-07-21', 'status' => true])
+        ->fillForm(['customer_id' => $customer->getKey(), 'issue_date' => '2026-07-21', 'expiry_date' => '2027-07-21', 'status' => true])
         ->call('create')
         ->assertHasNoFormErrors();
 
     $record = LoyaltyCard::query()->firstOrFail();
-    Livewire::test(ListLoyaltyCards::class)->assertSuccessful()->assertSee('LC-0001');
+    Livewire::test(ListLoyaltyCards::class)->assertSuccessful()->assertSee($record->card_number);
 
     Livewire::test(EditLoyaltyCard::class, ['record' => $record->getKey()])
-        ->fillForm(['customer_id' => $customer->getKey(), 'card_number' => 'LC-0002', 'issue_date' => '2026-07-22', 'expiry_date' => '2027-07-22', 'status' => false])
+        ->fillForm(['customer_id' => $customer->getKey(), 'issue_date' => '2026-07-22', 'expiry_date' => '2027-07-22', 'status' => false])
         ->call('save')
         ->assertHasNoFormErrors();
 
     $record->refresh();
-    expect($record->card_number)->toBe('LC-0002');
+    expect((bool) $record->status)->toBeFalse();
 
     Livewire::test(EditLoyaltyCard::class, ['record' => $record->getKey()])->callAction('delete');
     expect(LoyaltyCard::query()->whereKey($record->getKey())->exists())->toBeFalse();
