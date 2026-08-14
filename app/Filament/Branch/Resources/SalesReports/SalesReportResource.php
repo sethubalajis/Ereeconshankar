@@ -10,6 +10,7 @@ use App\Filament\Branch\Resources\SalesReports\Tables\SalesReportsTable;
 use App\Models\SalesReport;
 use BackedEnum;
 use App\Filament\Branch\Resources\BaseBranchResource;
+use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;

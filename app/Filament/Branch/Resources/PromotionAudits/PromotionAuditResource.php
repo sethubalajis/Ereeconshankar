@@ -19,7 +19,8 @@ class PromotionAuditResource extends BaseBranchResource
     protected static ?string $model = PromotionAudit::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
-    protected static \UnitEnum|string|null $navigationGroup = 'Promotions & Discounts';
+    protected static \UnitEnum|string|null $navigationGroup = '13. Promotions & Discounts';
+    protected static ?int $navigationSort = 9;
 
     public static function form(Schema $schema): Schema
     {

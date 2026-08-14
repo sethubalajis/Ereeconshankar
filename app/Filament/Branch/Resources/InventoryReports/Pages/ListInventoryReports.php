@@ -14,6 +14,22 @@ class ListInventoryReports extends ListRecords
     {
         return [
             CreateAction::make(),
+            \Filament\Actions\Action::make('export_pdf')
+                ->label('Export PDF Report')
+                ->icon('heroicon-o-document-arrow-down')
+                ->color('success')
+                ->action(function () {
+                    $records = \App\Models\InventoryReport::with('branch')->get();
+                    return \App\Helpers\ReportPdfHelper::downloadListPdf(
+                        'Inventory Reports Summary',
+                        $records,
+                        [
+                            'branch.name' => 'Branch',
+                            'report_date' => 'Report Date',
+                            'total_inventory_value' => 'Total Inventory Value',
+                        ]
+                    );
+                }),
         ];
     }
 }
