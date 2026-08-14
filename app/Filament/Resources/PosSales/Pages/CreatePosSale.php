@@ -12,14 +12,51 @@ class CreatePosSale extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         try {
-            // We invoke the Promotion Engine to validate the final cart state.
-            // If the cashier manually selected conflicting offers that violate exclusivity,
-            // the engine or checkout service would throw an Exception.
-            
-            // For now, we simulate a strict check on selected offers if needed.
-            // In a full implementation, you would pass $data to PosCheckoutService->processCheckout() here
-            // and bypass the default Filament creation, or just validate.
-            
+            // Validate Stock for all items before attempting to create anything
+            $items = $this->data['posSaleItems'] ?? [];
+            $branchId = $data['branch_id'] ?? null;
+            $warehouseId = $data['warehouse_id'] ?? null;
+
+            foreach ($items as $item) {
+                $productId = $item['product_id'] ?? null;
+                if (!$productId || !$branchId) {
+                    continue;
+                }
+
+                $variantId = $item['product_variant_id'] ?? null;
+                $quantity = (float) ($item['quantity'] ?? 0);
+                
+                if ($quantity <= 0) continue;
+
+                $stockQuery = \App\Models\Stock::where('product_id', $productId)
+                    ->where('branch_id', $branchId);
+
+                if ($variantId) {
+                    $stockQuery->where('product_variant_id', $variantId);
+                } else {
+                    $stockQuery->whereNull('product_variant_id');
+                }
+
+                if ($warehouseId) {
+                    $stockQuery->where('warehouse_id', $warehouseId);
+                }
+
+                $available = (float) $stockQuery->sum('available_qty');
+
+                $reservationId = $data['stock_reservation_id'] ?? null;
+                if ($reservationId) {
+                    $res = \App\Models\StockReservation::find($reservationId);
+                    if ($res && $res->product_id == $productId && $res->product_variant_id == $variantId) {
+                        $available += $res->quantity;
+                    }
+                }
+
+                if ($available < $quantity) {
+                    $productName = \App\Models\Product::find($productId)?->name ?? 'Product';
+                    throw new \Exception("Insufficient available stock for {$productName}. Available: {$available}, Requested: {$quantity}");
+                }
+            }
+
             // Example validation:
             if (isset($data['selected_offers']) && count($data['selected_offers']) > 1) {
                 // If the engine determines these cannot be combined
@@ -29,7 +66,7 @@ class CreatePosSale extends CreateRecord
         } catch (\Exception $e) {
             \Filament\Notifications\Notification::make()
                 ->danger()
-                ->title('Promotion Validation Failed')
+                ->title('Validation Failed')
                 ->body($e->getMessage())
                 ->send();
 

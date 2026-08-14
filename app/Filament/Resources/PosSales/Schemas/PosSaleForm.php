@@ -139,9 +139,9 @@ class PosSaleForm
                 $pathPrefix = $get('../../posSaleItems') !== null ? '../../posSaleItems.' : 'posSaleItems.';
                 $set($pathPrefix . $index . '.tax_percentage', $taxPercentage);
                 $set($pathPrefix . $index . '.taxable_amount', $itemTaxableAmount);
-                $set($pathPrefix . $index . '.cgst_amount', $itemCgst);
-                $set($pathPrefix . $index . '.sgst_amount', $itemSgst);
-                $set($pathPrefix . $index . '.igst_amount', $itemIgst);
+                $set($pathPrefix . $index . '.cgst', $itemCgst);
+                $set($pathPrefix . $index . '.sgst', $itemSgst);
+                $set($pathPrefix . $index . '.igst', $itemIgst);
             }
 
             $voucherAmount = (float) ($get('gift_voucher_amount') ?? $get('../../gift_voucher_amount') ?? 0);
@@ -302,8 +302,9 @@ class PosSaleForm
                     ->itemLabel(fn (array $state): ?string => (\App\Models\Product::find($state['product_id'])?->name ?? 'New Item') . (isset($state['product_variant_id']) && $state['product_variant_id'] ? ' (' . \App\Models\ProductVariant::find($state['product_variant_id'])?->sku . ')' : ''))
                     ->schema([
                         Select::make('product_id')
-                            ->relationship('product', 'name', function ($query, $get) {
-                                $query->where('product_type', 1);
+                            ->label('Product')
+                            ->options(function ($get) {
+                                $query = \App\Models\Product::where('product_type', 1);
                                 
                                 $branchId = $get('../../branch_id');
                                 $reservationId = $get('../../stock_reservation_id');
@@ -324,12 +325,13 @@ class PosSaleForm
                                     if (!empty($productIdsWithStock)) {
                                         $query->whereIn('id', $productIdsWithStock);
                                     } else {
-                                        $query->whereNull('id');
+                                        $query->whereNull('id'); // Force empty if no stock
                                     }
                                 }
+                                
+                                return $query->pluck('name', 'id');
                             })
                             ->searchable()
-                            ->preload()
                             ->live()
                             ->afterStateUpdated(function ($state, $set, $get) use ($recalculateAll) {
                                 $set('product_variant_id', null);
@@ -363,16 +365,19 @@ class PosSaleForm
                             ->required(),
                         \Filament\Forms\Components\Hidden::make('price_list_id'),
                         Select::make('product_variant_id')
-                            ->relationship('productVariant', 'sku', function ($query, $get) {
+                            ->label('Product Variant')
+                            ->options(function ($get) {
                                 $productId = $get('product_id');
                                 $branchId = $get('../../branch_id');
                                 $reservationId = $get('../../stock_reservation_id');
 
-                                if ($productId) {
-                                    $query->where('product_id', $productId);
+                                if (!$productId) {
+                                    return [];
                                 }
+
+                                $query = \App\Models\ProductVariant::where('product_id', $productId);
                                 
-                                if ($branchId && $productId) {
+                                if ($branchId) {
                                     $variantIdsWithStock = \App\Models\Stock::where('branch_id', $branchId)
                                         ->where('product_id', $productId)
                                         ->where('available_qty', '>', 0)
@@ -395,10 +400,10 @@ class PosSaleForm
                                         $query->whereNull('id');
                                     }
                                 }
+
+                                return $query->pluck('sku', 'id');
                             })
-                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->sku ?? 'Variant #' . $record->id)
                             ->searchable()
-                            ->preload()
                             ->live()
                             ->afterStateUpdated(function ($state, $set, $get) use ($recalculateAll) {
                                 if ($state) {
@@ -500,9 +505,17 @@ class PosSaleForm
                         TextInput::make('total_price')->numeric()->prefix('₹')->default(0)->required(),
                         \Filament\Forms\Components\Hidden::make('tax_percentage')->default(0),
                         \Filament\Forms\Components\Hidden::make('taxable_amount')->default(0),
-                        \Filament\Forms\Components\Hidden::make('cgst_amount')->default(0),
-                        \Filament\Forms\Components\Hidden::make('sgst_amount')->default(0),
-                        \Filament\Forms\Components\Hidden::make('igst_amount')->default(0),
+                        \Filament\Forms\Components\Hidden::make('cgst')->default(0),
+                        \Filament\Forms\Components\Hidden::make('sgst')->default(0),
+                        \Filament\Forms\Components\Hidden::make('igst')->default(0),
+                        \Filament\Forms\Components\Hidden::make('gst_amount')->default(0),
+                        \Filament\Forms\Components\Hidden::make('net_amount')->default(0),
+                        \Filament\Forms\Components\Hidden::make('mrp')->default(0),
+                        \Filament\Forms\Components\Hidden::make('selling_price')->default(0),
+                        \Filament\Forms\Components\Hidden::make('gross_amount')->default(0),
+                        \Filament\Forms\Components\Hidden::make('discount_type')->nullable(),
+                        \Filament\Forms\Components\Hidden::make('discount_percentage')->default(0),
+                        \Filament\Forms\Components\Hidden::make('discount_amount')->default(0),
                     ])
                     ->live()
                     ->afterStateUpdated(function ($state, $set, $get) use ($recalculateAll) {

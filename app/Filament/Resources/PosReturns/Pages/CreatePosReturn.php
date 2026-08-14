@@ -35,6 +35,13 @@ class CreatePosReturn extends CreateRecord
         $data['return_items'] = $items->all();
         $data['return_amount'] = round((float) $items->sum('line_total'), 2);
 
+        if (!empty($data['pos_sale_id'])) {
+            $sale = \App\Models\PosSale::find($data['pos_sale_id']);
+            if ($sale) {
+                $data['branch_id'] = $sale->branch_id;
+            }
+        }
+
         return $data;
     }
 

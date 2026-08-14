@@ -20,8 +20,6 @@ class InventoryCountsTable
                     ->sortable(),
                 TextColumn::make('branch.name')
                     ->sortable(),
-                TextColumn::make('warehouse.name')
-                    ->sortable(),
                 TextColumn::make('count_date')
                     ->date()
                     ->sortable(),

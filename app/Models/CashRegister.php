@@ -22,7 +22,8 @@ class CashRegister extends Model
 
     public function getNameAttribute()
     {
-        return 'Register #' . $this->id . ($this->posTerminal ? ' - ' . $this->posTerminal->terminal_name : '');
+        $userName = $this->user ? $this->user->name : 'Unknown User';
+        return $userName . ' - Register #' . $this->id . ($this->posTerminal ? ' (' . $this->posTerminal->terminal_name . ')' : '');
     }
 
     public function branch()

@@ -20,8 +20,6 @@ class StocksTable
                     ->sortable(),
                 TextColumn::make('branch.name')
                     ->sortable(),
-                TextColumn::make('warehouse.name')
-                    ->sortable(),
                 TextColumn::make('quantity')
                     ->numeric()
                     ->sortable(),

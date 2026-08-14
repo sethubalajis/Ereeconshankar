@@ -41,6 +41,22 @@ class BranchPanelProvider extends PanelProvider
             ->widgets([
                 AccountWidget::class,
             ])
+            ->navigationGroups([
+                '5. Procurement',
+                '6. Vendor Management',
+                '7. Inventory Management',
+                '8. Warehouse Management',
+                '9. Branch Management',
+                '10. Stock Transfer',
+                '11. Retail POS',
+                '12. CRM & Loyalty',
+                '13. Promotions & Discounts',
+                '16. Human Resources',
+                '17. Payroll',
+                '18. Asset Management',
+                '19. Service & Complaints',
+                '20. Reports & BI Dashboard',
+            ])
             ->brandName('Branch Admin Panel')
             ->middleware([
                 EncryptCookies::class,

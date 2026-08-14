@@ -45,7 +45,7 @@ class InventoryCount extends Model
                             $reconciliation->product_id,
                             $reconciliation->product_variant_id,
                             $model->branch_id,
-                            $model->warehouse_id,
+                            null, // warehouse_id removed
                             $type,
                             $absQuantity,
                             0, // Cost could be derived, left 0 for reconciliation adjustment
@@ -68,12 +68,6 @@ class InventoryCount extends Model
             ->selectRaw('product_id, product_variant_id, SUM(quantity) as system_qty')
             ->where('branch_id', $this->branch_id)
             ->groupBy('product_id', 'product_variant_id');
-
-        if ($this->warehouse_id) {
-            $stocksQuery->where('warehouse_id', $this->warehouse_id);
-        } else {
-            $stocksQuery->whereNull('warehouse_id');
-        }
 
         $stocks = $stocksQuery->get();
 
@@ -100,8 +94,5 @@ class InventoryCount extends Model
     //
     public function branch() {
         return $this->belongsTo(Branch::class, 'branch_id');
-    }
-    public function warehouse() {
-        return $this->belongsTo(Warehouse::class, 'warehouse_id');
     }
 }

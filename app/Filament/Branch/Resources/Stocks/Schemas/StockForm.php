@@ -22,9 +22,6 @@ class StockForm
                     ->required()
                     ->live()
                     ->afterStateUpdated(fn ($set, $get) => self::fetchStockDetails($set, $get)),
-                \Filament\Forms\Components\Select::make('warehouse_id')->relationship('warehouse', 'name')
-                    ->live()
-                    ->afterStateUpdated(fn ($set, $get) => self::fetchStockDetails($set, $get)),
                 TextInput::make('quantity')
                     ->required()
                     ->numeric()
@@ -42,8 +39,6 @@ class StockForm
         $productId = $get('product_id');
         $variantId = $get('product_variant_id');
         $branchId = $get('branch_id');
-        $warehouseId = $get('warehouse_id');
-
         if ($productId && $branchId) {
             $query = \App\Models\Stock::where('product_id', $productId)
                 ->where('branch_id', $branchId);
@@ -52,12 +47,6 @@ class StockForm
                 $query->where('product_variant_id', $variantId);
             } else {
                 $query->whereNull('product_variant_id');
-            }
-
-            if ($warehouseId) {
-                $query->where('warehouse_id', $warehouseId);
-            } else {
-                $query->whereNull('warehouse_id');
             }
 
             $stock = $query->first();
