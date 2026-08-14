@@ -1,0 +1,24 @@
+<?php
+
+namespace App\Filament\Branch\Resources\DiscountRules\Pages;
+
+use App\Filament\Branch\Resources\DiscountRules\DiscountRuleResource;
+use Filament\Actions\DeleteAction;
+use Filament\Resources\Pages\EditRecord;
+
+class EditDiscountRule extends EditRecord
+{
+    protected static string $resource = DiscountRuleResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DeleteAction::make(),
+        ];
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+}

@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\HasBranch;
+
 use Illuminate\Database\Eloquent\Model;
 
 class PosSaleItem extends Model
 {
+    use HasBranch;
+
     protected $guarded = [];
 
     protected static function booted()
@@ -132,5 +136,10 @@ class PosSaleItem extends Model
     }
     public function appliedPriceList() {
         return $this->belongsTo(PriceList::class, 'price_list_id');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 }

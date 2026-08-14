@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\HasBranch;
+
 use Illuminate\Database\Eloquent\Model;
 
 class RolePermission extends Model
 {
+    use HasBranch;
+
     protected $guarded = [];
 
     public $timestamps = false;

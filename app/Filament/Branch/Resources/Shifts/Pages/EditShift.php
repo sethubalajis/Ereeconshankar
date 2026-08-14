@@ -1,0 +1,24 @@
+<?php
+
+namespace App\Filament\Branch\Resources\Shifts\Pages;
+
+use App\Filament\Branch\Resources\Shifts\ShiftResource;
+use Filament\Actions\DeleteAction;
+use Filament\Resources\Pages\EditRecord;
+
+class EditShift extends EditRecord
+{
+    protected static string $resource = ShiftResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DeleteAction::make(),
+        ];
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+}

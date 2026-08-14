@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use App\Traits\HasTransferBranch;
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
 class TransferRequest extends Model
 {
+    use HasTransferBranch;
+
     protected $guarded = [];
 
     protected static function booted(): void

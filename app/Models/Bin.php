@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\HasBranch;
+
 use Illuminate\Database\Eloquent\Model;
 
 class Bin extends Model
 {
+    use HasBranch;
+
     protected $guarded = [];
 
     protected static function booted(): void
@@ -22,5 +26,10 @@ class Bin extends Model
     //
     public function rack() {
         return $this->belongsTo(Rack::class, 'rack_id');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 }

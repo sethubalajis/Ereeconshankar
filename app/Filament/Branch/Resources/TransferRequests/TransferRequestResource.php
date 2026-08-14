@@ -10,6 +10,7 @@ use App\Filament\Branch\Resources\TransferRequests\Tables\TransferRequestsTable;
 use App\Models\TransferRequest;
 use BackedEnum;
 use App\Filament\Branch\Resources\BaseBranchResource;
+use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;

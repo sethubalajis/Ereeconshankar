@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\HasBranch;
+
 use Illuminate\Database\Eloquent\Model;
 
 class CustomerWallet extends Model
 {
+    use HasBranch;
+
     protected $guarded = [];
 
     //
@@ -34,5 +38,10 @@ class CustomerWallet extends Model
 
         static::saved($recalculate);
         static::deleted($recalculate);
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 }

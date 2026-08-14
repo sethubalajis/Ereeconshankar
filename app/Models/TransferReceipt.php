@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\HasBranch;
+
 use Illuminate\Database\Eloquent\Model;
 
 class TransferReceipt extends Model
 {
+    use HasBranch;
+
     protected $guarded = [];
 
     //
@@ -15,5 +19,10 @@ class TransferReceipt extends Model
 
     public function receivedBy() {
         return $this->belongsTo(User::class, 'received_by');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 }

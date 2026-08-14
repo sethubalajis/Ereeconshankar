@@ -1,0 +1,24 @@
+<?php
+
+namespace App\Filament\Branch\Resources\EmployeeExits\Pages;
+
+use App\Filament\Branch\Resources\EmployeeExits\EmployeeExitResource;
+use Filament\Actions\DeleteAction;
+use Filament\Resources\Pages\EditRecord;
+
+class EditEmployeeExit extends EditRecord
+{
+    protected static string $resource = EmployeeExitResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DeleteAction::make(),
+        ];
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+}

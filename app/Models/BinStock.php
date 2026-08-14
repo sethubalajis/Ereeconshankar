@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\HasBranch;
+
 use Illuminate\Database\Eloquent\Model;
 
 class BinStock extends Model
 {
+    use HasBranch;
+
     protected $guarded = [];
 
     //
@@ -17,5 +21,10 @@ class BinStock extends Model
     }
     public function productVariant() {
         return $this->belongsTo(ProductVariant::class, 'product_variant_id');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 }

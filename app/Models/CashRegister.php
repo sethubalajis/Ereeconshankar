@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\HasBranch;
+
 use Illuminate\Database\Eloquent\Model;
 
 class CashRegister extends Model
 {
+    use HasBranch;
+
     protected $guarded = [];
 
     //
@@ -19,5 +23,10 @@ class CashRegister extends Model
     public function getNameAttribute()
     {
         return 'Register #' . $this->id . ($this->posTerminal ? ' - ' . $this->posTerminal->terminal_name : '');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 }

@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\HasBranch;
+
 use Illuminate\Database\Eloquent\Model;
 
 class PromoCode extends Model
 {
+    use HasBranch;
+
     protected $guarded = [];
 
     protected static function booted()
@@ -18,4 +22,9 @@ class PromoCode extends Model
     }
 
     //
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
+    }
 }

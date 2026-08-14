@@ -3,6 +3,7 @@
 namespace App\Filament\Branch\Resources\SalesReports\Tables;
 
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
@@ -65,6 +66,14 @@ class SalesReportsTable
             ])
             ->recordActions([
                 EditAction::make(),
+                DeleteAction::make(),
+                \Filament\Actions\Action::make('download_pdf')
+                    ->label('PDF')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('success')
+                    ->action(function ($record) {
+                        return \App\Helpers\ReportPdfHelper::downloadSalesReportPdf($record);
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use App\Traits\HasBranch;
+
 use App\Traits\BelongsToFinancialYear;
 
 use Illuminate\Database\Eloquent\Model;
 
 class DebitNote extends Model
 {
+    use HasBranch;
+
     use BelongsToFinancialYear;
     protected $guarded = [];
 
@@ -17,5 +21,10 @@ class DebitNote extends Model
     }
     public function vendor() {
         return $this->belongsTo(Vendor::class, 'vendor_id');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 }

@@ -1,0 +1,24 @@
+<?php
+
+namespace App\Filament\Branch\Resources\PromoCodes\Pages;
+
+use App\Filament\Branch\Resources\PromoCodes\PromoCodeResource;
+use Filament\Actions\DeleteAction;
+use Filament\Resources\Pages\EditRecord;
+
+class EditPromoCode extends EditRecord
+{
+    protected static string $resource = PromoCodeResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DeleteAction::make(),
+        ];
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+}

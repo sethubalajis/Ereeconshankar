@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use App\Traits\HasTransferBranch;
+
 use App\Traits\BelongsToFinancialYear;
 
 use Illuminate\Database\Eloquent\Model;
 
 class AssetTransfer extends Model
 {
+    use HasTransferBranch;
+
     use BelongsToFinancialYear;
     protected $guarded = [];
 

@@ -14,6 +14,22 @@ class ListBranchPerformanceReports extends ListRecords
     {
         return [
             CreateAction::make(),
+            \Filament\Actions\Action::make('export_pdf')
+                ->label('Export PDF Report')
+                ->icon('heroicon-o-document-arrow-down')
+                ->color('success')
+                ->action(function () {
+                    $records = \App\Models\BranchPerformanceReport::with('branch')->get();
+                    return \App\Helpers\ReportPdfHelper::downloadListPdf(
+                        'Branch Performance Reports Summary',
+                        $records,
+                        [
+                            'branch.name' => 'Branch',
+                            'report_month' => 'Report Month',
+                            'score' => 'Performance Score',
+                        ]
+                    );
+                }),
         ];
     }
 }

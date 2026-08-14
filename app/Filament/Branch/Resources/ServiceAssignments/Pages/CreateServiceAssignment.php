@@ -1,0 +1,16 @@
+<?php
+
+namespace App\Filament\Branch\Resources\ServiceAssignments\Pages;
+
+use App\Filament\Branch\Resources\ServiceAssignments\ServiceAssignmentResource;
+use Filament\Resources\Pages\CreateRecord;
+
+class CreateServiceAssignment extends CreateRecord
+{
+    protected static string $resource = ServiceAssignmentResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+}

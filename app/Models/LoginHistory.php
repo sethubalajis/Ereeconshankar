@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\HasBranch;
+
 use Illuminate\Database\Eloquent\Model;
 
 class LoginHistory extends Model
 {
+    use HasBranch;
+
 
     protected $guarded = [];
 
@@ -14,4 +18,9 @@ class LoginHistory extends Model
     }
 
     //
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
+    }
 }
