@@ -835,5 +835,12 @@ class ReportPdfHelper
         $filename = 'POS-Receipt-' . ($record->invoice_number ?? $record->id) . '-' . now()->format('YmdHis') . '.pdf';
         return response()->streamDownload(fn () => print($pdf->output()), $filename);
     }
+    public static function downloadQuotationReceiptPdf(object $record): StreamedResponse
+    {
+        $pdf = Pdf::loadView('reports.quotation_receipt_pdf', ['record' => $record])
+            ->setPaper('a4');
+        $filename = 'Quotation-Receipt-' . ($record->quotation_number ?? $record->id) . '-' . now()->format('YmdHis') . '.pdf';
+        return response()->streamDownload(fn () => print($pdf->output()), $filename);
+    }
 }
 
