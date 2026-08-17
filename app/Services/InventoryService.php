@@ -31,7 +31,6 @@ class InventoryService
             'product_id' => $productId,
             'product_variant_id' => $variantId,
             'branch_id' => $branchId,
-            'warehouse_id' => $warehouseId,
         ])->first();
 
         if (! $stock) {
@@ -41,24 +40,17 @@ class InventoryService
                     ->where('product_id', $productId)
                     ->where('product_variant_id', $variantId)
                     ->where('branch_id', $branchId)
-                    ->orderByRaw('warehouse_id IS NULL DESC')
                     ->orderByDesc('quantity')
                     ->first();
 
                 if (! $stock) {
                     return null;
                 }
-
-                if ($warehouseId && $stock->warehouse_id !== $warehouseId) {
-                    $stock->warehouse_id = $warehouseId;
-                    $stock->save();
-                }
             } else {
                 $stock = new Stock([
                     'product_id' => $productId,
                     'product_variant_id' => $variantId,
                     'branch_id' => $branchId,
-                    'warehouse_id' => $warehouseId,
                 ]);
             }
         }

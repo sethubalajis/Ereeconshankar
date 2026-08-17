@@ -16,8 +16,6 @@ class StockAdjustmentsTable
             ->columns([
                 TextColumn::make('branch.name')
                     ->sortable(),
-                TextColumn::make('warehouse.name')
-                    ->sortable(),
                 TextColumn::make('product.name')
                     ->sortable(),
                 TextColumn::make('productVariant.sku')

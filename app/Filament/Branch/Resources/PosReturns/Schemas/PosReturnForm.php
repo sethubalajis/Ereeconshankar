@@ -27,7 +27,7 @@ class PosReturnForm
             ->components([
                 Select::make('pos_sale_id')
                     ->label('POS Sale')
-                    ->relationship('posSale', 'invoice_number')
+                    ->relationship('posSale', 'invoice_number', fn ($query) => $query->orderBy('id', 'desc'))
                     ->searchable()
                     ->preload()
                     ->live()

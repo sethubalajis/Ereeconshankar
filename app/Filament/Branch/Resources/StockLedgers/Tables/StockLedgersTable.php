@@ -24,9 +24,7 @@ class StockLedgersTable
                 TextColumn::make('branch.name')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('warehouse.name')
-                    ->sortable()
-                    ->searchable(),
+
                 TextColumn::make('transaction_date')
                     ->date()
                     ->sortable(),

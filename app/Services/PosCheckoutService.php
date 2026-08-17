@@ -179,7 +179,7 @@ class PosCheckoutService
             $stock = Stock::where('branch_id', $branchId)
                 ->where('product_id', $item['product_id'])
                 ->where('product_variant_id', $item['product_variant_id'] ?? null)
-                ->sum('quantity');
+                ->sum('available_qty');
 
             if ($stock < $item['quantity']) {
                 throw new Exception("Insufficient stock for product ID: {$item['product_id']}");

@@ -11,7 +11,16 @@ class RackForm
     {
         return $schema
             ->components([
-                \Filament\Forms\Components\Select::make('warehouse_zone_id')->relationship('warehouseZone', 'name')
+                \Filament\Forms\Components\Select::make('branch_id')->relationship('branch', 'name')
+                    ->required()
+                    ->live(),
+                \Filament\Forms\Components\Select::make('warehouse_zone_id')
+                    ->relationship('warehouseZone', 'name', function ($query, $get) {
+                        $branchId = $get('branch_id');
+                        if ($branchId) {
+                            $query->where('branch_id', $branchId);
+                        }
+                    })
                     ->required(),
                 TextInput::make('name')
                     ->required(),

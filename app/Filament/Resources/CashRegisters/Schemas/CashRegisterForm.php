@@ -35,7 +35,16 @@ class CashRegisterForm
 
         return $schema
             ->components([
-                \Filament\Forms\Components\Select::make('pos_terminal_id')->relationship('posTerminal', 'terminal_name')
+                \Filament\Forms\Components\Select::make('branch_id')->relationship('branch', 'name')
+                    ->required()
+                    ->live(),
+                \Filament\Forms\Components\Select::make('pos_terminal_id')
+                    ->relationship('posTerminal', 'terminal_name', function ($query, $get) {
+                        $branchId = $get('branch_id');
+                        if ($branchId) {
+                            $query->where('branch_id', $branchId);
+                        }
+                    })
                     ->required()
                     ->live()
                     ->afterStateUpdated($updateBalances),

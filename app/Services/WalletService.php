@@ -37,6 +37,7 @@ class WalletService
             'amount' => $amount,
             'reference' => 'Debited for POS Sale #' . $posSale->id,
             'created_by' => auth()->id() ?? 1,
+            'transaction_date' => now()->toDateString(),
         ]);
 
 
@@ -62,6 +63,7 @@ class WalletService
             'amount' => $amount,
             'reference' => $reference ?? ('Credited from POS Sale #' . $posSale->id),
             'created_by' => auth()->id() ?? 1,
+            'transaction_date' => now()->toDateString(),
         ]);
 
 

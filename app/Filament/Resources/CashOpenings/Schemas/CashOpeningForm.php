@@ -37,14 +37,15 @@ class CashOpeningForm
         return $schema
             ->components([
                 \Filament\Forms\Components\Select::make('cash_register_id')
-                    ->relationship('cashRegister', 'id')
-                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->name)
+                    ->label('Cash Register')
+                    ->options(fn () => \App\Models\CashRegister::with('posTerminal')->get()->pluck('name', 'id'))
                     ->required()
                     ->live()
                     ->afterStateUpdated($updateOpeningAmount),
                 DateTimePicker::make('opening_time')
                     ->required()
-                    ->default(now()->timezone('Asia/Kolkata')),
+                    ->timezone('Asia/Kolkata')
+                    ->default(now()),
                 TextInput::make('opening_amount')
                     ->required()
                     ->numeric()

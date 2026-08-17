@@ -41,7 +41,7 @@ class StockAdjustment extends Model
                     $model->product_id,
                     $model->product_variant_id,
                     $model->branch_id,
-                    $model->warehouse_id,
+                    null, // warehouse_id removed
                     $type,
                     $absQuantity,
                     0, // cost adjustment might require more complex logic, leave 0 for now
@@ -55,9 +55,6 @@ class StockAdjustment extends Model
     //
     public function branch() {
         return $this->belongsTo(Branch::class, 'branch_id');
-    }
-    public function warehouse() {
-        return $this->belongsTo(Warehouse::class, 'warehouse_id');
     }
     public function product() {
         return $this->belongsTo(Product::class, 'product_id');

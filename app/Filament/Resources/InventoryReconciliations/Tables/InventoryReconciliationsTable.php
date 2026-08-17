@@ -23,6 +23,7 @@ class InventoryReconciliationsTable
                 TextColumn::make('productVariant.sku')
                     ->sortable(),
                 TextColumn::make('system_qty')
+                    ->label('Current Stock Qty')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('physical_qty')

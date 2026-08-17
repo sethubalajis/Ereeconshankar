@@ -15,8 +15,9 @@ class CashClosingsTable
     {
         return $table
             ->columns([
-                TextColumn::make('cashRegister.name')
-                    ->sortable(),
+                TextColumn::make('cash_register_id')
+                    ->label('Cash Register')
+                    ->formatStateUsing(fn ($record) => $record->cashRegister?->name),
                 TextColumn::make('closing_time')
                     ->dateTime()
                     ->sortable(),

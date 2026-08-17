@@ -14,7 +14,7 @@ class InventoryCountForm
             ->components([
                 \Filament\Forms\Components\Select::make('branch_id')->relationship('branch', 'name')
                     ->required(),
-                \Filament\Forms\Components\Select::make('warehouse_id')->relationship('warehouse', 'name'),
+
                 TextInput::make('count_code')
                     ->required()
                     ->default(fn () => 'IC-' . now()->format('Ymd') . '-' . str_pad((string) ((\App\Models\InventoryCount::max('id') ?? 0) + 1), 4, '0', STR_PAD_LEFT))
@@ -27,6 +27,7 @@ class InventoryCountForm
                         'draft' => 'Draft',
                         'active' => 'Active',
                         'completed' => 'Completed',
+                        'approved' => 'Approved',
                         'cancelled' => 'Cancelled',
                     ])
                     ->required()

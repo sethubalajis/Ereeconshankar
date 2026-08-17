@@ -31,12 +31,23 @@ class StockReservationForm
                     ->required()
                     ->unique(ignoreRecord: true),
                 Select::make('product_id')
-                    ->relationship('product', 'name')
+                    ->label('Product')
+                    ->options(\App\Models\Product::pluck('name', 'id'))
                     ->required()
+                    ->searchable()
                     ->live()
                     ->afterStateUpdated(fn ($set) => $set('product_variant_id', null)),
                 Select::make('product_variant_id')
-                    ->relationship('productVariant', 'sku', fn (Builder $query, $get) => $query->where('product_id', $get('product_id'))),
+                    ->label('Product Variant')
+                    ->options(function ($get) {
+                        $productId = $get('product_id');
+                        if (!$productId) {
+                            return [];
+                        }
+                        return \App\Models\ProductVariant::where('product_id', $productId)->pluck('sku', 'id');
+                    })
+                    ->searchable()
+                    ->live(),
                 Select::make('branch_id')
                     ->relationship('branch', 'name')
                     ->required(),

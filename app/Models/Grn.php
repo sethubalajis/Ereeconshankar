@@ -71,7 +71,7 @@ class Grn extends Model
                             $productId,
                             $variantId,
                             $model->branch_id,
-                            $model->warehouse_id,
+                            null, // warehouse_id removed
                             'in',
                             $quantity,
                             $unitPrice,
@@ -93,8 +93,5 @@ class Grn extends Model
     }
     public function branch() {
         return $this->belongsTo(Branch::class, 'branch_id');
-    }
-    public function warehouse() {
-        return $this->belongsTo(Warehouse::class, 'warehouse_id');
     }
 }
