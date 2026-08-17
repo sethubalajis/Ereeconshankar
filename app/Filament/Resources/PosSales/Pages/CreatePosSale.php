@@ -15,7 +15,6 @@ class CreatePosSale extends CreateRecord
             // Validate Stock for all items before attempting to create anything
             $items = $this->data['posSaleItems'] ?? [];
             $branchId = $data['branch_id'] ?? null;
-            $warehouseId = $data['warehouse_id'] ?? null;
 
             foreach ($items as $item) {
                 $productId = $item['product_id'] ?? null;
@@ -37,9 +36,6 @@ class CreatePosSale extends CreateRecord
                     $stockQuery->whereNull('product_variant_id');
                 }
 
-                if ($warehouseId) {
-                    $stockQuery->where('warehouse_id', $warehouseId);
-                }
 
                 $available = (float) $stockQuery->sum('available_qty');
 

@@ -17,9 +17,6 @@ class PosSalesTable
             ->columns([
                 TextColumn::make('branch.name')
                     ->sortable(),
-                TextColumn::make('warehouse.name')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('posTerminal.terminal_name')
                     ->sortable(),
                 TextColumn::make('customer.name')

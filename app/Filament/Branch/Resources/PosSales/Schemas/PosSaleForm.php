@@ -188,21 +188,15 @@ class PosSaleForm
                     ->required()
                     ->live()
                     ->afterStateUpdated(function ($state, $set) {
-                        if ($state) {
-                            $set('warehouse_id', \App\Models\Warehouse::defaultIdForBranch((int) $state));
-                        }
                     }),
-                Select::make('warehouse_id')
-                    ->relationship('warehouse', 'name', function ($query, $get) {
+
+                Select::make('pos_terminal_id')
+                    ->relationship('posTerminal', 'terminal_name', function ($query, $get) {
                         $branchId = $get('branch_id');
                         if ($branchId) {
                             $query->where('branch_id', $branchId);
                         }
                     })
-                    ->label('Warehouse (Optional)')
-                    ->nullable(),
-                Select::make('pos_terminal_id')
-                    ->relationship('posTerminal', 'terminal_name')
                     ->required(),
                 Select::make('customer_id')
                     ->label('Customer')
