@@ -26,6 +26,7 @@ class InventoryCountForm
                         'draft' => 'Draft',
                         'active' => 'Active',
                         'completed' => 'Completed',
+                        'approved' => 'Approved',
                         'cancelled' => 'Cancelled',
                     ])
                     ->required()

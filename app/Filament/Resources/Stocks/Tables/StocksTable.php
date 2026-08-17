@@ -22,7 +22,7 @@ class StocksTable
                 TextColumn::make('branch.name')
                     ->sortable(),
                 TextColumn::make('quantity')
-                    ->label('Total Qty')
+                    ->label('Current Stock Qty')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('reserved_qty')

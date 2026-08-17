@@ -19,7 +19,7 @@ class CreateStock extends CreateRecord
         $stock = static::getModel()::where('product_id', $data['product_id'])
             ->where('product_variant_id', $data['product_variant_id'] ?? null)
             ->where('branch_id', $data['branch_id'])
-            ->where('warehouse_id', $data['warehouse_id'] ?? null)
+
             ->first();
 
         if ($stock) {

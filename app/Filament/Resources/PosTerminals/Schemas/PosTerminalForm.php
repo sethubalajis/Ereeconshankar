@@ -17,7 +17,9 @@ class PosTerminalForm
                 TextInput::make('terminal_name')
                     ->required(),
                 TextInput::make('terminal_code')
-                    ->required(),
+                    ->required()
+                    ->default(fn () => 'TERM-' . str_pad((string) ((\App\Models\PosTerminal::max('id') ?? 0) + 1), 4, '0', STR_PAD_LEFT))
+                    ->unique(ignoreRecord: true),
                 Toggle::make('status')
                     ->required(),
             ]);

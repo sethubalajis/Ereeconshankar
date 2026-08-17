@@ -37,16 +37,21 @@ class DamagedProductResource extends Resource
     {
         return $schema
             ->components([
-                TextInput::make('product_id')
-                    ->required()
-                    ->numeric(),
-                TextInput::make('product_variant_id')
-                    ->numeric(),
-                TextInput::make('branch_id')
-                    ->required()
-                    ->numeric(),
-                TextInput::make('warehouse_id')
-                    ->numeric(),
+                \Filament\Forms\Components\Select::make('product_id')
+                    ->relationship('product', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
+                \Filament\Forms\Components\Select::make('product_variant_id')
+                    ->relationship('productVariant', 'sku')
+                    ->searchable()
+                    ->preload(),
+                \Filament\Forms\Components\Select::make('branch_id')
+                    ->relationship('branch', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
+
                 TextInput::make('quantity')
                     ->required()
                     ->numeric()
@@ -66,16 +71,11 @@ class DamagedProductResource extends Resource
     {
         return $schema
             ->components([
-                TextEntry::make('product_id')
-                    ->numeric(),
-                TextEntry::make('product_variant_id')
-                    ->numeric()
+                TextEntry::make('product.name'),
+                TextEntry::make('productVariant.sku')
                     ->placeholder('-'),
-                TextEntry::make('branch_id')
-                    ->numeric(),
-                TextEntry::make('warehouse_id')
-                    ->numeric()
-                    ->placeholder('-'),
+                TextEntry::make('branch.name'),
+
                 TextEntry::make('quantity')
                     ->numeric(),
                 TextEntry::make('source_type')
@@ -116,9 +116,7 @@ class DamagedProductResource extends Resource
                 TextColumn::make('branch.name')
                     ->label('Branch')
                     ->sortable(),
-                TextColumn::make('warehouse.name')
-                    ->label('Warehouse')
-                    ->sortable(),
+
                 TextColumn::make('quantity')
                     ->numeric()
                     ->sortable(),

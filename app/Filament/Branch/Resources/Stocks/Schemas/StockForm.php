@@ -14,8 +14,17 @@ class StockForm
                 \Filament\Forms\Components\Select::make('product_id')->relationship('product', 'name')
                     ->required()
                     ->live()
-                    ->afterStateUpdated(fn ($set, $get) => self::fetchStockDetails($set, $get)),
-                \Filament\Forms\Components\Select::make('product_variant_id')->relationship('productVariant', 'sku')
+                    ->afterStateUpdated(function ($set, $get) {
+                        $set('product_variant_id', null);
+                        self::fetchStockDetails($set, $get);
+                    }),
+                \Filament\Forms\Components\Select::make('product_variant_id')
+                    ->relationship('productVariant', 'sku', function ($query, $get) {
+                        $productId = $get('product_id');
+                        if ($productId) {
+                            $query->where('product_id', $productId);
+                        }
+                    })
                     ->live()
                     ->afterStateUpdated(fn ($set, $get) => self::fetchStockDetails($set, $get)),
                 \Filament\Forms\Components\Select::make('branch_id')->relationship('branch', 'name')
@@ -23,6 +32,7 @@ class StockForm
                     ->live()
                     ->afterStateUpdated(fn ($set, $get) => self::fetchStockDetails($set, $get)),
                 TextInput::make('quantity')
+                    ->label('Current Stock Qty')
                     ->required()
                     ->numeric()
                     ->default(0.0),
@@ -30,7 +40,7 @@ class StockForm
                     ->required()
                     ->numeric()
                     ->default(0.0)
-                    ->prefix('$'),
+                    ->prefix('₹'),
             ]);
     }
 
@@ -49,15 +59,16 @@ class StockForm
                 $query->whereNull('product_variant_id');
             }
 
-            $stock = $query->first();
+            $stocks = $query->get();
+            $quantity = $stocks->sum('quantity');
+            
+            $totalCost = $stocks->sum(function ($stock) {
+                return $stock->quantity * $stock->avg_cost;
+            });
+            $avg_cost = $quantity > 0 ? $totalCost / $quantity : 0.0;
 
-            if ($stock) {
-                $set('quantity', $stock->quantity);
-                $set('avg_cost', $stock->avg_cost);
-            } else {
-                $set('quantity', 0);
-                $set('avg_cost', 0.0);
-            }
+            $set('quantity', $quantity);
+            $set('avg_cost', round($avg_cost, 2));
         }
     }
 }

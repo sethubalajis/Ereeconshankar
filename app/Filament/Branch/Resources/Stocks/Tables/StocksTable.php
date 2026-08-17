@@ -21,10 +21,12 @@ class StocksTable
                 TextColumn::make('branch.name')
                     ->sortable(),
                 TextColumn::make('quantity')
+                    ->label('Current Stock Qty')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('avg_cost')
-                    ->money()
+                    ->prefix('₹')
+                    ->numeric()
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

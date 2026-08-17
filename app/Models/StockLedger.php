@@ -22,7 +22,4 @@ class StockLedger extends Model
     public function branch() {
         return $this->belongsTo(Branch::class, 'branch_id');
     }
-    public function warehouse() {
-        return $this->belongsTo(Warehouse::class, 'warehouse_id');
-    }
 }

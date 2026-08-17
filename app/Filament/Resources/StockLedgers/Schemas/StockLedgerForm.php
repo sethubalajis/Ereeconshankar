@@ -14,7 +14,7 @@ class StockLedgerForm
             $productId = $get('product_id');
             $variantId = $get('product_variant_id');
             $branchId = $get('branch_id');
-            $warehouseId = $get('warehouse_id');
+
 
             if ($productId && $branchId) {
                 $query = \App\Models\Stock::where('product_id', $productId)
@@ -23,9 +23,7 @@ class StockLedgerForm
                 if ($variantId) {
                     $query->where('product_variant_id', $variantId);
                 }
-                if ($warehouseId) {
-                    $query->where('warehouse_id', $warehouseId);
-                }
+
                 
                 $stock = $query->first();
                 $openingQty = $stock ? (float) $stock->quantity : 0.0;
@@ -61,9 +59,7 @@ class StockLedgerForm
                     ->required()
                     ->live()
                     ->afterStateUpdated($updateQuantities),
-                \Filament\Forms\Components\Select::make('warehouse_id')->relationship('warehouse', 'name')
-                    ->live()
-                    ->afterStateUpdated($updateQuantities),
+
                 DatePicker::make('transaction_date')
                     ->required()
                     ->default(now()->timezone('Asia/Kolkata')),

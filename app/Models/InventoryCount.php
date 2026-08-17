@@ -33,25 +33,17 @@ class InventoryCount extends Model
                 $model->generateReconciliationsFromStock();
             }
 
-            if ($model->wasChanged('status') && $model->status === 'completed') {
-                $inventoryService = new \App\Services\InventoryService();
-                
+            if ($model->wasChanged('status') && $model->status === 'approved') {
                 foreach ($model->inventoryReconciliations as $reconciliation) {
                     if ($reconciliation->variance != 0) {
-                        $type = $reconciliation->variance > 0 ? 'in' : 'out';
-                        $absQuantity = abs($reconciliation->variance);
-                        
-                        $inventoryService->updateStock(
-                            $reconciliation->product_id,
-                            $reconciliation->product_variant_id,
-                            $model->branch_id,
-                            null, // warehouse_id removed
-                            $type,
-                            $absQuantity,
-                            0, // Cost could be derived, left 0 for reconciliation adjustment
-                            'REC-' . $model->id,
-                            'App\\Models\\InventoryCount'
-                        );
+                        \App\Models\StockAdjustment::create([
+                            'branch_id' => $model->branch_id,
+                            'product_id' => $reconciliation->product_id,
+                            'product_variant_id' => $reconciliation->product_variant_id,
+                            'quantity' => $reconciliation->variance,
+                            'reason' => 'Inventory Count: ' . $model->count_code,
+                            'status' => 'approved',
+                        ]);
                     }
                 }
             }

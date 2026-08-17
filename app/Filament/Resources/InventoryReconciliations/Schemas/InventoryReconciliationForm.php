@@ -38,6 +38,7 @@ class InventoryReconciliationForm
                         self::updateSystemQty($set, $get);
                     }),
                 TextInput::make('system_qty')
+                    ->label('Current Stock Qty')
                     ->required()
                     ->numeric()
                     ->readOnly()
