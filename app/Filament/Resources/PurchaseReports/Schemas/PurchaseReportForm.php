@@ -78,6 +78,8 @@ class PurchaseReportForm
                     ->required()
                     ->numeric()
                     ->prefix('₹')
+                    ->readOnly()
+                    ->dehydrated()
                     ->default(0.0),
             
                 Placeholder::make('report_details')
