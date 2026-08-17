@@ -15,6 +15,9 @@ class QuotationsTable
     {
         return $table
             ->columns([
+                TextColumn::make('quotation_number')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('vendor.name')
                     ->sortable(),
                 TextColumn::make('rfq.rfq_number')
@@ -48,6 +51,13 @@ class QuotationsTable
             ->recordActions([
                 EditAction::make(),
                 DeleteAction::make(),
+                \Filament\Actions\Action::make('download_receipt')
+                    ->label('Receipt')
+                    ->icon('heroicon-o-document-text')
+                    ->color('success')
+                    ->action(function ($record) {
+                        return \App\Helpers\ReportPdfHelper::downloadQuotationReceiptPdf($record);
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
