@@ -16,7 +16,14 @@ class ServiceReportsTable
         return $table
             ->columns([
                 TextColumn::make('serviceRequest.request_number')
+                    ->searchable()
                     ->sortable(),
+                TextColumn::make('serviceRequest.customer.name')
+                    ->searchable()
+                    ->hidden(),
+                TextColumn::make('serviceRequest.customer.phone')
+                    ->searchable()
+                    ->hidden(),
                 TextColumn::make('report_date')
                     ->date()
                     ->sortable(),

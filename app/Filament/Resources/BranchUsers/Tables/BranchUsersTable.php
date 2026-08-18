@@ -16,8 +16,10 @@ class BranchUsersTable
         return $table
             ->columns([
                 TextColumn::make('branch.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('user.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
