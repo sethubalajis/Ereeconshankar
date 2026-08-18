@@ -20,9 +20,17 @@ class StockTransfersTable
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('fromBranch.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('toBranch.name')
+                    ->searchable()
                     ->sortable(),
+                TextColumn::make('transferItems.product.name')
+                    ->searchable()
+                    ->hidden(),
+                TextColumn::make('transferItems.product.code')
+                    ->searchable()
+                    ->hidden(),
                 TextColumn::make('transfer_date')
                     ->date()
                     ->sortable(),

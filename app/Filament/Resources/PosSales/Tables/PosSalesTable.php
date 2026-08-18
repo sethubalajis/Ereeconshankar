@@ -20,7 +20,11 @@ class PosSalesTable
                 TextColumn::make('posTerminal.terminal_name')
                     ->sortable(),
                 TextColumn::make('customer.name')
+                    ->searchable()
                     ->sortable(),
+                TextColumn::make('customer.phone')
+                    ->searchable()
+                    ->hidden(),
                 TextColumn::make('customerMembership.membershipPlan.name')
                     ->label('Membership')
                     ->sortable()

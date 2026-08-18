@@ -40,6 +40,9 @@ class ProductsTable
                         default => 'Sellable',
                     })
                     ->searchable(),
+                TextColumn::make('productBarcodes.barcode')
+                    ->searchable()
+                    ->hidden(),
 
                 IconColumn::make('is_active')
                     ->boolean(),
