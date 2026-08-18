@@ -13,8 +13,8 @@ class TransferApprovalForm
         return $schema
             ->components([
                 \Filament\Forms\Components\Select::make('transfer_request_id')
-                    ->label('Transfer Request Code')
-                    ->relationship('transferRequest', 'transfer_request_code')
+                    ->label('Transfer Request Number')
+                    ->relationship('transferRequest', 'transfer_request_number')
                     ->searchable()
                     ->preload()
                     ->required(),
@@ -23,12 +23,15 @@ class TransferApprovalForm
                     ->default(now()->timezone('Asia/Kolkata')),
                 \Filament\Forms\Components\Select::make('status')
                     ->options([
-                        'pending' => 'Pending',
-                        'approved' => 'Approved',
-                        'rejected' => 'Rejected',
+                        'PENDING' => 'Pending',
+                        'APPROVED' => 'Approved',
+                        'REJECTED' => 'Rejected',
                     ])
                     ->required()
-                    ->default('pending'),
+                    ->default('PENDING'),
+                \Filament\Forms\Components\TextInput::make('approved_quantity')->numeric()->label('Total Approved Qty'),
+                \Filament\Forms\Components\Textarea::make('rejection_reason')->label('Rejection Reason'),
+                \Filament\Forms\Components\Textarea::make('remarks')->label('Remarks'),
             ]);
     }
 }

@@ -46,6 +46,12 @@ class StockTransfersTable
             ])
             ->recordActions([
                 EditAction::make(),
+                \Filament\Actions\Action::make('downloadReceipt')
+                    ->label('Receipt')
+                    ->color('success')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->url(fn (\App\Models\StockTransfer $record) => route('stock-transfers.pdf', $record))
+                    ->openUrlInNewTab(),
                 DeleteAction::make(),
             ])
             ->toolbarActions([

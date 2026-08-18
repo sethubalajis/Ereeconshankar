@@ -842,5 +842,20 @@ class ReportPdfHelper
         $filename = 'Quotation-Receipt-' . ($record->quotation_number ?? $record->id) . '-' . now()->format('YmdHis') . '.pdf';
         return response()->streamDownload(fn () => print($pdf->output()), $filename);
     }
+    public static function downloadTransferReceiptPdf(object $record): StreamedResponse
+    {
+        $pdf = Pdf::loadView('reports.transfer_receipt_pdf', ['record' => $record])
+            ->setPaper('a4');
+        $filename = 'Transfer-Receipt-' . ($record->receipt_number ?? $record->id) . '-' . now()->format('YmdHis') . '.pdf';
+        return response()->streamDownload(fn () => print($pdf->output()), $filename);
+    }
+    public static function downloadStockTransferPdf(object $record): StreamedResponse
+    {
+        $pdf = Pdf::loadView('reports.stock_transfer_pdf', ['record' => $record])
+            ->setPaper('a4');
+        $filename = 'Stock-Transfer-' . ($record->transfer_number ?? $record->id) . '-' . now()->format('YmdHis') . '.pdf';
+        return response()->streamDownload(fn () => print($pdf->output()), $filename);
+    }
 }
+
 

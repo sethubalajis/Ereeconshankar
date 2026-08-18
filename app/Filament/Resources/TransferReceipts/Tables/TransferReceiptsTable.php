@@ -39,6 +39,12 @@ class TransferReceiptsTable
             ])
             ->recordActions([
                 EditAction::make(),
+                \Filament\Actions\Action::make('downloadReceipt')
+                    ->label('Receipt')
+                    ->color('success')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->url(fn (\App\Models\TransferReceipt $record) => route('transfer-receipts.pdf', $record))
+                    ->openUrlInNewTab(),
                 DeleteAction::make(),
             ])
             ->toolbarActions([
