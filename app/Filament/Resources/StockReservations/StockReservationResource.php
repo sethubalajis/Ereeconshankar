@@ -22,7 +22,6 @@ class StockReservationResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'reservation_number';
 
     public static function form(Schema $schema): Schema
     {
