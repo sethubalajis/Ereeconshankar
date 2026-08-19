@@ -27,12 +27,15 @@ class HrReportsTable
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('total_employees')
                     ->numeric()
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('new_hires')
                     ->numeric()
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('exits')
                     ->numeric()
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

@@ -25,4 +25,8 @@ class StockTransfer extends Model
     public function toBranch() {
         return $this->belongsTo(Branch::class, 'to_branch_id');
     }
+
+    public function transferItems() {
+        return $this->hasMany(TransferItem::class, 'stock_transfer_id');
+    }
 }

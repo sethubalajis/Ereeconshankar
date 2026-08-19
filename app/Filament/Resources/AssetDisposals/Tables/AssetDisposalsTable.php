@@ -16,6 +16,7 @@ class AssetDisposalsTable
         return $table
             ->columns([
                 TextColumn::make('asset.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('disposal_date')
                     ->date()

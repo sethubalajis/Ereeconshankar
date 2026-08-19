@@ -16,6 +16,7 @@ class AssetDepreciationsTable
         return $table
             ->columns([
                 TextColumn::make('asset.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('depreciation_date')
                     ->date()

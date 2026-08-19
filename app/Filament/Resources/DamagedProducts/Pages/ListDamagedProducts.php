@@ -3,17 +3,17 @@
 namespace App\Filament\Resources\DamagedProducts\Pages;
 
 use App\Filament\Resources\DamagedProducts\DamagedProductResource;
-use Filament\Actions\CreateAction;
-use Filament\Resources\Pages\ManageRecords;
+use Filament\Actions;
+use Filament\Resources\Pages\ListRecords;
 
-class ManageDamagedProducts extends ManageRecords
+class ListDamagedProducts extends ListRecords
 {
     protected static string $resource = DamagedProductResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            Actions\CreateAction::make(),
         ];
     }
 }

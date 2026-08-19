@@ -25,6 +25,9 @@ class CustomersTable
                 TextColumn::make('email')
                     ->label('Email address')
                     ->searchable(),
+                TextColumn::make('loyaltyCards.card_number')
+                    ->searchable()
+                    ->hidden(),
                 TextColumn::make('dob')
                     ->date()
                     ->sortable(),

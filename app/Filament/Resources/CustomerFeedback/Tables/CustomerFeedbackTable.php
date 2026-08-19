@@ -16,7 +16,11 @@ class CustomerFeedbackTable
         return $table
             ->columns([
                 TextColumn::make('customer.name')
+                    ->searchable()
                     ->sortable(),
+                TextColumn::make('customer.phone')
+                    ->searchable()
+                    ->hidden(),
                 TextColumn::make('branch.name')
                     ->sortable(),
                 TextColumn::make('rating')

@@ -30,6 +30,33 @@ class TransferReceiptForm
                     ])
                     ->required()
                     ->default('received'),
+                    
+                \Filament\Forms\Components\Repeater::make('transferItems')
+                    ->relationship('transferItems')
+                    ->schema([
+                        \Filament\Forms\Components\Select::make('product_id')
+                            ->relationship('product', 'name')
+                            ->required()
+                            ->label('Product'),
+                        \Filament\Forms\Components\Select::make('product_variant_id')
+                            ->relationship('productVariant', 'sku')
+                            ->label('Variant'),
+                        TextInput::make('dispatched_quantity')
+                            ->numeric()
+                            ->label('Dispatched Qty')
+                            ->disabled(),
+                        TextInput::make('received_quantity')
+                            ->numeric()
+                            ->label('Received Qty'),
+                        TextInput::make('damaged_quantity')
+                            ->numeric()
+                            ->label('Damaged Qty'),
+                        TextInput::make('shortage_quantity')
+                            ->numeric()
+                            ->label('Shortage Qty'),
+                    ])
+                    ->columns(3)
+                    ->columnSpanFull(),
             ]);
     }
 }

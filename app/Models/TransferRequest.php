@@ -16,12 +16,12 @@ class TransferRequest extends Model
     protected static function booted(): void
     {
         static::created(function (self $model): void {
-            if (! empty($model->transfer_request_code)) {
+            if (! empty($model->transfer_request_number)) {
                 return;
             }
 
             $model->forceFill([
-                'transfer_request_code' => self::buildTransferRequestCode($model->id, $model->request_date),
+                'transfer_request_number' => self::buildTransferRequestCode($model->id, $model->request_date),
             ])->saveQuietly();
         });
     }
@@ -41,5 +41,9 @@ class TransferRequest extends Model
     }
     public function toBranch() {
         return $this->belongsTo(Branch::class, 'to_branch_id');
+    }
+
+    public function transferItems() {
+        return $this->hasMany(TransferItem::class, 'transfer_request_id');
     }
 }

@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\DamagedProducts;
 
-use App\Filament\Resources\DamagedProducts\Pages\ManageDamagedProducts;
+use App\Filament\Resources\DamagedProducts\Pages\CreateDamagedProduct;
+use App\Filament\Resources\DamagedProducts\Pages\EditDamagedProduct;
+use App\Filament\Resources\DamagedProducts\Pages\ListDamagedProducts;
 use App\Models\DamagedProduct;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -28,10 +30,6 @@ class DamagedProductResource extends Resource
     protected static \UnitEnum|string|null $navigationGroup = '7. Inventory Management';
     protected static ?int $navigationSort = 7;
 
-    public static function canCreate(): bool
-    {
-        return false;
-    }
 
     public static function form(Schema $schema): Schema
     {
@@ -61,7 +59,12 @@ class DamagedProductResource extends Resource
                     ->numeric(),
                 TextInput::make('reason'),
                 DatePicker::make('reported_date'),
-                TextInput::make('status')
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'Quarantined' => 'Quarantined',
+                        'Disposed' => 'Disposed',
+                        'Repaired' => 'Repaired',
+                    ])
                     ->required()
                     ->default('Quarantined'),
             ]);
@@ -139,6 +142,7 @@ class DamagedProductResource extends Resource
             ])
             ->recordActions([
                 ViewAction::make(),
+                EditAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
@@ -151,7 +155,9 @@ class DamagedProductResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ManageDamagedProducts::route('/'),
+            'index' => ListDamagedProducts::route('/'),
+            'create' => CreateDamagedProduct::route('/create'),
+            'edit' => EditDamagedProduct::route('/{record}/edit'),
         ];
     }
 }

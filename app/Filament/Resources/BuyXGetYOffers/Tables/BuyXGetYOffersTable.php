@@ -17,8 +17,10 @@ class BuyXGetYOffersTable
         return $table
             ->columns([
                 TextColumn::make('buyProduct.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('getProduct.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('buy_quantity')
                     ->numeric()

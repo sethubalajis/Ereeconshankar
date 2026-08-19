@@ -16,7 +16,14 @@ class IncentivesTable
         return $table
             ->columns([
                 TextColumn::make('employee.first_name')
+                    ->searchable()
                     ->sortable(),
+                TextColumn::make('employee.last_name')
+                    ->searchable()
+                    ->hidden(),
+                TextColumn::make('employee.employee_code')
+                    ->searchable()
+                    ->hidden(),
                 TextColumn::make('month')
                     ->date()
                     ->sortable(),

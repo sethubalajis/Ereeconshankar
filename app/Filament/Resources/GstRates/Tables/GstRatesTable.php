@@ -19,18 +19,22 @@ class GstRatesTable
                 TextColumn::make('cgst_percentage')
                     ->numeric()
                     ->suffix('%')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('sgst_percentage')
                     ->numeric()
                     ->suffix('%')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('igst_percentage')
                     ->numeric()
                     ->suffix('%')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('cess_percentage')
                     ->numeric()
                     ->suffix('%')
+                    ->searchable()
                     ->sortable(),
                 IconColumn::make('status')
                     ->boolean(),

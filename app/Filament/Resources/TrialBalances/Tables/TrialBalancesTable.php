@@ -19,6 +19,7 @@ class TrialBalancesTable
                     ->date()
                     ->sortable(),
                 TextColumn::make('chartOfAccount.account_name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('debit_balance')
                     ->numeric()

@@ -18,8 +18,10 @@ class StockReservationsTable
                 TextColumn::make('reservation_number')
                     ->searchable(),
                 TextColumn::make('product.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('productVariant.sku')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('branch.name')
                     ->sortable(),

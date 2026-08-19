@@ -20,9 +20,17 @@ class StockTransfersTable
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('fromBranch.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('toBranch.name')
+                    ->searchable()
                     ->sortable(),
+                TextColumn::make('transferItems.product.name')
+                    ->searchable()
+                    ->hidden(),
+                TextColumn::make('transferItems.product.code')
+                    ->searchable()
+                    ->hidden(),
                 TextColumn::make('transfer_date')
                     ->date()
                     ->sortable(),
@@ -46,6 +54,12 @@ class StockTransfersTable
             ])
             ->recordActions([
                 EditAction::make(),
+                \Filament\Actions\Action::make('downloadReceipt')
+                    ->label('Receipt')
+                    ->color('success')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->url(fn (\App\Models\StockTransfer $record) => route('stock-transfers.pdf', $record))
+                    ->openUrlInNewTab(),
                 DeleteAction::make(),
             ])
             ->toolbarActions([

@@ -24,4 +24,9 @@ class CreateStockReservation extends CreateRecord
             throw new \Filament\Support\Exceptions\Halt();
         }
     }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }
