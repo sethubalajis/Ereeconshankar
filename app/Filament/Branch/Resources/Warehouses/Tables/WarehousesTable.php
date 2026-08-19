@@ -16,6 +16,7 @@ class WarehousesTable
         return $table
             ->columns([
                 TextColumn::make('branch.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('name')
                     ->searchable(),

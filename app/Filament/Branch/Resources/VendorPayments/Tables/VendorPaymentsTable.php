@@ -16,8 +16,10 @@ class VendorPaymentsTable
         return $table
             ->columns([
                 TextColumn::make('vendor.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('purchaseOrder.po_number')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('payment_date')
                     ->date()
@@ -27,6 +29,7 @@ class VendorPaymentsTable
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('paymentMode.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('transaction_reference')
                     ->searchable(),

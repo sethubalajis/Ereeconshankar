@@ -16,6 +16,7 @@ class ServiceRequestsTable
         return $table
             ->columns([
                 TextColumn::make('customer.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('request_number')
                     ->searchable(),

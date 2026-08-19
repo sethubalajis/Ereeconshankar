@@ -19,6 +19,7 @@ class QuotationsTable
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('vendor.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('rfq.rfq_number')
                     ->label('RFQ Number')

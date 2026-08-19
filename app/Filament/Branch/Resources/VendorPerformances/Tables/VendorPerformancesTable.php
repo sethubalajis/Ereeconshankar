@@ -16,6 +16,7 @@ class VendorPerformancesTable
         return $table
             ->columns([
                 TextColumn::make('vendor.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('review_date')
                     ->date()

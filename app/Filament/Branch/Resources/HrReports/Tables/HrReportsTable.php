@@ -17,9 +17,11 @@ class HrReportsTable
             ->columns([
                 TextColumn::make('from_date')
                     ->date()
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('to_date')
                     ->date()
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('report_month')
                     ->date()

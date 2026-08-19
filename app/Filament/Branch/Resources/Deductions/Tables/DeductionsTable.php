@@ -16,6 +16,7 @@ class DeductionsTable
         return $table
             ->columns([
                 TextColumn::make('employee.first_name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('deduction_type')
                     ->searchable(),

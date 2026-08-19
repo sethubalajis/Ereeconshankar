@@ -16,11 +16,13 @@ class TransferReceiptsTable
         return $table
             ->columns([
                 TextColumn::make('stockTransfer.vehicle_number')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('receive_date')
                     ->date()
                     ->sortable(),
                 TextColumn::make('receivedBy.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('status')
                     ->searchable(),

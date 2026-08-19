@@ -19,6 +19,7 @@ class SalesReportsTable
         return $table
             ->columns([
                 TextColumn::make('branch.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('from_date')
                     ->date()

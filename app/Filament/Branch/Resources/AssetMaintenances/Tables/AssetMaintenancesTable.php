@@ -16,6 +16,7 @@ class AssetMaintenancesTable
         return $table
             ->columns([
                 TextColumn::make('asset.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('maintenance_date')
                     ->date()

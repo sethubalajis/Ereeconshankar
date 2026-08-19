@@ -15,10 +15,13 @@ class PosSaleItemsTable
         return $table
             ->columns([
                 TextColumn::make('posSale.invoice_number')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('product.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('productVariant.sku')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('quantity')
                     ->numeric()

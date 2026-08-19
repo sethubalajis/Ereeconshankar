@@ -16,6 +16,7 @@ class EmployeeExitsTable
         return $table
             ->columns([
                 TextColumn::make('employee.first_name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('resignation_date')
                     ->date()

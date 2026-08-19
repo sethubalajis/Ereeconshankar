@@ -15,6 +15,7 @@ class StockValuationsTable
         return $table
             ->columns([
                 TextColumn::make('branch.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('valuation_date')
                     ->date()

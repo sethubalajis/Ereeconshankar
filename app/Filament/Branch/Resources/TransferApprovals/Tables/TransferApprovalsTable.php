@@ -20,6 +20,7 @@ class TransferApprovalsTable
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('approver.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('approval_date')
                     ->date()

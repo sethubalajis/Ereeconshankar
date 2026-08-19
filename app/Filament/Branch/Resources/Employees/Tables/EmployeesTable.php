@@ -15,12 +15,16 @@ class EmployeesTable
         return $table
             ->columns([
                 TextColumn::make('user.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('department.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('designation.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('branch.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('employee_code')
                     ->searchable(),

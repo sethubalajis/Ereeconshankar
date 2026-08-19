@@ -16,6 +16,7 @@ class LoyaltyPointsTable
         return $table
             ->columns([
                 TextColumn::make('customer.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('transaction_type')
                     ->searchable(),

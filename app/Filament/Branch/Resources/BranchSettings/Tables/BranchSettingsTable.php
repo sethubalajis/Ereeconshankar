@@ -15,6 +15,7 @@ class BranchSettingsTable
         return $table
             ->columns([
                 TextColumn::make('branch.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('setting_key')
                     ->searchable(),

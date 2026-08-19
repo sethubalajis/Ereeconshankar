@@ -16,8 +16,10 @@ class EmployeeSalaryAssignmentsTable
         return $table
             ->columns([
                 TextColumn::make('employee.first_name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('salaryStructure.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('gross_salary')
                     ->numeric()

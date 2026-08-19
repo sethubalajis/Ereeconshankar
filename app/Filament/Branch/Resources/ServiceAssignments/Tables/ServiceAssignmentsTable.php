@@ -16,8 +16,10 @@ class ServiceAssignmentsTable
         return $table
             ->columns([
                 TextColumn::make('serviceRequest.request_number')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('employee.first_name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('assigned_date')
                     ->date()

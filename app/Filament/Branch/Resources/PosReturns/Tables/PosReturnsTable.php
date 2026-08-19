@@ -16,6 +16,7 @@ class PosReturnsTable
         return $table
             ->columns([
                 TextColumn::make('posSale.invoice_number')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('return_date')
                     ->date()

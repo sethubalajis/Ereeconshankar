@@ -18,8 +18,10 @@ class PurchaseRequisitionsTable
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('branch.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('department.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('subject')
                     ->searchable(),

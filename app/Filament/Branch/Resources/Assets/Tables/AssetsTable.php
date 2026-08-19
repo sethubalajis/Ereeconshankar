@@ -16,8 +16,10 @@ class AssetsTable
         return $table
             ->columns([
                 TextColumn::make('assetCategory.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('branch.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('name')
                     ->searchable(),

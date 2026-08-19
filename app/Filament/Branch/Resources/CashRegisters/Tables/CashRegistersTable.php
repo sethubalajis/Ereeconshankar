@@ -16,8 +16,10 @@ class CashRegistersTable
         return $table
             ->columns([
                 TextColumn::make('posTerminal.terminal_name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('user.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('date')
                     ->date()

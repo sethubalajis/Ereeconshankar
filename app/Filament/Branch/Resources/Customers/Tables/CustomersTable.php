@@ -17,6 +17,7 @@ class CustomersTable
         return $table
             ->columns([
                 TextColumn::make('customerGroup.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('name')
                     ->searchable(),

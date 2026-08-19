@@ -17,6 +17,7 @@ class LoyaltyCardsTable
         return $table
             ->columns([
                 TextColumn::make('customer.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('card_number')
                     ->searchable(),

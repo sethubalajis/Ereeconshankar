@@ -15,10 +15,13 @@ class GrnsTable
         return $table
             ->columns([
                 TextColumn::make('purchaseOrder.po_number')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('vendor.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('branch.name')
+                    ->searchable()
                     ->sortable(),
 
                 TextColumn::make('grn_number')

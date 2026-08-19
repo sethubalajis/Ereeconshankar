@@ -16,8 +16,10 @@ class AssetAllocationsTable
         return $table
             ->columns([
                 TextColumn::make('asset.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('employee.first_name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('allocation_date')
                     ->date()

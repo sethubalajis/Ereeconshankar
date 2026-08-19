@@ -16,6 +16,7 @@ class TechnicianVisitsTable
         return $table
             ->columns([
                 TextColumn::make('serviceAssignment.status')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('visit_date')
                     ->date()
