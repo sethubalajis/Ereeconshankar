@@ -16,10 +16,13 @@ class VendorPriceListsTable
         return $table
             ->columns([
                 TextColumn::make('vendor.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('product.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('productVariant.sku')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('agreed_price')
                     ->prefix('₹')

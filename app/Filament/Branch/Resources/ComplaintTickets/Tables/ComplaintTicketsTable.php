@@ -16,8 +16,10 @@ class ComplaintTicketsTable
         return $table
             ->columns([
                 TextColumn::make('customer.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('complaintCategory.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('ticket_number')
                     ->searchable(),

@@ -16,8 +16,10 @@ class PayrollProcessingsTable
         return $table
             ->columns([
                 TextColumn::make('payrollCycle.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('employee.first_name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('total_working_days')
                     ->label('Working Days')

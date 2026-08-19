@@ -15,10 +15,13 @@ class StockAdjustmentsTable
         return $table
             ->columns([
                 TextColumn::make('branch.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('product.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('productVariant.sku')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('quantity')
                     ->numeric()

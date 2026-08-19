@@ -17,6 +17,7 @@ class DiscountRulesTable
         return $table
             ->columns([
                 TextColumn::make('promotionType.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('name')
                     ->searchable(),

@@ -16,6 +16,7 @@ class VendorAgreementsTable
         return $table
             ->columns([
                 TextColumn::make('vendor.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('title')
                     ->searchable(),

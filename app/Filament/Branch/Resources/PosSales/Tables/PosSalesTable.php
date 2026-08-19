@@ -15,10 +15,13 @@ class PosSalesTable
         return $table
             ->columns([
                 TextColumn::make('branch.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('posTerminal.terminal_name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('customer.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('invoice_number')
                     ->searchable(),

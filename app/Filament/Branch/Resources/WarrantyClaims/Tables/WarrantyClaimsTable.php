@@ -16,8 +16,10 @@ class WarrantyClaimsTable
         return $table
             ->columns([
                 TextColumn::make('customer.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('product.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('claim_number')
                     ->searchable(),

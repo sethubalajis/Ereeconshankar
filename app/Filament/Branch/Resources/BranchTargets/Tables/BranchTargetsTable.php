@@ -15,6 +15,7 @@ class BranchTargetsTable
         return $table
             ->columns([
                 TextColumn::make('branch.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('target_month')
                     ->date()

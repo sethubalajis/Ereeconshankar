@@ -16,8 +16,10 @@ class EmployeeLeavesTable
         return $table
             ->columns([
                 TextColumn::make('employee.first_name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('leaveType.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('start_date')
                     ->date()

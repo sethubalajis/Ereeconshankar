@@ -19,8 +19,10 @@ class InventoryReconciliationsTable
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('product.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('productVariant.sku')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('system_qty')
                     ->label('Current Stock Qty')

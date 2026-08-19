@@ -16,8 +16,10 @@ class MerchandisePlanningsTable
         return $table
             ->columns([
                 TextColumn::make('financialYear.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('season.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('target_sales')
                     ->money('INR')

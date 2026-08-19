@@ -17,6 +17,7 @@ class EmployeeDocumentsTable
         return $table
             ->columns([
                 TextColumn::make('employee.first_name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('document_type')
                     ->searchable(),

@@ -14,6 +14,7 @@ class EmployeeTaxDeclarationsTable
         return $table
             ->columns([
                 \Filament\Tables\Columns\TextColumn::make('employee.first_name')
+                    ->searchable()
                     ->numeric()
                     ->sortable(),
                 \Filament\Tables\Columns\TextColumn::make('financialYear.name')

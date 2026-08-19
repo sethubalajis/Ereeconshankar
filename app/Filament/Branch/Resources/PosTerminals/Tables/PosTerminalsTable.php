@@ -16,6 +16,7 @@ class PosTerminalsTable
         return $table
             ->columns([
                 TextColumn::make('branch.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('terminal_name')
                     ->searchable(),

@@ -15,12 +15,16 @@ class PurchaseReturnsTable
         return $table
             ->columns([
                 TextColumn::make('purchaseOrder.po_number')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('grn.grn_number')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('vendor.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('branch.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('return_date')
                     ->date()

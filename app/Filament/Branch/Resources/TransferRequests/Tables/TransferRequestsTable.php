@@ -19,8 +19,10 @@ class TransferRequestsTable
                     ->label('Transfer Request Code')
                     ->searchable(),
                 TextColumn::make('fromBranch.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('toBranch.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('request_date')
                     ->date()

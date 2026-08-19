@@ -18,8 +18,10 @@ class ProductImagesTable
         return $table
             ->columns([
                 TextColumn::make('product.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('productVariant.sku')
+                    ->searchable()
                     ->sortable(),
                 ImageColumn::make('image_path')
                     ->disk("public"),

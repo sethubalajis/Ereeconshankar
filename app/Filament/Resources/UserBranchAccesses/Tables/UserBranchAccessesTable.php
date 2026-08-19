@@ -17,8 +17,10 @@ class UserBranchAccessesTable
         return $table
             ->columns([
                 TextColumn::make('user.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('branch.name')
+                    ->searchable()
                     ->sortable(),
                 IconColumn::make('is_default')
                     ->boolean(),

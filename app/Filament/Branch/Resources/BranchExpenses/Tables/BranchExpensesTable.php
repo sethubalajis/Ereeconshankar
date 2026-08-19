@@ -15,6 +15,7 @@ class BranchExpensesTable
         return $table
             ->columns([
                 TextColumn::make('branch.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('expense_date')
                     ->date()

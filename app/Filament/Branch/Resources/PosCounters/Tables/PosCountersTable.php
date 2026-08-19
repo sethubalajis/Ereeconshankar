@@ -16,6 +16,7 @@ class PosCountersTable
         return $table
             ->columns([
                 TextColumn::make('branch.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('counter_name')
                     ->searchable(),

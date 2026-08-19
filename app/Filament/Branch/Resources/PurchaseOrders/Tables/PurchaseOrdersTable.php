@@ -15,8 +15,10 @@ class PurchaseOrdersTable
         return $table
             ->columns([
                 TextColumn::make('vendor.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('branch.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('po_number')
                     ->searchable(),

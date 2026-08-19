@@ -18,6 +18,7 @@ class InventoryCountsTable
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('branch.name')
+                    ->searchable()
                     ->sortable(),
 
                 TextColumn::make('count_date')

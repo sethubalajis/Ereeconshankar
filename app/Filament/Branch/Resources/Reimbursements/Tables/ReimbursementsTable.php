@@ -16,6 +16,7 @@ class ReimbursementsTable
         return $table
             ->columns([
                 TextColumn::make('employee.first_name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('expense_date')
                     ->date()

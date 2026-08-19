@@ -16,10 +16,13 @@ class StocksTable
         return $table
             ->columns([
                 TextColumn::make('product.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('productVariant.sku')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('branch.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('quantity')
                     ->label('Current Stock Qty')
