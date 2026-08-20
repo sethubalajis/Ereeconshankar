@@ -69,24 +69,10 @@ class StockReservationObserver
 
     private function findStock(StockReservation $stockReservation)
     {
-        // First try to find exact match
-        $stock = Stock::query()
+        return Stock::query()
             ->where('product_id', $stockReservation->product_id)
             ->where('product_variant_id', $stockReservation->product_variant_id)
             ->where('branch_id', $stockReservation->branch_id)
-            ->where('warehouse_id', $stockReservation->warehouse_id)
             ->first();
-
-        // If warehouse was null or not found, try to find any stock in branch
-        if (!$stock) {
-            $stock = Stock::query()
-                ->where('product_id', $stockReservation->product_id)
-                ->where('product_variant_id', $stockReservation->product_variant_id)
-                ->where('branch_id', $stockReservation->branch_id)
-                ->orderByRaw('warehouse_id IS NULL DESC')
-                ->first();
-        }
-        
-        return $stock;
     }
 }

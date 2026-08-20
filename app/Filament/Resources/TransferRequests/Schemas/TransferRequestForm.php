@@ -47,9 +47,13 @@ class TransferRequestForm
                         \Filament\Forms\Components\Select::make('product_id')
                             ->relationship('product', 'name')
                             ->required()
+                            ->live()
+                            ->afterStateUpdated(fn ($set) => $set('product_variant_id', null))
                             ->label('Product'),
                         \Filament\Forms\Components\Select::make('product_variant_id')
-                            ->relationship('productVariant', 'sku')
+                            ->relationship('productVariant', 'sku', fn (\Illuminate\Database\Eloquent\Builder $query, $get) => 
+                                $query->where('product_id', $get('product_id'))
+                            )
                             ->label('Variant'),
                         TextInput::make('requested_quantity')
                             ->numeric()
