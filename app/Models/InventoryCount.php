@@ -19,9 +19,13 @@ class InventoryCount extends Model
     {
         static::creating(function ($model) {
             if (empty($model->count_code)) {
-                $last = self::query()->orderByDesc('id')->first();
-                $nextId = $last ? ($last->id + 1) : 1;
-                $model->count_code = 'IC-' . date('Ymd') . '-' . str_pad((string) $nextId, 4, '0', STR_PAD_LEFT);
+                $companyId = $model->branch->company_id ?? 1;
+                $model->count_code = \App\Services\DocumentNumberService::generate(
+                    self::class,
+                    $companyId,
+                    $model->branch_id,
+                    now()->format('Y-m-d')
+                );
             }
         });
 

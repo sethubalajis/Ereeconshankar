@@ -44,9 +44,15 @@ class StockTransferService
                 'remarks' => $remarks
             ]);
 
+            $companyId = $request->fromBranch->company_id ?? 1;
             // Create Stock Transfer
             $transfer = StockTransfer::create([
-                'transfer_number' => 'ST-' . date('Ymd') . '-' . str_pad($request->id, 4, '0', STR_PAD_LEFT),
+                'transfer_number' => \App\Services\DocumentNumberService::generate(
+                    StockTransfer::class,
+                    $companyId,
+                    $request->from_branch_id,
+                    now()->format('Y-m-d')
+                ),
                 'transfer_request_id' => $request->id,
                 'from_branch_id' => $request->from_branch_id,
                 'to_branch_id' => $request->to_branch_id,
@@ -179,9 +185,15 @@ class StockTransferService
                 throw new Exception("Transfer cannot be received in its current state.");
             }
 
+            $companyId = $transfer->fromBranch->company_id ?? 1;
             $receipt = TransferReceipt::create([
                 'stock_transfer_id' => $transfer->id,
-                'receipt_number' => 'TRC-' . date('Ymd') . '-' . str_pad($transfer->id, 4, '0', STR_PAD_LEFT),
+                'receipt_number' => \App\Services\DocumentNumberService::generate(
+                    TransferReceipt::class,
+                    $companyId,
+                    $transfer->to_branch_id,
+                    now()->format('Y-m-d')
+                ),
                 'destination_branch_id' => $transfer->to_branch_id,
                 'receive_date' => now(),
                 'received_by' => $userId,

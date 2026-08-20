@@ -132,6 +132,80 @@ class PosReturn extends Model
                     }
                 }
             }
+
+            // Accounting & GST Reversal & Credit Note
+            if ($model->return_amount > 0) {
+                $accountingService = app(\App\Services\AccountingService::class);
+                $gstService = app(\App\Services\GstService::class);
+
+                // Assuming 18% average GST just for this implementation
+                $taxableAmount = round($model->return_amount / 1.18, 2);
+                $gstAmount = $model->return_amount - $taxableAmount;
+                $gstData = $gstService->calculateGst((float)$taxableAmount, 18.0);
+                
+                // Create Credit Note
+                if ($sale->customer_id) {
+                    $creditNote = \App\Models\CreditNote::firstOrCreate(
+                        ['note_number' => 'CN-POS-' . $model->id],
+                        [
+                            'customer_id' => $sale->customer_id,
+                            'note_date' => now(),
+                            'amount' => $model->return_amount,
+                            'reason' => 'POS Return',
+                            'branch_id' => $sale->branch_id,
+                            'company_id' => clone $sale->company_id ?? null,
+                            'financial_year_id' => clone $model->financial_year_id ?? null,
+                        ]
+                    );
+                }
+
+                // Accounting Entry (Reverse Sales, Reverse Output GST, Decrease Cash/Customer)
+                $salesAcc = \App\Models\ChartOfAccount::where('account_code', '4001')->first();
+                $cashAcc = \App\Models\ChartOfAccount::where('account_code', '1001')->first();
+                $gstOutAcc = \App\Models\ChartOfAccount::where('account_code', '2001')->first();
+
+                if ($salesAcc && $cashAcc && $gstOutAcc) {
+                    // check if already posted
+                    $existingJournal = \App\Models\Journal::where('journal_number', 'JRN-RET-' . $model->id)->first();
+                    if (!$existingJournal) {
+                        $accountingService->postJournalEntry([
+                            'journal_number' => 'JRN-RET-' . $model->id,
+                            'journal_date' => now(),
+                            'reference' => 'POS Return ' . $model->id,
+                            'branch_id' => clone $sale->branch_id ?? null,
+                            'company_id' => clone $sale->company_id ?? null,
+                            'financial_year_id' => clone $model->financial_year_id ?? null,
+                            'total_debit' => clone $model->return_amount ?? 0,
+                            'total_credit' => clone $model->return_amount ?? 0,
+                        ], [
+                            [
+                                'chart_of_account_id' => $salesAcc->id,
+                                'debit' => clone $taxableAmount,
+                                'credit' => 0,
+                                'branch_id' => clone $sale->branch_id ?? null,
+                                'company_id' => clone $sale->company_id ?? null,
+                                'financial_year_id' => clone $model->financial_year_id ?? null,
+                            ],
+                            [
+                                'chart_of_account_id' => $gstOutAcc->id,
+                                'debit' => clone $gstAmount,
+                                'credit' => 0,
+                                'branch_id' => clone $sale->branch_id ?? null,
+                                'company_id' => clone $sale->company_id ?? null,
+                                'financial_year_id' => clone $model->financial_year_id ?? null,
+                            ],
+                            [
+                                'chart_of_account_id' => $cashAcc->id,
+                                'debit' => 0,
+                                'credit' => clone $model->return_amount ?? 0,
+                                'branch_id' => clone $sale->branch_id ?? null,
+                                'company_id' => clone $sale->company_id ?? null,
+                                'financial_year_id' => clone $model->financial_year_id ?? null,
+                            ]
+                        ]);
+                    }
+                }
+            }
         });
     }
 

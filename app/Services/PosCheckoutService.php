@@ -19,19 +19,25 @@ class PosCheckoutService
     protected $customerContext;
     protected $loyaltyService;
     protected $walletService;
+    protected $accountingService;
+    protected $gstService;
 
     public function __construct(
         PromotionEngine $promotionEngine, 
         PricingEngine $pricingEngine,
         CustomerContextService $customerContext,
         LoyaltyService $loyaltyService,
-        WalletService $walletService
+        WalletService $walletService,
+        AccountingService $accountingService,
+        GstService $gstService
     ) {
         $this->promotionEngine = $promotionEngine;
         $this->pricingEngine = $pricingEngine;
         $this->customerContext = $customerContext;
         $this->loyaltyService = $loyaltyService;
         $this->walletService = $walletService;
+        $this->accountingService = $accountingService;
+        $this->gstService = $gstService;
     }
 
     /**
@@ -159,10 +165,69 @@ class PosCheckoutService
                 }
             }
 
-            // 31. Create financial entries
-            // Create Journal Entries for Sales, GST, Discount, Cash/Bank (omitted logic for brevity, handled by Finance module)
+            // 31. Create financial entries & GST
+            // Get or create Chart of Accounts (Assume specific codes exist or fetch by name, mocked for now)
+            $salesAcc = \App\Models\ChartOfAccount::where('account_code', '4001')->first();
+            $cashAcc = \App\Models\ChartOfAccount::where('account_code', '1001')->first();
+            $gstOutAcc = \App\Models\ChartOfAccount::where('account_code', '2001')->first();
 
-            // 36. Update customer purchase history (Handled automatically by DB relations or async job)
+            if ($salesAcc && $cashAcc && $gstOutAcc) {
+                $gstData = $this->gstService->calculateGst((float)$checkoutData['net_amount'], 18.0); // Assuming 18% for POS
+                
+                $companyId = $posSale->branch->company_id ?? 1;
+                $taxInvoiceNumber = \App\Services\DocumentNumberService::generate(
+                    \App\Models\TaxInvoice::class,
+                    $companyId,
+                    $branchId,
+                    now()->format('Y-m-d')
+                );
+
+                $this->gstService->generateTaxInvoice($posSale, [
+                    'invoice_number' => $taxInvoiceNumber,
+                    'invoice_date' => now(),
+                    'taxable_amount' => $checkoutData['net_amount'],
+                    'tax_amount' => $gstData['total_gst'],
+                    'total_amount' => $checkoutData['total_amount'],
+                    'branch_id' => $branchId,
+                    'customer_id' => $customer ? $customer->id : null,
+                    'financial_year_id' => $checkoutData['financial_year_id'] ?? null,
+                    'cgst' => $gstData['cgst'],
+                    'sgst' => $gstData['sgst'],
+                    'igst' => $gstData['igst'],
+                ]);
+
+                $this->accountingService->postJournalEntry([
+                    'journal_number' => 'JRN-POS-' . $posSale->id,
+                    'journal_date' => now(),
+                    'reference' => 'POS Sale ' . $posSale->id,
+                    'branch_id' => $branchId,
+                    'financial_year_id' => $checkoutData['financial_year_id'] ?? null,
+                    'total_debit' => $checkoutData['total_amount'],
+                    'total_credit' => $checkoutData['total_amount'],
+                ], [
+                    [
+                        'chart_of_account_id' => $cashAcc->id,
+                        'debit' => $checkoutData['total_amount'],
+                        'credit' => 0,
+                        'branch_id' => $branchId,
+                        'financial_year_id' => $checkoutData['financial_year_id'] ?? null,
+                    ],
+                    [
+                        'chart_of_account_id' => $salesAcc->id,
+                        'debit' => 0,
+                        'credit' => $checkoutData['net_amount'],
+                        'branch_id' => $branchId,
+                        'financial_year_id' => $checkoutData['financial_year_id'] ?? null,
+                    ],
+                    [
+                        'chart_of_account_id' => $gstOutAcc->id,
+                        'debit' => 0,
+                        'credit' => $gstData['total_gst'],
+                        'branch_id' => $branchId,
+                        'financial_year_id' => $checkoutData['financial_year_id'] ?? null,
+                    ]
+                ]);
+            }
             
             DB::commit();
             return $posSale;

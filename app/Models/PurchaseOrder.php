@@ -19,9 +19,13 @@ class PurchaseOrder extends Model
     {
         static::creating(function ($model) {
             if (empty($model->po_number)) {
-                $lastPo = self::orderBy('id', 'desc')->first();
-                $nextId = $lastPo ? $lastPo->id + 1 : 1;
-                $model->po_number = 'PO-' . date('Ymd') . '-' . str_pad($nextId, 4, '0', STR_PAD_LEFT);
+                $companyId = $model->branch->company_id ?? 1; // Assuming we can get company_id, maybe we need to fetch it from branch
+                $model->po_number = \App\Services\DocumentNumberService::generate(
+                    self::class,
+                    $companyId,
+                    $model->branch_id,
+                    $model->po_date ?? now()->format('Y-m-d')
+                );
             }
         });
     }

@@ -21,6 +21,8 @@ class PurchaseOrdersTable
                     ->sortable(),
                 TextColumn::make('po_number')
                     ->searchable(),
+                TextColumn::make('quotation_number')
+                    ->searchable(),
                 TextColumn::make('po_date')
                     ->date()
                     ->sortable(),
