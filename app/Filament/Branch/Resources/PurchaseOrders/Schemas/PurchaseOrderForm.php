@@ -16,13 +16,47 @@ class PurchaseOrderForm
         return $schema
             ->components([
                 \Filament\Forms\Components\Select::make('vendor_id')->relationship('vendor', 'name')
-                    ->required(),
+                    ->required()
+                    ->live(),
                 \Filament\Forms\Components\Select::make('branch_id')->relationship('branch', 'name')
                     ->required(),
                 TextInput::make('po_number')
                     ->default('Auto-generated')
                     ->disabled()
                     ->dehydrated(false),
+                Select::make('quotation_number')
+                    ->options(function (callable $get) {
+                        $vendorId = $get('vendor_id');
+                        if ($vendorId) {
+                            return \App\Models\Quotation::whereNotNull('quotation_number')->where('vendor_id', $vendorId)->pluck('quotation_number', 'quotation_number');
+                        }
+                        return \App\Models\Quotation::whereNotNull('quotation_number')->pluck('quotation_number', 'quotation_number');
+                    })
+                    ->searchable()
+                    ->nullable()
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function ($state, callable $set) {
+                        if (!$state) return;
+                        $quotation = \App\Models\Quotation::with('items')->where('quotation_number', $state)->first();
+                        if ($quotation) {
+                            $set('vendor_id', $quotation->vendor_id);
+                            if ($quotation->branch_id) {
+                                $set('branch_id', $quotation->branch_id);
+                            }
+                            $items = [];
+                            foreach ($quotation->items as $qItem) {
+                                $items[] = [
+                                    'product_id' => $qItem->product_id,
+                                    'product_variant_id' => $qItem->product_variant_id,
+                                    'quantity' => $qItem->quantity,
+                                    'unit_price' => $qItem->unit_price,
+                                    'total_price' => $qItem->total_price,
+                                ];
+                            }
+                            $set('items', $items);
+                            $set('total_amount', $quotation->total_amount);
+                        }
+                    }),
                 DatePicker::make('po_date')
                     ->required()
                     ->default(now()->timezone('Asia/Kolkata')),

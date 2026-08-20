@@ -18,9 +18,14 @@ class CustomerContextService
      */
     public function identifyCustomer(string $search): ?Customer
     {
+        $now = \Illuminate\Support\Carbon::now();
         // Check for Loyalty Card first
         $loyaltyCard = LoyaltyCard::where('card_number', $search)
             ->where('status', true)
+            ->where(function ($q) use ($now) {
+                $q->whereNull('expiry_date')
+                  ->orWhere('expiry_date', '>=', $now->startOfDay());
+            })
             ->first();
 
         if ($loyaltyCard && $loyaltyCard->customer) {
@@ -56,6 +61,10 @@ class CustomerContextService
         // Active Loyalty Card
         $activeLoyaltyCard = $customer->loyaltyCards()
             ->where('status', true)
+            ->where(function ($q) use ($now) {
+                $q->whereNull('expiry_date')
+                  ->orWhere('expiry_date', '>=', $now->startOfDay());
+            })
             ->first();
 
         // Loyalty Program
