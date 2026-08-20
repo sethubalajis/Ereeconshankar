@@ -174,8 +174,16 @@ class PosCheckoutService
             if ($salesAcc && $cashAcc && $gstOutAcc) {
                 $gstData = $this->gstService->calculateGst((float)$checkoutData['net_amount'], 18.0); // Assuming 18% for POS
                 
+                $companyId = $posSale->branch->company_id ?? 1;
+                $taxInvoiceNumber = \App\Services\DocumentNumberService::generate(
+                    \App\Models\TaxInvoice::class,
+                    $companyId,
+                    $branchId,
+                    now()->format('Y-m-d')
+                );
+
                 $this->gstService->generateTaxInvoice($posSale, [
-                    'invoice_number' => 'INV-POS-' . $posSale->id,
+                    'invoice_number' => $taxInvoiceNumber,
                     'invoice_date' => now(),
                     'taxable_amount' => $checkoutData['net_amount'],
                     'tax_amount' => $gstData['total_gst'],

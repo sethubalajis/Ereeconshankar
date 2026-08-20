@@ -6,6 +6,19 @@ use App\Models\PosSale;
 
 class PosSaleObserver
 {
+    public function creating(PosSale $model): void
+    {
+        if (empty($model->invoice_number)) {
+            $companyId = $model->branch->company_id ?? 1;
+            $model->invoice_number = \App\Services\DocumentNumberService::generate(
+                PosSale::class,
+                $companyId,
+                $model->branch_id,
+                $model->sale_date ?? now()->format('Y-m-d')
+            );
+        }
+    }
+
     /**
      * Handle the PosSale "created" event.
      */
