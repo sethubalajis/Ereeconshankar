@@ -17,7 +17,7 @@ class GrnForm
         return $schema
             ->components([
                 \Filament\Forms\Components\Select::make('purchase_order_id')
-                    ->relationship('purchaseOrder', 'po_number')
+                    ->relationship('purchaseOrder', 'po_number', fn ($query) => $query->where('status', 'completed'))
                     ->required()
                     ->live()
                     ->afterStateUpdated(function ($state, callable $set) {

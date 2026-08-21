@@ -28,9 +28,13 @@ class PurchaseOrderForm
                     ->options(function (callable $get) {
                         $vendorId = $get('vendor_id');
                         if ($vendorId) {
-                            return \App\Models\Quotation::whereNotNull('quotation_number')->where('vendor_id', $vendorId)->pluck('quotation_number', 'quotation_number');
+                            return \App\Models\Quotation::whereNotNull('quotation_number')
+                                ->where('status', 'accepted')
+                                ->where('vendor_id', $vendorId)->pluck('quotation_number', 'quotation_number');
                         }
-                        return \App\Models\Quotation::whereNotNull('quotation_number')->pluck('quotation_number', 'quotation_number');
+                        return \App\Models\Quotation::whereNotNull('quotation_number')
+                            ->where('status', 'accepted')
+                            ->pluck('quotation_number', 'quotation_number');
                     })
                     ->searchable()
                     ->nullable()

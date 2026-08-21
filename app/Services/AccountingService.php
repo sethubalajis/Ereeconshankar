@@ -47,15 +47,26 @@ class AccountingService
      */
     protected function postLedgerEntry(JournalEntry $entry)
     {
-        Ledger::create([
+        $ledgerData = [
             'chart_of_account_id' => $entry->chart_of_account_id,
-            'journal_entry_id' => $entry->id,
             'debit' => $entry->debit,
             'credit' => $entry->credit,
-            'branch_id' => $entry->branch_id,
-            'company_id' => $entry->company_id,
-            'financial_year_id' => $entry->financial_year_id,
-            'transaction_date' => $entry->created_at,
-        ]);
+            'transaction_date' => $entry->created_at ?? now(),
+        ];
+        
+        if (\Illuminate\Support\Facades\Schema::hasColumn('ledgers', 'journal_entry_id')) {
+            $ledgerData['journal_entry_id'] = $entry->id;
+        }
+        if (\Illuminate\Support\Facades\Schema::hasColumn('ledgers', 'branch_id')) {
+            $ledgerData['branch_id'] = $entry->branch_id ?? 1;
+        }
+        if (\Illuminate\Support\Facades\Schema::hasColumn('ledgers', 'company_id')) {
+            $ledgerData['company_id'] = $entry->company_id ?? 1;
+        }
+        if (\Illuminate\Support\Facades\Schema::hasColumn('ledgers', 'financial_year_id')) {
+            $ledgerData['financial_year_id'] = $entry->financial_year_id ?? 1;
+        }
+
+        Ledger::create($ledgerData);
     }
 }
