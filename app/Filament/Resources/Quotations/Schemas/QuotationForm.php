@@ -19,7 +19,7 @@ class QuotationForm
                 \Filament\Forms\Components\Select::make('vendor_id')->relationship('vendor', 'name')
                     ->required(),
                 \Filament\Forms\Components\Select::make('rfq_id')
-                    ->relationship('rfq', 'rfq_number')
+                    ->relationship('rfq', 'rfq_number', fn ($query) => $query->where('status', 'awarded'))
                     ->getOptionLabelFromRecordUsing(fn ($record) => $record->rfq_number ?? "RFQ #{$record->id}"),
                 DatePicker::make('quote_date')
                     ->required()
