@@ -16,6 +16,7 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Unique;
 
 class ProductVariantForm
 {
@@ -32,6 +33,34 @@ class ProductVariantForm
                         self::updateVariantPrices($set, $get);
                     })
                     ->required(),
+                Select::make('color_id')->relationship('color', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->required()
+                    ->live()
+                    ->afterStateUpdated(function (Set $set, Get $get): void {
+                        self::updateSkuAndBarcode($set, $get);
+                    }),
+                Select::make('size_id')->relationship('size', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->required()
+                    ->live()
+                    ->afterStateUpdated(function (Set $set, Get $get): void {
+                        self::updateSkuAndBarcode($set, $get);
+                    })
+                    ->unique(
+                        table: 'product_variants',
+                        ignoreRecord: true,
+                        modifyRuleUsing: function (Unique $rule, Get $get) {
+                            return $rule
+                                ->where('product_id', $get('product_id'))
+                                ->where('color_id', $get('color_id'));
+                        }
+                    )
+                    ->validationMessages([
+                        'unique' => 'A variant with this Product, Color, and Size already exists.',
+                    ]),
 
             ], $attributeComponents, [
                 TextInput::make('sku')
@@ -243,7 +272,7 @@ class ProductVariantForm
 
     private static function updateSkuAndBarcode(Set $set, Get $get): void
     {
-        $sku = self::generateSku($get('product_id'), $get('attribute_inputs'));
+        $sku = self::generateSku($get('product_id'), $get('attribute_inputs'), $get('color_id'), $get('size_id'));
         $set('sku', $sku);
         $set('barcode', self::generateBarcodeFromSku($sku));
     }
@@ -254,7 +283,7 @@ class ProductVariantForm
         // Prices are set directly on variants.
     }
 
-    private static function generateSku(mixed $productId, mixed $attributeInputs): string
+    private static function generateSku(mixed $productId, mixed $attributeInputs, mixed $colorId = null, mixed $sizeId = null): string
     {
         $productCode = Product::query()->whereKey($productId)->value('code');
 
@@ -264,6 +293,34 @@ class ProductVariantForm
 
         if ($productPart === '') {
             $productPart = 'VAR';
+        }
+
+        $attributeParts = [];
+
+        if ($colorId) {
+            $colorName = \App\Models\Color::query()->whereKey($colorId)->value('name');
+            if ($colorName) {
+                $colorPart = Str::upper((string) Str::of((string) $colorName)
+                    ->replaceMatches('/[^A-Za-z0-9]/', '')
+                    ->limit(6, '')
+                    ->toString());
+                if ($colorPart !== '') {
+                    $attributeParts[] = 'C' . $colorPart;
+                }
+            }
+        }
+
+        if ($sizeId) {
+            $sizeName = \App\Models\Size::query()->whereKey($sizeId)->value('name');
+            if ($sizeName) {
+                $sizePart = Str::upper((string) Str::of((string) $sizeName)
+                    ->replaceMatches('/[^A-Za-z0-9]/', '')
+                    ->limit(6, '')
+                    ->toString());
+                if ($sizePart !== '') {
+                    $attributeParts[] = 'S' . $sizePart;
+                }
+            }
         }
 
         $inputs = collect($attributeInputs)
@@ -277,7 +334,7 @@ class ProductVariantForm
                 return [$attributeId => $input];
             });
 
-        if ($inputs->isEmpty()) {
+        if ($inputs->isEmpty() && empty($attributeParts)) {
             return $productPart;
         }
 
@@ -295,8 +352,6 @@ class ProductVariantForm
         $selectedValues = AttributeValue::query()
             ->whereIn('id', $selectedValueIds)
             ->pluck('value', 'id');
-
-        $attributeParts = [];
 
         foreach ($inputs->sortKeys() as $attributeId => $input) {
             $attribute = $attributes->get($attributeId);
