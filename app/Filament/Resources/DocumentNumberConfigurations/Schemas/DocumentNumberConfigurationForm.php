@@ -20,17 +20,54 @@ class DocumentNumberConfigurationForm
                             ->required()
                             ->live(),
                         \Filament\Forms\Components\Select::make('document_type')
-                            ->options([
-                                'App\Models\PosSale' => 'POS Sale',
-                                'App\Models\PurchaseOrder' => 'Purchase Order',
-                                'App\Models\PurchaseRequisition' => 'Purchase Requisition',
-                                'App\Models\InventoryCount' => 'Inventory Count',
-                                'App\Models\StockTransfer' => 'Stock Transfer',
-                                'App\Models\TransferReceipt' => 'Transfer Receipt',
-                                'App\Models\TaxInvoice' => 'Tax Invoice',
-                                'App\Models\Receipt' => 'Receipt',
-                                'App\Models\Grn' => 'GRN',
+                            ->options(function () {
+                                return [
+                                    'App\Models\PosSale' => 'POS Sale',
+                                    'App\Models\PurchaseOrder' => 'Purchase Order',
+                                    'App\Models\PurchaseRequisition' => 'Purchase Requisition',
+                                    'App\Models\InventoryCount' => 'Inventory Count',
+                                    'App\Models\StockTransfer' => 'Stock Transfer',
+                                    'App\Models\TransferReceipt' => 'Transfer Receipt',
+                                    'App\Models\TaxInvoice' => 'Tax Invoice',
+                                    'App\Models\Receipt' => 'Receipt',
+                                    'App\Models\Grn' => 'GRN',
+                                    'App\Models\EmployeeDocument' => 'Employee Document',
+                                    'App\Models\Quotation' => 'Quotation',
+                                    'App\Models\CreditNote' => 'Credit Note',
+                                    'App\Models\DebitNote' => 'Debit Note',
+                                    'App\Models\JournalEntry' => 'Journal Entry',
+                                    'App\Models\Payment' => 'Payment',
+                                ];
+                            })
+                            ->searchable()
+                            ->createOptionForm([
+                                \Filament\Forms\Components\TextInput::make('new_document_type')
+                                    ->label('New Document Type')
+                                    ->required(),
                             ])
+                            ->createOptionUsing(function (array $data) {
+                                return $data['new_document_type'];
+                            })
+                            ->getOptionLabelUsing(function ($value) {
+                                $options = [
+                                    'App\Models\PosSale' => 'POS Sale',
+                                    'App\Models\PurchaseOrder' => 'Purchase Order',
+                                    'App\Models\PurchaseRequisition' => 'Purchase Requisition',
+                                    'App\Models\InventoryCount' => 'Inventory Count',
+                                    'App\Models\StockTransfer' => 'Stock Transfer',
+                                    'App\Models\TransferReceipt' => 'Transfer Receipt',
+                                    'App\Models\TaxInvoice' => 'Tax Invoice',
+                                    'App\Models\Receipt' => 'Receipt',
+                                    'App\Models\Grn' => 'GRN',
+                                    'App\Models\EmployeeDocument' => 'Employee Document',
+                                    'App\Models\Quotation' => 'Quotation',
+                                    'App\Models\CreditNote' => 'Credit Note',
+                                    'App\Models\DebitNote' => 'Debit Note',
+                                    'App\Models\JournalEntry' => 'Journal Entry',
+                                    'App\Models\Payment' => 'Payment',
+                                ];
+                                return $options[$value] ?? $value;
+                            })
                             ->required()
                             ->live(),
                         \Filament\Forms\Components\TextInput::make('prefix')

@@ -17,7 +17,16 @@ class ProductVariantsTable
         return $table
             ->columns([
                 TextColumn::make('product.name')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('color.name')
+                    ->label('Color')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('size.name')
+                    ->label('Size')
+                    ->sortable()
+                    ->searchable(),
 
                 TextColumn::make('sku')
                     ->label('SKU')
