@@ -24,6 +24,10 @@ class Stock extends Model
         return $this->belongsTo(Branch::class, 'branch_id');
     }
 
+    public function warehouse() {
+        return $this->belongsTo(Warehouse::class, 'warehouse_id');
+    }
+
     public function reserve($qty) {
         $this->reserved_qty += $qty;
         $this->available_qty = $this->quantity - $this->reserved_qty - ($this->damaged_qty ?? 0);
