@@ -22,7 +22,20 @@ class StockTransactionResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCube;
 
-    // Removed canCreate and canEdit to allow these actions
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
+    public static function canEdit(\Illuminate\Database\Eloquent\Model $record): bool
+    {
+        return false;
+    }
+
+    public static function canDelete(\Illuminate\Database\Eloquent\Model $record): bool
+    {
+        return false;
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -45,8 +58,6 @@ class StockTransactionResource extends Resource
     {
         return [
             'index' => ListStockTransactions::route('/'),
-            'create' => CreateStockTransaction::route('/create'),
-            'edit' => EditStockTransaction::route('/{record}/edit'),
         ];
     }
 }

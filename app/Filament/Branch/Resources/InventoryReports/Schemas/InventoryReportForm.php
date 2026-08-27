@@ -154,59 +154,12 @@ class InventoryReportForm
                 Placeholder::make('report_details')
                     ->label('Report Details')
                     ->content(function ($get) {
-                        $fromDate = $get('from_date');
-                        $toDate = $get('to_date');
-                        $date = $get('report_date');
-                        
-                        $branchId = null;
-                        try {
-                            $branchId = $get('branch_id');
-                        } catch (\Exception $e) {
-                            $branchId = null;
-                        }
-
-                        if (!$branchId && auth()->check() && auth()->user()?->branch_id) {
-                            $branchId = auth()->user()->branch_id;
-                        }
-
-                        if (!$branchId) {
-                            $branchId = \App\Models\Branch::query()->first()?->id;
-                        }
-                        
-                        if (!$branchId || (!$fromDate && !$toDate && !$date)) return new HtmlString('<p class="text-gray-500">Please select a branch and date range to view inventory details.</p>');
-                        
-                        $items = \App\Models\BranchInventory::where('branch_id', $branchId)->with(['product', 'productVariant'])->take(50)->get();
-                        if ($items->isEmpty()) {
-                            $items = \App\Models\Stock::where('branch_id', $branchId)->with(['product', 'productVariant'])->take(50)->get();
-                        }
-                        
-                        if ($items->isEmpty()) return new HtmlString('<p class="text-gray-500">No inventory items found for this branch.</p>');
-                        
-                        $html = '<div class="overflow-x-auto"><table class="w-full text-sm text-left border-collapse">';
-                        $html .= '<thead><tr class="bg-gray-100">';
-                        $html .= '<th class="p-2 border">Product</th>';
-                        $html .= '<th class="p-2 border">SKU</th>';
-                        $html .= '<th class="p-2 border">Qty</th>';
-                        $html .= '<th class="p-2 border">Unit Cost</th>';
-                        $html .= '<th class="p-2 border">Total Value</th>';
-                        $html .= '</tr></thead><tbody>';
-                        $grandTotal = 0;
-                        foreach ($records = $items as $record) {
-                            $qty = (float) $record->quantity;
-                            $variant = $record->productVariant ?: \App\Models\ProductVariant::where('product_id', $record->product_id)->first();
-                            $cost = (float) ($variant?->cost_price ?: ($variant?->selling_price ?: ($record->avg_cost ?? 0)));
-                            $val = $qty * $cost;
-                            $grandTotal += $val;
-                            $html .= '<tr>';
-                            $html .= '<td class="p-2 border">' . ($record->product ? $record->product->name : 'N/A') . '</td>';
-                            $html .= '<td class="p-2 border">' . ($variant ? $variant->sku : '-') . '</td>';
-                            $html .= '<td class="p-2 border">' . number_format($qty, 2) . '</td>';
-                            $html .= '<td class="p-2 border">₹' . number_format($cost, 2) . '</td>';
-                            $html .= '<td class="p-2 border font-bold">₹' . number_format($val, 2) . '</td>';
-                            $html .= '</tr>';
-                        }
-                        $html .= '</tbody><tfoot><tr class="bg-gray-50 font-bold"><td colspan="4" class="p-2 border text-right">Total Inventory Value:</td><td class="p-2 border">₹' . number_format($grandTotal, 2) . '</td></tr></tfoot></table></div>';
-                        return new HtmlString($html);
+                        return view('filament.reports.inventory-report-placeholder', [
+                            'branchId' => $get('branch_id'),
+                            'fromDate' => $get('from_date'),
+                            'toDate' => $get('to_date'),
+                            'reportDate' => $get('report_date'),
+                        ]);
                     })
                     ->columnSpanFull(),
             ]);

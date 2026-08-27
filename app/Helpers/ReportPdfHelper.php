@@ -171,6 +171,42 @@ class ReportPdfHelper
         );
     }
 
+    public static function downloadStockTransactionReportPdf(object $record): StreamedResponse
+    {
+        $fromDate = $record->from_date;
+        $toDate = $record->to_date;
+        $branchId = $record->branch_id;
+
+        $query = \App\Models\StockTransaction::query()
+                    ->with(['product', 'branch']);
+
+        if ($branchId) {
+            $query->where('branch_id', $branchId);
+        }
+
+        if ($fromDate && $toDate) {
+            $query->whereBetween('transaction_date', [$fromDate, $toDate]);
+        } elseif ($fromDate) {
+            $query->whereDate('transaction_date', '>=', $fromDate);
+        } elseif ($toDate) {
+            $query->whereDate('transaction_date', '<=', $toDate);
+        }
+
+        $transactions = $query->orderBy('transaction_date', 'desc')->get();
+
+        $pdf = Pdf::loadView('reports.stock_transaction_report_pdf', [
+            'record' => $record,
+            'transactions' => $transactions,
+        ]);
+
+        $filename = 'stock-transaction-report-' . ($record->id ?? time()) . '.pdf';
+
+        return response()->streamDownload(
+            fn () => print($pdf->output()),
+            $filename
+        );
+    }
+
     public static function getGstReportData(?string $reportType, ?string $fromDate, ?string $toDate): array
     {
         $items = [];
@@ -416,8 +452,8 @@ class ReportPdfHelper
                     $items[] = [
                         'category' => 'Journal Adjustment',
                         'date' => $je->journal && $je->journal->journal_date ? (is_string($je->journal->journal_date) ? $je->journal->journal_date : $je->journal->journal_date->format('Y-m-d')) : '-',
-                        'doc_no' => $je->entry_number ?? ('JE-' . $je->id),
-                        'description' => $je->description ?? ($je->chartOfAccount->name ?? 'Journal Entry'),
+                        'doc_no' => ($je->journal->journal_number ?? null) ?? ('JE-' . $je->id),
+                        'description' => $je->description ?? ($je->chartOfAccount->account_name ?? 'Journal Entry'),
                         'amount' => (float) ($je->debit ?: $je->credit),
                         'type' => $je->debit > 0 ? 'Expense' : 'Revenue',
                     ];
