@@ -15,8 +15,24 @@ class PurchaseReturnForm
     {
         return $schema
             ->components([
+                \Filament\Forms\Components\Select::make('vendor_id')
+                    ->relationship('vendor', 'name')
+                    ->searchable()
+                    ->required()
+                    ->live(),
+                \Filament\Forms\Components\Select::make('branch_id')
+                    ->relationship('branch', 'name')
+                    ->searchable()
+                    ->required()
+                    ->live(),
                 \Filament\Forms\Components\Select::make('purchase_order_id')
-                    ->relationship('purchaseOrder', 'po_number')
+                    ->relationship(
+                        name: 'purchaseOrder',
+                        titleAttribute: 'po_number',
+                        modifyQueryUsing: fn (\Illuminate\Database\Eloquent\Builder $query, callable $get) => 
+                            $get('vendor_id') ? $query->where('vendor_id', $get('vendor_id')) : $query
+                    )
+                    ->searchable()
                     ->live()
                     ->afterStateUpdated(function ($state, callable $set) {
                         if ($state) {
@@ -41,9 +57,16 @@ class PurchaseReturnForm
                     ->relationship(
                         name: 'grn',
                         titleAttribute: 'grn_number',
-                        modifyQueryUsing: fn (\Illuminate\Database\Eloquent\Builder $query, callable $get) => 
-                            $get('purchase_order_id') ? $query->where('purchase_order_id', $get('purchase_order_id')) : $query
+                        modifyQueryUsing: function (\Illuminate\Database\Eloquent\Builder $query, callable $get) {
+                            if ($get('purchase_order_id')) {
+                                $query->where('purchase_order_id', $get('purchase_order_id'));
+                            } elseif ($get('vendor_id')) {
+                                $query->where('vendor_id', $get('vendor_id'));
+                            }
+                            return $query;
+                        }
                     )
+                    ->searchable()
                     ->live()
                     ->afterStateUpdated(function ($state, callable $set) {
                         if ($state) {
@@ -69,10 +92,6 @@ class PurchaseReturnForm
                             }
                         }
                     }),
-                \Filament\Forms\Components\Select::make('vendor_id')->relationship('vendor', 'name')
-                    ->required(),
-                \Filament\Forms\Components\Select::make('branch_id')->relationship('branch', 'name')
-                    ->required(),
                 DatePicker::make('return_date')
                     ->required()
                     ->default(now()->timezone('Asia/Kolkata')),
@@ -97,15 +116,25 @@ class PurchaseReturnForm
                     ->schema([
                         \Filament\Forms\Components\Repeater::make('returned_items')
                             ->label('Items')
+                            ->itemLabel(fn (array $state): ?string => 
+                                isset($state['product_id']) && $state['product_id'] 
+                                    ? 'Item: ' . (\App\Models\Product::find($state['product_id'])?->name ?? 'Product #' . $state['product_id']) 
+                                    : 'New Item'
+                            )
+                            ->collapsible()
+                            ->cloneable()
+                            ->addActionLabel('+ Add Item')
                             ->schema([
                                 \Filament\Forms\Components\Select::make('product_id')
                                     ->options(\App\Models\Product::pluck('name', 'id'))
+                                    ->searchable()
                                     ->live(),
                                 \Filament\Forms\Components\Select::make('product_variant_id')
                                     ->options(function (callable $get) {
                                         if (!$get('product_id')) return [];
                                         return \App\Models\ProductVariant::where('product_id', $get('product_id'))->pluck('sku', 'id');
-                                    }),
+                                    })
+                                    ->searchable(),
                                 \Filament\Forms\Components\TextInput::make('quantity')
                                     ->numeric()
                                     ->live(debounce: 500)

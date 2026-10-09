@@ -17,8 +17,8 @@ class GrnForm
         return $schema
             ->components([
                 \Filament\Forms\Components\Select::make('purchase_order_id')
-                    ->relationship('purchaseOrder', 'po_number', fn ($query) => $query->where('status', 'completed'))
-                    ->required()
+                    ->relationship('purchaseOrder', 'po_number', fn ($query) => $query->whereIn('status', ['approved', 'submitted', 'completed']))
+                    ->searchable()
                     ->live()
                     ->afterStateUpdated(function ($state, callable $set) {
                         if ($state) {
@@ -35,9 +35,13 @@ class GrnForm
                             }
                         }
                     }),
-                \Filament\Forms\Components\Select::make('vendor_id')->relationship('vendor', 'name')
+                \Filament\Forms\Components\Select::make('vendor_id')
+                    ->relationship('vendor', 'name')
+                    ->searchable()
                     ->required(),
-                \Filament\Forms\Components\Select::make('branch_id')->relationship('branch', 'name')
+                \Filament\Forms\Components\Select::make('branch_id')
+                    ->relationship('branch', 'name')
+                    ->searchable()
                     ->required(),
                 TextInput::make('grn_number')
                     ->default('Auto-generated')
@@ -60,9 +64,18 @@ class GrnForm
                     ->schema([
                         \Filament\Forms\Components\Repeater::make('received_items')
                             ->label('Items')
+                            ->itemLabel(fn (array $state): ?string => 
+                                isset($state['product_id']) && $state['product_id'] 
+                                    ? 'Item: ' . (\App\Models\Product::find($state['product_id'])?->name ?? 'Product #' . $state['product_id']) 
+                                    : 'New Item'
+                            )
+                            ->collapsible()
+                            ->cloneable()
+                            ->addActionLabel('+ Add Item')
                             ->schema([
                                 \Filament\Forms\Components\Select::make('product_id')
                                     ->options(\App\Models\Product::pluck('name', 'id'))
+                                    ->searchable()
                                     ->required()
                                     ->live(),
                                 \Filament\Forms\Components\Select::make('product_variant_id')
@@ -70,6 +83,7 @@ class GrnForm
                                         if (!$get('product_id')) return [];
                                         return \App\Models\ProductVariant::where('product_id', $get('product_id'))->pluck('sku', 'id');
                                     })
+                                    ->searchable()
                                     ->live(onBlur: true),
                                 \Filament\Forms\Components\TextInput::make('quantity')
                                     ->required()
@@ -99,7 +113,6 @@ class GrnForm
                             ->columns(5)
                             ->columnSpanFull()
                     ])
-                    ->columnSpan('full')
                     ->columnSpan('full')
             ]);
     }

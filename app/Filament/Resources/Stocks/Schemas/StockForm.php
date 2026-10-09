@@ -12,6 +12,7 @@ class StockForm
         return $schema
             ->components([
                 \Filament\Forms\Components\Select::make('product_id')->relationship('product', 'name')
+                    ->searchable()
                     ->required()
                     ->live()
                     ->afterStateUpdated(function ($set, $get) {
@@ -25,9 +26,11 @@ class StockForm
                             $query->where('product_id', $productId);
                         }
                     })
+                    ->searchable()
                     ->live()
                     ->afterStateUpdated(fn ($set, $get) => self::fetchStockDetails($set, $get)),
                 \Filament\Forms\Components\Select::make('branch_id')->relationship('branch', 'name')
+                    ->searchable()
                     ->required()
                     ->live()
                     ->afterStateUpdated(fn ($set, $get) => self::fetchStockDetails($set, $get)),

@@ -16,11 +16,14 @@ class QuotationForm
                     ->default('Auto-generated')
                     ->disabled()
                     ->dehydrated(false),
-                \Filament\Forms\Components\Select::make('vendor_id')->relationship('vendor', 'name')
+                \Filament\Forms\Components\Select::make('vendor_id')
+                    ->relationship('vendor', 'name')
+                    ->searchable()
                     ->required(),
                 \Filament\Forms\Components\Select::make('rfq_id')
-                    ->relationship('rfq', 'rfq_number', fn ($query) => $query->where('status', 'awarded'))
-                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->rfq_number ?? "RFQ #{$record->id}"),
+                    ->relationship('rfq', 'rfq_number', fn ($query) => $query->whereIn('status', ['open', 'published', 'active', 'awarded']))
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->rfq_number ?? "RFQ #{$record->id}")
+                    ->searchable(),
                 DatePicker::make('quote_date')
                     ->required()
                     ->default(now()->timezone('Asia/Kolkata')),
@@ -41,6 +44,14 @@ class QuotationForm
                     ->default('received'),
                 \Filament\Forms\Components\Repeater::make('items')
                     ->relationship('items')
+                    ->itemLabel(fn (array $state): ?string => 
+                        isset($state['product_id']) && $state['product_id'] 
+                            ? 'Item: ' . (\App\Models\Product::find($state['product_id'])?->name ?? 'Product #' . $state['product_id']) 
+                            : 'New Item'
+                    )
+                    ->collapsible()
+                    ->cloneable()
+                    ->addActionLabel('+ Add Item')
                     ->live()
                     ->afterStateUpdated(function (callable $get, callable $set) {
                         $items = $get('items') ?? [];
@@ -48,7 +59,10 @@ class QuotationForm
                         $set('total_amount', $total);
                     })
                     ->schema([
-                        \Filament\Forms\Components\Select::make('product_id')->relationship('product', 'name')
+                        \Filament\Forms\Components\Select::make('product_id')
+                            ->relationship('product', 'name')
+                            ->searchable()
+                            ->preload()
                             ->required()
                             ->live(),
                         \Filament\Forms\Components\Select::make('product_variant_id')
@@ -57,6 +71,7 @@ class QuotationForm
                                 if (!$get('product_id')) return [];
                                 return \App\Models\ProductVariant::where('product_id', $get('product_id'))->pluck('sku', 'id');
                             })
+                            ->searchable()
                             ->live(onBlur: true)
                             ->afterStateUpdated(function ($state, callable $set, callable $get) {
                                 if ($state) {

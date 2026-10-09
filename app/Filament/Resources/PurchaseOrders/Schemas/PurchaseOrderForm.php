@@ -15,10 +15,14 @@ class PurchaseOrderForm
     {
         return $schema
             ->components([
-                \Filament\Forms\Components\Select::make('vendor_id')->relationship('vendor', 'name')
+                Select::make('vendor_id')
+                    ->relationship('vendor', 'name')
+                    ->searchable()
                     ->required()
                     ->live(),
-                \Filament\Forms\Components\Select::make('branch_id')->relationship('branch', 'name')
+                Select::make('branch_id')
+                    ->relationship('branch', 'name')
+                    ->searchable()
                     ->required(),
                 TextInput::make('po_number')
                     ->default('Auto-generated')
@@ -27,14 +31,13 @@ class PurchaseOrderForm
                 Select::make('quotation_number')
                     ->options(function (callable $get) {
                         $vendorId = $get('vendor_id');
+                        $query = \App\Models\Quotation::whereNotNull('quotation_number');
                         if ($vendorId) {
-                            return \App\Models\Quotation::whereNotNull('quotation_number')
-                                ->where('status', 'accepted')
-                                ->where('vendor_id', $vendorId)->pluck('quotation_number', 'quotation_number');
+                            $query->where('vendor_id', $vendorId);
                         }
-                        return \App\Models\Quotation::whereNotNull('quotation_number')
-                            ->where('status', 'accepted')
-                            ->pluck('quotation_number', 'quotation_number');
+                        return $query->get()->mapWithKeys(function ($quote) {
+                            return [$quote->quotation_number => "{$quote->quotation_number} (" . ucfirst($quote->status) . " - ₹{$quote->total_amount})"];
+                        });
                     })
                     ->searchable()
                     ->nullable()
@@ -84,6 +87,14 @@ class PurchaseOrderForm
                     ->default('draft'),
                 Repeater::make('items')
                     ->relationship('items')
+                    ->itemLabel(fn (array $state): ?string => 
+                        isset($state['product_id']) && $state['product_id'] 
+                            ? 'Item: ' . (\App\Models\Product::find($state['product_id'])?->name ?? 'Product #' . $state['product_id']) 
+                            : 'New Item'
+                    )
+                    ->collapsible()
+                    ->cloneable()
+                    ->addActionLabel('+ Add Item')
                     ->live()
                     ->afterStateUpdated(function (callable $get, callable $set) {
                         $items = $get('items') ?? [];
@@ -92,6 +103,8 @@ class PurchaseOrderForm
                     })
                     ->schema([
                         Select::make('product_id')->relationship('product', 'name')
+                            ->searchable()
+                            ->preload()
                             ->required()
                             ->live(),
                         Select::make('product_variant_id')
@@ -100,6 +113,7 @@ class PurchaseOrderForm
                                 if (!$get('product_id')) return [];
                                 return ProductVariant::where('product_id', $get('product_id'))->pluck('sku', 'id');
                             })
+                            ->searchable()
                             ->live(onBlur: true)
                             ->afterStateUpdated(function ($state, callable $set, callable $get) {
                                 if ($state) {
