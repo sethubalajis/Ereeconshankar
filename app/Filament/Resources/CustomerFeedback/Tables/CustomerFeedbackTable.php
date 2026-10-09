@@ -16,17 +16,28 @@ class CustomerFeedbackTable
         return $table
             ->columns([
                 TextColumn::make('customer.name')
+                    ->label('Customer')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('customer.phone')
-                    ->searchable()
-                    ->hidden(),
                 TextColumn::make('branch.name')
+                    ->label('Branch')
                     ->sortable(),
                 TextColumn::make('rating')
-                    ->numeric()
+                    ->label('Rating')
+                    ->formatStateUsing(fn ($state) => str_repeat('★', (int)$state) . str_repeat('☆', max(0, 5 - (int)$state)) . " ({$state}/5)")
+                    ->badge()
+                    ->color(fn ($state): string => match (true) {
+                        (int)$state >= 4 => 'success',
+                        (int)$state === 3 => 'warning',
+                        default => 'danger',
+                    })
                     ->sortable(),
+                TextColumn::make('comments')
+                    ->label('Comments')
+                    ->limit(40)
+                    ->tooltip(fn ($record) => $record->comments),
                 TextColumn::make('feedback_date')
+                    ->label('Date')
                     ->date()
                     ->sortable(),
                 TextColumn::make('created_at')

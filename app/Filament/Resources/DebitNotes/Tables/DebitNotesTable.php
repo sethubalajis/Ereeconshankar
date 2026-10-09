@@ -15,21 +15,35 @@ class DebitNotesTable
     {
         return $table
             ->columns([
-                TextColumn::make('purchaseReturn.reason')
-                    ->sortable(),
-                TextColumn::make('vendor.name')
-                    ->sortable(),
                 TextColumn::make('note_number')
-                    ->searchable(),
+                    ->label('Debit Note #')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('note_date')
                     ->date()
+                    ->sortable(),
+                TextColumn::make('purchase_return_id')
+                    ->label('Purchase Return')
+                    ->formatStateUsing(fn ($state) => $state ? "PR-#{$state}" : '-')
+                    ->sortable(),
+                TextColumn::make('vendor.name')
+                    ->label('Vendor')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('amount')
                     ->numeric()
                     ->prefix('₹ ')
                     ->sortable(),
                 TextColumn::make('status')
-                    ->searchable(),
+                    ->badge()
+                    ->colors([
+                        'warning' => 'draft',
+                        'success' => 'issued',
+                        'danger' => 'cancelled',
+                    ]),
+                TextColumn::make('purchaseReturn.reason')
+                    ->label('Return Reason')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

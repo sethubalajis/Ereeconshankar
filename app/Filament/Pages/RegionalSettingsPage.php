@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Models\Company;
 use App\Models\CompanySetting;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Section;
@@ -22,9 +23,16 @@ class RegionalSettingsPage extends Page implements HasForms
 
     public ?array $data = [];
 
+    protected function getCompanyId(): ?int
+    {
+        return session('company_id') 
+            ?? (auth()->check() ? auth()->user()->company_id : null) 
+            ?? Company::query()->value('id');
+    }
+
     public function mount(): void
     {
-        $companyId = session('company_id') ?? (auth()->check() ? auth()->user()->company_id : null);
+        $companyId = $this->getCompanyId();
         if ($companyId) {
             $settings = CompanySetting::where('company_id', $companyId)->pluck('setting_value', 'setting_key')->toArray();
             $this->form->fill($settings);
@@ -48,6 +56,7 @@ class RegionalSettingsPage extends Page implements HasForms
                                 'd-m-Y' => 'DD-MM-YYYY',
                                 'd.m.Y' => 'DD.MM.YYYY',
                             ])
+                            ->default('d/m/Y')
                             ->required(),
                         Select::make('time_format')
                             ->label('Time Format')
@@ -55,6 +64,7 @@ class RegionalSettingsPage extends Page implements HasForms
                                 'h:i A' => '12 Hour (AM/PM)',
                                 'H:i' => '24 Hour',
                             ])
+                            ->default('h:i A')
                             ->required(),
                         Select::make('datetime_format')
                             ->label('Date-Time Format')
@@ -65,6 +75,7 @@ class RegionalSettingsPage extends Page implements HasForms
                                 'd-m-Y h:i A' => 'DD-MM-YYYY hh:mm A',
                                 'd.m.Y h:i A' => 'DD.MM.YYYY hh:mm A',
                             ])
+                            ->default('d/m/Y h:i A')
                             ->required(),
                         Select::make('timezone')
                             ->label('Time Zone')
@@ -76,6 +87,7 @@ class RegionalSettingsPage extends Page implements HasForms
                                 'America/New_York' => 'America/New_York',
                                 'UTC' => 'UTC',
                             ])
+                            ->default('Asia/Kolkata')
                             ->searchable()
                             ->required(),
                         Select::make('first_day_of_week')
@@ -83,7 +95,8 @@ class RegionalSettingsPage extends Page implements HasForms
                             ->options([
                                 '0' => 'Sunday',
                                 '1' => 'Monday',
-                            ]),
+                            ])
+                            ->default('1'),
                     ])->columns(2)
             ])
             ->statePath('data');
@@ -92,7 +105,7 @@ class RegionalSettingsPage extends Page implements HasForms
     public function save(): void
     {
         $data = $this->form->getState();
-        $companyId = session('company_id') ?? (auth()->check() ? auth()->user()->company_id : null);
+        $companyId = $this->getCompanyId();
 
         if ($companyId) {
             foreach ($data as $key => $value) {
@@ -105,6 +118,11 @@ class RegionalSettingsPage extends Page implements HasForms
             Notification::make()
                 ->title('Settings saved successfully')
                 ->success()
+                ->send();
+        } else {
+            Notification::make()
+                ->title('No active company found to save settings.')
+                ->danger()
                 ->send();
         }
     }

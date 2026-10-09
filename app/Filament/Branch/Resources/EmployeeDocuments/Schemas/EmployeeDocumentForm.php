@@ -2,7 +2,9 @@
 
 namespace App\Filament\Branch\Resources\EmployeeDocuments\Schemas;
 
-use Filament\Forms\Components\TextInput;
+use App\Models\Employee;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
@@ -12,9 +14,13 @@ class EmployeeDocumentForm
     {
         return $schema
             ->components([
-                \Filament\Forms\Components\Select::make('employee_id')->relationship('employee', 'first_name')
+                Select::make('employee_id')
+                    ->relationship('employee', 'first_name')
+                    ->getOptionLabelFromRecordUsing(fn (Employee $record) => "{$record->employee_code} - {$record->first_name} {$record->last_name}")
+                    ->searchable()
+                    ->preload()
                     ->required(),
-                \Filament\Forms\Components\Select::make('document_type')
+                Select::make('document_type')
                     ->options([
                         'Identity Proof' => 'Identity Proof',
                         'Address Proof' => 'Address Proof',
@@ -27,10 +33,16 @@ class EmployeeDocumentForm
                         'Other' => 'Other',
                     ])
                     ->required(),
-                \Filament\Forms\Components\FileUpload::make('document_path')
+                FileUpload::make('document_path')
+                    ->label('Upload Document / Photo')
                     ->directory('employee-documents')
+                    ->disk('public')
+                    ->openable()
+                    ->downloadable()
                     ->required(),
                 Toggle::make('is_verified')
+                    ->label('Is Verified')
+                    ->default(false)
                     ->required(),
             ]);
     }

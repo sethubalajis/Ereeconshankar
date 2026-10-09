@@ -2,6 +2,7 @@
 
 namespace App\Filament\Branch\Pages;
 
+use App\Models\Branch;
 use App\Models\BranchSetting;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Section;
@@ -22,9 +23,26 @@ class RegionalSettingsPage extends Page implements HasForms
 
     public ?array $data = [];
 
-    public function mount(): void
+    protected function getBranchId(): ?int
     {
         $branchId = session('branch_id');
+        if (!$branchId && auth()->check()) {
+            $branchId = auth()->user()->branch_id ?? auth()->user()->branches()->value('branches.id');
+        }
+        if (!$branchId) {
+            try {
+                $branchId = \Filament\Facades\Filament::getTenant()?->getKey();
+            } catch (\Throwable $e) {}
+        }
+        if (!$branchId) {
+            $branchId = Branch::query()->value('id');
+        }
+        return $branchId;
+    }
+
+    public function mount(): void
+    {
+        $branchId = $this->getBranchId();
         if ($branchId) {
             $settings = BranchSetting::where('branch_id', $branchId)->pluck('setting_value', 'setting_key')->toArray();
             $this->form->fill($settings);
@@ -88,7 +106,7 @@ class RegionalSettingsPage extends Page implements HasForms
     public function save(): void
     {
         $data = $this->form->getState();
-        $branchId = session('branch_id');
+        $branchId = $this->getBranchId();
 
         if ($branchId) {
             foreach ($data as $key => $value) {
@@ -105,6 +123,11 @@ class RegionalSettingsPage extends Page implements HasForms
             Notification::make()
                 ->title('Branch Settings saved successfully')
                 ->success()
+                ->send();
+        } else {
+            Notification::make()
+                ->title('No active branch found to save settings.')
+                ->danger()
                 ->send();
         }
     }

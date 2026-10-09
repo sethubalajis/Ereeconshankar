@@ -18,9 +18,13 @@ class ContraEntriesTable
                 TextColumn::make('date')
                     ->date()
                     ->sortable(),
-                TextColumn::make('fromAccount.name')
+                TextColumn::make('fromAccount.account_name')
+                    ->label('From Account')
+                    ->searchable()
                     ->sortable(),
-                TextColumn::make('toAccount.name')
+                TextColumn::make('toAccount.account_name')
+                    ->label('To Account')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('amount')
                     ->numeric()

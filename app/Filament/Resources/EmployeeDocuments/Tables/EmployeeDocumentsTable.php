@@ -17,12 +17,20 @@ class EmployeeDocumentsTable
         return $table
             ->columns([
                 TextColumn::make('employee.first_name')
+                    ->label('Employee')
+                    ->formatStateUsing(fn ($state, $record) => $record->employee ? "{$record->employee->first_name} {$record->employee->last_name} ({$record->employee->employee_code})" : '-')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('document_type')
+                    ->label('Document Type')
+                    ->badge()
                     ->searchable(),
                 TextColumn::make('document_path')
-                    ->searchable(),
+                    ->label('File')
+                    ->formatStateUsing(fn ($state) => basename($state))
+                    ->openUrlInNewTab(fn ($record) => asset('storage/' . $record->document_path)),
                 IconColumn::make('is_verified')
+                    ->label('Verified')
                     ->boolean(),
                 TextColumn::make('created_at')
                     ->dateTime()

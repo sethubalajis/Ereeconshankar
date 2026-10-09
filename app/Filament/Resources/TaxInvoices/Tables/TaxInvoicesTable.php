@@ -15,14 +15,20 @@ class TaxInvoicesTable
     {
         return $table
             ->columns([
-                TextColumn::make('invoiceable_id')->numeric()
-                    ->sortable(),
-                TextColumn::make('invoiceable_type')
-                    ->searchable(),
                 TextColumn::make('invoice_number')
-                    ->searchable(),
+                    ->label('Invoice #')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('invoice_date')
                     ->date()
+                    ->sortable(),
+                TextColumn::make('invoiceable_type')
+                    ->label('Module')
+                    ->formatStateUsing(fn ($state) => class_basename($state))
+                    ->searchable(),
+                TextColumn::make('invoiceable_id')
+                    ->label('Ref ID')
+                    ->numeric()
                     ->sortable(),
                 TextColumn::make('taxable_amount')
                     ->numeric()
@@ -35,7 +41,8 @@ class TaxInvoicesTable
                 TextColumn::make('total_amount')
                     ->numeric()
                     ->prefix('₹ ')
-                    ->sortable(),
+                    ->sortable()
+                    ->weight('bold'),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

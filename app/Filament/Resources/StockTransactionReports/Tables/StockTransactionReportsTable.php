@@ -8,7 +8,6 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-
 use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
@@ -20,6 +19,7 @@ class StockTransactionReportsTable
         return $table
             ->columns([
                 TextColumn::make('branch.name')
+                    ->label('Branch')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('from_date')
@@ -28,11 +28,8 @@ class StockTransactionReportsTable
                 TextColumn::make('to_date')
                     ->date()
                     ->sortable(),
-                TextColumn::make('report_date')
-                    ->date()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('total_inventory_value')
+                    ->label('Total Value')
                     ->numeric()
                     ->prefix('₹ ')
                     ->sortable(),

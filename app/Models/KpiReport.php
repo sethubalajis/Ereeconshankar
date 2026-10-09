@@ -14,4 +14,13 @@ class KpiReport extends Model
         'report_date' => 'date',
         'value' => 'float',
     ];
+
+    protected static function booted()
+    {
+        static::saving(function ($model) {
+            if (empty($model->report_date) && !empty($model->from_date)) {
+                $model->report_date = $model->from_date;
+            }
+        });
+    }
 }
