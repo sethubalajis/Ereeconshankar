@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\TransferApprovals\Schemas;
+namespace App\Filament\Branch\Resources\TransferApprovals\Schemas;
 
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TextInput;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\StockTransfers\Schemas;
+namespace App\Filament\Branch\Resources\StockTransfers\Schemas;
 
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TextInput;
