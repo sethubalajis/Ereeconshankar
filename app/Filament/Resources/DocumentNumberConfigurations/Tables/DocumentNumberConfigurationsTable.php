@@ -15,10 +15,32 @@ class DocumentNumberConfigurationsTable
     {
         return $table
             ->columns([
-                TextColumn::make('company_id')
-                    ->numeric()
-                    ->sortable(),
+                TextColumn::make('company.name')
+                    ->label('Company')
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('document_type')
+                    ->label('Document Type')
+                    ->formatStateUsing(function ($state) {
+                        $options = [
+                            'App\Models\PosSale' => 'POS Sale',
+                            'App\Models\PurchaseOrder' => 'Purchase Order',
+                            'App\Models\PurchaseRequisition' => 'Purchase Requisition',
+                            'App\Models\InventoryCount' => 'Inventory Count',
+                            'App\Models\StockTransfer' => 'Stock Transfer',
+                            'App\Models\TransferReceipt' => 'Transfer Receipt',
+                            'App\Models\TaxInvoice' => 'Tax Invoice',
+                            'App\Models\Receipt' => 'Receipt',
+                            'App\Models\Grn' => 'GRN',
+                            'App\Models\EmployeeDocument' => 'Employee Document',
+                            'App\Models\Quotation' => 'Quotation',
+                            'App\Models\CreditNote' => 'Credit Note',
+                            'App\Models\DebitNote' => 'Debit Note',
+                            'App\Models\JournalEntry' => 'Journal Entry',
+                            'App\Models\Payment' => 'Payment',
+                        ];
+                        return $options[$state] ?? class_basename($state);
+                    })
                     ->searchable(),
                 TextColumn::make('prefix')
                     ->searchable(),

@@ -111,6 +111,8 @@ class DocumentNumberConfigurationForm
                                 'YYYY-YYYY' => 'YYYY-YYYY (e.g. 2026-2027)',
                                 'YYYY-YY' => 'YYYY-YY (e.g. 2026-27)',
                                 'YY-YY' => 'YY-YY (e.g. 26-27)',
+                                'YYYY' => 'YYYY (e.g. 2026)',
+                                'YY' => 'YY (e.g. 26)',
                             ])
                             ->visible(fn ($get) => $get('include_financial_year'))
                             ->live(),
@@ -141,6 +143,10 @@ class DocumentNumberConfigurationForm
                                         $fyString = $startYear . '-' . $endYear;
                                     } elseif ($fyFormat === 'YY-YY') {
                                         $fyString = substr($startYear, 2) . '-' . substr($endYear, 2);
+                                    } elseif ($fyFormat === 'YYYY') {
+                                        $fyString = $startYear;
+                                    } elseif ($fyFormat === 'YY') {
+                                        $fyString = substr($startYear, 2);
                                     } else {
                                         $fyString = $startYear . '-' . substr($endYear, 2);
                                     }
