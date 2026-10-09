@@ -13,10 +13,29 @@ class CurrencyForm
         return $schema
             ->components([
                 TextInput::make('name')
-                    ->required(),
+                    ->required()
+                    ->maxLength(255),
                 TextInput::make('code')
-                    ->required(),
-                TextInput::make('symbol'),
+                    ->required()
+                    ->maxLength(10)
+                    ->placeholder('e.g. INR, USD, MYR'),
+                TextInput::make('symbol')
+                    ->maxLength(10)
+                    ->placeholder('e.g. ₹, $, €, RM')
+                    ->datalist([
+                        '₹',
+                        '$',
+                        '€',
+                        '£',
+                        'RM',
+                        'S$',
+                        'AED',
+                        '¥',
+                        'CHF',
+                        'CAD',
+                        'AUD',
+                    ])
+                    ->helperText('Select from dropdown suggestions or type a custom symbol.'),
                 TextInput::make('exchange_rate')
                     ->required()
                     ->numeric()

@@ -23,6 +23,7 @@ class UserForm
                     ->unique(ignoreRecord: true),
                 TextInput::make('password')
                     ->password()
+                    ->revealable()
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(fn (?string $state): bool => filled($state)),
                 Select::make('roles')
