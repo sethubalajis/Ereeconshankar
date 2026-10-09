@@ -17,11 +17,16 @@ class PickingListsTable
             ->columns([
                 TextColumn::make('warehouse.name')
                     ->sortable(),
-                TextColumn::make('reference_id')->numeric()
+                TextColumn::make('reference_id')
+                    ->label('Reference ID')
+                    ->formatStateUsing(fn ($state, $record) => $state ? "#{$state}" : ($record->reference_name ?? '-'))
                     ->sortable(),
                 TextColumn::make('reference_type')
+                    ->label('Reference Type')
+                    ->formatStateUsing(fn ($state) => class_basename($state))
                     ->searchable(),
                 TextColumn::make('status')
+                    ->badge()
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Branch\Resources\StockTransfers\Schemas;
+namespace App\Filament\Resources\StockTransfers\Schemas;
 
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TextInput;
@@ -14,12 +14,19 @@ class StockTransferForm
             ->components([
                 \Filament\Forms\Components\Select::make('transfer_request_id')
                     ->label('Transfer Request Code')
-                    ->relationship('transferRequest', 'transfer_request_code')
+                    ->relationship('transferRequest', 'transfer_request_number')
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->transfer_request_number ?: ($record->transfer_request_code ?: "Request #{$record->id}"))
                     ->searchable()
                     ->preload(),
-                \Filament\Forms\Components\Select::make('from_branch_id')->relationship('fromBranch', 'name')
-                    ->required(),
-                \Filament\Forms\Components\Select::make('to_branch_id')->relationship('toBranch', 'name')
+                \Filament\Forms\Components\Select::make('from_branch_id')
+                    ->relationship('fromBranch', 'name')
+                    ->searchable()
+                    ->required()
+                    ->live(),
+                \Filament\Forms\Components\Select::make('to_branch_id')
+                    ->relationship('toBranch', 'name')
+                    ->searchable()
+                    ->different('from_branch_id')
                     ->required(),
                 DatePicker::make('transfer_date')
                     ->required()
